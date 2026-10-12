@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="vi" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C++17 OOP - Trắc Nghiệm Đa Hình Chuyên Sâu (50 Câu)</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        primary: '#4f46e5', // indigo-600
+                        secondary: '#1e1b4b', // indigo-950
+                        accent: '#e0e7ff', // indigo-100
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Syntax Highlighting -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+
+    <style>
+        body { background-color: #f8fafc; color: #0f172a; }
+        
+        .option-btn { transition: all 0.2s ease; position: relative; }
+        /* Style màu xanh cho câu đúng */
+        .option-btn.selected-correct { background-color: #f0fdf4 !important; border-color: #22c55e !important; color: #14532d !important; font-weight: 600; }
+        /* Style màu ĐỎ cho câu sai theo đúng yêu cầu */
+        .option-btn.selected-wrong { background-color: #fef2f2 !important; border-color: #ef4444 !important; color: #991b1b !important; }
+        /* Style hiển thị đáp án đúng khi người dùng chọn sai */
+        .option-btn.show-correct { background-color: #f0fdf4 !important; border-color: #22c55e !important; color: #14532d !important; border-style: dashed; }
+        .option-btn.disabled { cursor: not-allowed; opacity: 0.7; }
+
+        .answer-block {
+            display: none; margin-top: 1.5rem; padding: 1.5rem;
+            background-color: #f8fafc; border-left: 4px solid #4f46e5; 
+            color: #334155; font-size: 0.95rem; line-height: 1.6;
+            border-radius: 0 0.5rem 0.5rem 0;
+            box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+        }
+        .answer-block.show { display: block; animation: slideDown 0.3s ease-out; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+        
+        pre[class*="language-"] { border-radius: 0.5rem; margin: 1em 0; border: 1px solid #cbd5e1; font-size: 0.9em; }
+        
+        .toc-link { transition: all 0.2s; border-left: 2px solid transparent; }
+        .toc-link:hover { border-left-color: #4f46e5; color: #4f46e5; background-color: #e0e7ff; }
+    </style>
+</head>
+
+<body class="antialiased min-h-screen flex flex-col font-sans selection:bg-indigo-200">
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 md:px-8 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-primary text-white flex items-center justify-center font-bold font-mono rounded-lg shadow-md text-xl">C++</div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight text-secondary leading-none">50 Câu Hỏi Đa Hình (Polymorphism)</h1>
+                    <p class="text-xs text-slate-500 mt-1">Hệ thống trắc nghiệm C++17 | Giải thích Under the hood</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <span id="score-display" class="font-mono font-bold text-slate-700 bg-slate-100 px-4 py-2 rounded-lg border border-slate-200 shadow-inner">Điểm: 0/50</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 md:px-8 py-8 flex flex-col lg:flex-row gap-10">
+        
+        <!-- Sidebar Navigation -->
+        <aside class="w-full lg:w-72 flex-shrink-0 hidden lg:block">
+            <div class="sticky top-24 bg-white p-5 border border-slate-200 rounded-xl shadow-sm">
+                <h2 class="text-xs uppercase tracking-widest text-slate-400 font-black mb-4">Danh mục chuyên đề</h2>
+                <nav class="flex flex-col gap-1 border-l-2 border-slate-100 pl-4 text-sm font-medium text-slate-600">
+                    <a href="#cat-0" class="toc-link py-2 px-3 block rounded-r hover:text-primary">1. Đa hình Hàm & Nạp chồng</a>
+                    <a href="#cat-1" class="toc-link py-2 px-3 block rounded-r hover:text-primary">2. So sánh Overloading vs Overriding</a>
+                    <a href="#cat-2" class="toc-link py-2 px-3 block rounded-r hover:text-primary">3. Từ khóa override & final</a>
+                    <a href="#cat-3" class="toc-link py-2 px-3 block rounded-r hover:text-primary">4. Liên kết Động (Dynamic Binding)</a>
+                    <a href="#cat-4" class="toc-link py-2 px-3 block rounded-r hover:text-primary">5. VTable & VPTR (Cơ chế ngầm)</a>
+                    <a href="#cat-5" class="toc-link py-2 px-3 block rounded-r hover:text-primary">6. Hàm Ảo (Virtual Functions)</a>
+                    <a href="#cat-6" class="toc-link py-2 px-3 block rounded-r hover:text-primary">7. Default Arguments trong Hàm Ảo</a>
+                    <a href="#cat-7" class="toc-link py-2 px-3 block rounded-r hover:text-primary">8. Destructor Ảo (Memory Leak)</a>
+                    <a href="#cat-8" class="toc-link py-2 px-3 block rounded-r hover:text-primary">9. Lớp Trừu Tượng (Abstract Class)</a>
+                    <a href="#cat-9" class="toc-link py-2 px-3 block rounded-r hover:text-primary">10. Các trường hợp Nâng cao</a>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="flex-grow max-w-4xl">
+            <div class="bg-white border border-slate-200 p-6 md:p-10 rounded-xl shadow-sm">
+                <div class="mb-8 border-b-2 border-slate-100 pb-4">
+                    <h2 class="text-2xl font-bold text-secondary uppercase tracking-tight">Bắt đầu kiểm tra</h2>
+                    <p class="text-sm text-slate-500 mt-2">Chọn một đáp án để xem giải thích chi tiết (Dù đúng hay sai cũng sẽ hiển thị lý do).</p>
+                </div>
+                <div id="questions-list" class="space-y-12"></div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const quizData = [
+            // CATEGORY 0: Đa hình Hàm & Nạp chồng (1-5)
+            {
+                category: "1. Đa hình Hàm & Nạp chồng (Static Polymorphism)",
+                q: "Đa hình tĩnh (Static Polymorphism) trong C++ được thể hiện rõ nhất thông qua kỹ thuật nào sau đây?",
+                code: "",
+                options: [
+                    "Kế thừa (Inheritance)",
+                    "Hàm ảo (Virtual Functions)",
+                    "Nạp chồng hàm (Function Overloading) và Templates",
+                    "Ghi đè phương thức (Method Overriding)"
+                ],
+                correct: 2,
+                explanation: "<b>Giải thích:</b> Đa hình tĩnh (Compile-time polymorphism) nghĩa là quyết định gọi hàm nào được giải quyết ngay lúc biên dịch. Trong C++, Nạp chồng hàm (Overloading) và Templates là hai đại diện tiêu biểu nhất. Trình biên dịch sẽ dựa vào kiểu tham số để 'bind' đúng thân hàm. Hàm ảo và Ghi đè thuộc về Đa hình động (Runtime)."
+            },
+            {
+                category: "1. Đa hình Hàm & Nạp chồng (Static Polymorphism)",
+                q: "Đoạn code sau có hợp lệ trong C++ (Nạp chồng hàm) không?\n<pre><code class=\"language-cpp\">int add(int a, int b) { return a + b; }\ndouble add(int a, int b) { return a + b + 0.5; }</code></pre>",
+                code: "",
+                options: [
+                    "Hợp lệ. Chạy bình thường.",
+                    "Lỗi biên dịch: Không thể nạp chồng hàm chỉ khác nhau kiểu trả về.",
+                    "Hợp lệ nhưng sẽ bị cảnh báo (Warning).",
+                    "Lỗi runtime khi gọi hàm add(1, 2)."
+                ],
+                correct: 1,
+                explanation: "<b>Giải thích:</b> C++ <strong>KHÔNG</strong> cho phép nạp chồng hàm nếu chúng chỉ khác nhau về Kiểu trả về (Return type). Trình biên dịch phân biệt các hàm nạp chồng dựa trên 'Chữ ký hàm' (Tên hàm + Danh sách tham số). Vì tham số đều là `(int, int)`, trình biên dịch sẽ báo lỗi xung đột định nghĩa."
+            },
+            {
+                category: "1. Đa hình Hàm & Nạp chồng (Static Polymorphism)",
+                q: "Hai hàm sau có được tính là nạp chồng hợp lệ không?\n<pre><code class=\"language-cpp\">void print(int x);\nvoid print(const int x);</code></pre>",
+                code: "",
+                options: [
+                    "Hợp lệ, đây là nạp chồng (Overloading).",
+                    "Không hợp lệ (Lỗi biên dịch). Trình biên dịch coi đây là định nghĩa lại (Redefinition) của cùng một hàm.",
+                    "Hợp lệ, nhưng hàm thứ hai sẽ che khuất hàm thứ nhất.",
+                    "Chỉ hợp lệ trong C++17 trở lên."
+                ],
+                correct: 1,
+                explanation: "<b>Giải thích:</b> Đối với tham số truyền theo <strong>giá trị (pass-by-value)</strong>, từ khóa `const` ở mức độ cao nhất (top-level const) bị trình biên dịch bỏ qua khi xét chữ ký hàm. Do đó, `print(int)` và `print(const int)` được coi là có cùng chữ ký -> Lỗi biên dịch. (Lưu ý: Nếu dùng tham chiếu hoặc con trỏ `print(int&)` và `print(const int&)`, thì lại là nạp chồng hợp lệ)."
+            },
+            {
+                category: "1. Đa hình Hàm & Nạp chồng (Static Polymorphism)",
+                q: "Sự khác biệt chính giữa Đa hình (Polymorphism) qua Nạp chồng (Overloading) và Nạp chồng toán tử (Operator Overloading)?",
+                code: "",
+                options: [
+                    "Cả hai đều giống hệt nhau, chỉ khác là một bên dùng tên hàm, một bên dùng ký hiệu toán tử. Đều là đa hình tĩnh.",
+                    "Toán tử là đa hình động, hàm là đa hình tĩnh.",
+                    "Hàm có thể nạp chồng khác số lượng tham số, toán tử thì bắt buộc cố định số tham số.",
+                    "Toán tử không phải là đa hình."
+                ],
+                correct: 0,
+                explanation: "<b>Giải thích:</b> Nạp chồng toán tử bản chất chỉ là 'Cú pháp rườm rà (Syntactic sugar)' của nạp chồng hàm. `a + b` thực chất được dịch thành `operator+(a, b)` hoặc `a.operator+(b)`. Cả hai đều được giải quyết tại Compile-time nên đều thuộc Đa hình tĩnh."
+            },
+            {
+                category: "1. Đa hình Hàm & Nạp chồng (Static Polymorphism)",
+                q: "Mục đích chính của Đa hình (Polymorphism) theo góc nhìn Hướng đối tượng là gì?",
+                code: "",
+                options: [
+                    "Để code chạy nhanh hơn bằng cách giảm chi phí bộ nhớ.",
+                    "Để một giao diện (Interface) duy nhất có thể đại diện cho nhiều kiểu thực thi khác nhau, tăng tính linh hoạt và mở rộng.",
+                    "Để giấu đi các biến private khỏi sự truy cập bên ngoài.",
+                    "Để ép kiểu đối tượng con thành đối tượng cha."
+                ],
+                correct: 1,
+                explanation: "<b>Giải thích:</b> 'Poly' (nhiều) + 'morph' (hình thái). Mục đích của Đa hình là cung cấp <strong>Một giao diện chung, nhiều cách thực thi</strong>. Ví dụ gọi `animal->speak()`, nếu là Chó nó sủa, Mèo nó kêu. Người gọi hàm không cần biết nó là con gì, hệ thống tự động xử lý. Điều này giúp hệ thống dễ dàng mở rộng (thêm con Heo vào mà không phải sửa code hiện tại)."
+            },
+
+            // CATEGORY 1: Overloading vs Overriding (6-10)
+            {
+                category: "2. So sánh Overloading vs Overriding",
+                q: "Điều kiện BẮT BUỘC ĐỂ CÓ THỂ Ghi đè phương thức (Method Overriding) là gì?",
+                code: "",
+                options: [
+                    "Hai hàm phải nằm trong cùng một Lớp.",
+                    "Hai hàm phải có tên giống nhau nhưng khác tham số.",
+                    "Hàm ở lớp con phải có chữ ký (Tên + Tham số + Kiểu trả về) GIỐNG HỆT hàm ảo ở lớp cha.",
+                    "Hàm ở lớp cha phải là private."
+                ],
+                correct: 2,
+                explanation: "<b>Giải thích:</b> Khác với Nạp chồng (Overloading) yêu cầu khác tham số. <strong>Ghi đè (Overriding)</strong> yêu cầu Lớp Con định nghĩa lại hành vi của Lớp Cha. Do đó, chữ ký hàm (Tên, Danh sách tham số, Kiểu trả về, Tự khóa const) phải <strong>khớp tuyệt đối 100%</strong>. Nếu sai một chút, nó biến thành Name Hiding (Che khuất)."
+            },
+            {
+                category: "2. So sánh Overloading vs Overriding",
+                q: "Kiểu liên kết (Binding) của Overloading và Overriding khác nhau như thế nào?",
+                code: "",
+                options: [
+                    "Cả hai đều là Static Binding.",
+                    "Overloading là Static Binding (Liên kết sớm lúc biên dịch), Overriding (với virtual) là Dynamic Binding (Liên kết trễ lúc chạy).",
+                    "Cả hai đều là Dynamic Binding.",
+                    "Overloading là Dynamic Binding, Overriding là Static Binding."
+                ],
+                correct: 1,
+                explanation: "<b>Giải thích:</b> Overloading được trình biên dịch giải quyết ngay lúc compile (Compile-time / Static binding). Overriding (Hàm ảo) yêu cầu tra cứu VTable lúc chương trình đang chạy để biết con trỏ đang trỏ tới object nào (Runtime / Dynamic binding)."
+            },
+            {
+                category: "2. So sánh Overloading vs Overriding",
+                q: "Đoạn code sau có phải là Ghi đè (Overriding) không?\n<pre><code class=\"language-cpp\">class Base { public: void print() {} };\nclass Derived : public Base { public: void print(int x) {} };</code></pre>",
+                code: "",
+                options: [
+                    "Có, đây là Overriding.",
+                    "Không, đây là Overloading.",
+                    "Không, đây là Che khuất tên (Name Hiding / Shadowing).",
+                    "Lỗi biên dịch."
+                ],
+                correct: 2,
+                explanation: "<b>Giải thích:</b> Hàm ở lớp con khác tham số với hàm ở lớp cha. Theo luật C++, nó <strong>không phải là Overriding</strong> (vì khác chữ ký), cũng <strong>không phải Overloading</strong> (vì không nằm cùng phạm vi Scope). Trình biên dịch sẽ DỪNG tra cứu tên khi tìm thấy `print` ở lớp Derived, che khuất hoàn toàn hàm `print()` không tham số của Base. Hiện tượng này gọi là <strong>Name Hiding</strong>."
+            },
+            {
+                category: "2. So sánh Overloading vs Overriding",
+                q: "Khái niệm 'Covariant Return Type' trong Overriding cho phép điều gì?",
+                code: "",
+                options: [
+                    "Hàm con trả về kiểu int trong khi hàm cha trả về float.",
+                    "Hàm con trả về Con trỏ/Tham chiếu tới Lớp Dẫn Xuất, trong khi hàm cha trả về Con trỏ/Tham chiếu tới Lớp Cơ Sở.",
+                    "Hàm con không trả về gì (void) trong khi hàm cha trả về đối tượng.",
+                    "Không có khái niệm này trong C++."
+                ],
+                correct: 1,
+                explanation: "<b>Giải thích:</b> Mặc dù quy tắc Ghi đè yêu cầu kiểu trả về giống hệt nhau, C++ có một ngoại lệ duy nhất gọi là <strong>Kiểu trả về đồng biến (Covariant Return Types)</strong>. Nếu hàm Cha trả về `Base*`, hàm Con ghi đè có quyền trả về `Derived*`. Điều này cực kỳ hữu ích trong pattern Prototype (hàm `clone()`)."
+            },
+            {
+                category: "2. So sánh Overloading vs Overriding",
+                q: "Trong C++, nếu hàm của Lớp Cơ Sở KHÔNG khai báo là `virtual`, nhưng lớp con lại viết một hàm giống hệt. Hiện tượng gì xảy ra?",
+                code: "",
+                options: [
+                    "Đó là Ghi đè (Overriding).",
+                    "Đó là Định nghĩa lại (Redefinition). Khi dùng con trỏ lớp cha trỏ vào lớp con, nó sẽ gọi hàm của Lớp Cha (Liên kết tĩnh).",
+                    "Trình biên dịch tự động thêm từ khóa virtual ngầm định.",
+                    "Lỗi biên dịch."
+                ],
+                correct: 1,
+                explanation: "<b>Giải thích:</b> Nếu không có `virtual`, C++ áp dụng Liên kết tĩnh. Hàm ở lớp con chỉ là sự <strong>Định nghĩa lại (Redefinition / Hiding)</strong>. Nếu bạn ép kiểu `Base* p = new Derived();` rồi gọi `p->func()`, nó sẽ chốt gọi hàm của `Base`. Mất tính đa hình!"
+            },
+
+            // CATEGORY 2: Từ khóa override & final (11-15)
+            {
+                category: "3. Từ khóa override & final (C++11/17)",
+                q: "Mục đích chính của từ khóa `override` được đưa vào từ C++11 là gì?",
+                code: "",
+                options: [
+                    "Giúp chương trình chạy nhanh hơn.",
+                    "Ép buộc trình biên dịch tạo hàm ảo.",
+                    "Báo cho trình biên dịch biết ý định ghi đè hàm ảo của lớp cha. Nếu chữ ký hàm sai lệch (do gõ nhầm tên hoặc sai tham số), trình biên dịch sẽ BÁO LỖI thay vì âm thầm tạo hàm mới (Name hiding).",
+                    "Cho phép đa kế thừa."
+                ],
+                correct: 2,
+                explanation: "<b>Giải thích:</b> Trước C++11, nếu bạn muốn ghi đè `virtual void draw() const;` nhưng bạn quên chữ `const`: `void draw();`, C++ sẽ không báo lỗi mà coi đó là một hàm mới hoàn toàn (Name hiding). Bug này cực khó tìm. Thêm `override` vào sau hàm con, Compiler sẽ đối chiếu với hàm cha, nếu không khớp 100% nó sẽ ném lỗi Compilation Error ngay."
+            },
+            {
+                category: "3. Từ khóa override & final (C++11/17)",
+                q: "Đoạn code sau bị lỗi biên dịch vì lý do gì?\n<pre><code class=\"language-cpp\">class A { public: void show() {} };\nclass B : public A { public: void show() override {} };</code></pre>",
+                code: "",
+                options: [
+                    "Lớp B không có quyền public.",
+                    "Hàm show() ở lớp A KHÔNG phải là hàm ảo (virtual). Không thể dùng override.",
+                    "Từ khóa override phải viết trước tên hàm.",
+                    "Không có lỗi."
+                ],
+                correct: 1,
+                explanation: "<b>Giải thích:</b> Từ khóa `override` chỉ có tác dụng và BẮT BUỘC chỉ được dùng khi ghi đè một <strong>hàm ảo (virtual)</strong>. Vì `A::show()` không có từ khóa `virtual`, C++ hiểu B đang cố gắng ghi đè một hàm liên kết tĩnh, nên báo lỗi."
+            },
+            {
+                category: "3. Từ khóa override & final (C++11/17)",
+                q: "Từ khóa `final` áp dụng cho một CLASS (`class X final {};`) có tác dụng gì?",
+                code: "",
+                options: [
+                    "Làm cho tất cả các biến trong class thành hằng số.",
+                    "Ngăn cấm bất kỳ class nào khác kế thừa từ class X (Tuyệt tự).",
+                    "Ngăn cấm việc tạo đối tượng của class X.",
+                    "Bắt buộc class X phải kế thừa từ một class khác."
+                ],
+                correct: 1,
+                explanation: "<b>Giải thích:</b> Khi gắn `final` sau tên Class, C++ cấm việc mở rộng class này. Bất cứ lệnh `class Y : public X` nào cũng sẽ bị lỗi biên dịch. Hữu ích khi thiết kế các class lõi như `String`, không muốn ai can thiệp làm hỏng cấu trúc bảo mật."
+            },
+            {
+                category: "3. Từ khóa override & final (C++11/17)",
+                q: "Từ khóa `final` áp dụng cho một PHƯƠNG THỨC ẢO (`virtual void foo() final;`) có tác dụng gì?",
+                code: "",
+                options: [
+                    "Cấm việc gọi hàm này từ bên ngoài.",
+                    "Cấm các Lớp Con (ở cấp thấp hơn nữa) tiếp tục ghi đè (override) hàm này.",
+                    "Làm cho hàm chạy nhanh hơn gấp đôi.",
+                    "Hủy tính đa hình của hàm."
+                ],
+                correct: 1,
+                explanation: "<b>Giải thích:</b> Nếu class B kế thừa class A và ghi đè hàm ảo `foo()`. B có thể nói: 'Tôi là phiên bản cuối cùng của foo()'. Bằng cách thêm `final`: `void foo() override final;`. Bất kỳ class C nào kế thừa B mà cố gắng ghi đè `foo()` sẽ bị lỗi biên dịch."
+            },
+            {
+                category: "3. Từ khóa override & final (C++11/17)",
+                q: "Có thể sử dụng đồng thời cả `override` và `final` trên cùng một hàm không?",
+                code: "",
+                options: [
+                    "Không, sẽ bị lỗi biên dịch.",
+                    "Có. Ví dụ: `void doWork() override final;` có nghĩa là: Hàm này ghi đè hàm cha, VÀ cấm các lớp con khác ghi đè tiếp.",
+                    "Có, nhưng override sẽ bị bỏ qua.",
+                    "Có, nhưng chỉ trên C++20."
+                ],
+                correct: 1,
+                explanation: "<b>Giải thích:</b> Hoàn toàn hợp lệ trong C++11/17. `override` để Compiler check xem có khớp với Cha không. `final` để chặn các Cháu ghi đè tiếp. Trật tự viết thường là `override final` đặt sau nguyên mẫu hàm."
+            },
+
+            // CATEGORY 3: Liên kết Động & Tĩnh (16-20)
+            {
+                category: "4. Liên kết Động (Dynamic Binding)",
+                q: "Liên kết tĩnh (Static / Early Binding) quyết định hàm cần gọi dựa trên yếu tố nào?",
+                code: "",
+                options: [
+                    "Kiểu thực sự của đối tượng trong vùng nhớ (Runtime Type).",
+                    "Kiểu dữ liệu của Con trỏ / Tham chiếu được khai báo (Compile-time Type).",
+                    "Dựa vào từ khóa virtual.",
+                    "Dựa vào địa chỉ RAM."
+                ],
+                correct: 1,
+                explanation: "<b>Giải thích:</b> Trình biên dịch khi đọc code, nếu thấy `Base* p`, nó nhắm mắt quyết định gọi hàm của `Base` (nếu không có virtual). Nghĩa là nó dựa hoàn toàn vào 'Cái nhãn' (kiểu khai báo) của con trỏ, gọi là Static Binding."
+            },
+            {
+                category: "4. Liên kết Động (Dynamic Binding)",
+                q: "Liên kết động (Dynamic / Late Binding) chỉ xảy ra khi hội đủ 2 điều kiện nào?",
+                code: "",
+                options: [
+                    "Sử dụng kế thừa public và không dùng con trỏ.",
+                    "Gọi hàm thông qua Đối tượng giá trị (Pass-by-value) và hàm là virtual.",
+                    "Gọi hàm thông qua Con trỏ (Pointer) hoặc Tham chiếu (Reference) tới Lớp Cơ Sở, VÀ hàm đó được khai báo là virtual.",
+                    "Hàm có từ khóa override và final."
+                ],
+                correct: 2,
+                explanation: "<b>Giải thích:</b> <strong>Luật thép của C++:</strong> Đa hình động chỉ kích hoạt qua Con trỏ (`Base*`) hoặc Tham chiếu (`Base&`). Nếu bạn gán giá trị trực tiếp (`Base obj = derivedObj;`), nó bị Slicing và mất tính đa hình (chỉ dùng Static binding). VÀ hàm phải là `virtual`."
+            },
+            {
+                category: "4. Liên kết Động (Dynamic Binding)",
+                q: "Đoạn code sau in ra gì?\n<pre><code class=\"language-cpp\">class Base { public: virtual void f() { cout<<\"B\"; } };\nclass Derived : public Base { public: void f() override { cout<<\"D\"; } };\nint main() {\n  Derived d;\n  Base b = d; // Gán theo giá trị\n  b.f();\n}</code></pre>",
+                code: "",
+                options: [
+                    "D (Liên kết động)",
+                    "B (Bị Object Slicing, mất đa hình)",
+                    "Lỗi biên dịch",
+                    "Crash"
+                ],
+                correct: 1,
+                explanation: "<b>Giải thích:</b> Mặc dù `f()` là hàm ảo, nhưng `b` được khai báo là một đối tượng giá trị (`Base b`). Phép gán `b = d` đã GỌT BỎ (Slice) phần Derived, b thực sự chỉ là một object Base thuần túy. Do không dùng con trỏ hay tham chiếu, C++ dùng Static Binding, gọi hàm của Base. In ra B."
+            },
+            {
+                category: "4. Liên kết Động (Dynamic Binding)",
+                q: "Để vô hiệu hóa Liên kết động và cưỡng ép gọi hàm của Lớp Cha từ con trỏ đang trỏ tới Lớp Con, ta dùng cú pháp nào?",
+                code: "",
+                options: [
+                    "Ép kiểu: `(Base)ptr->f();`",
+                    "Sử dụng toán tử phân giải phạm vi: `ptr->Base::f();`",
+                    "Không thể làm được vì hàm đã là virtual.",
+                    "Dùng từ khóa static."
+                ],
+                correct: 1,
+                explanation: "<b>Giải thích:</b> Ngay cả khi Liên kết động đang hoạt động (con trỏ gọi đúng hàm ảo của con), ta vẫn có thể ra lệnh cưỡng ép 'Hãy gọi phiên bản của ông nội' bằng Toán tử phân giải phạm vi `::`. Ví dụ `ptr->Base::f();` sẽ bỏ qua VTable và nhắm thẳng vào hàm của Base (Static binding cưỡng bức)."
+            },
+            {
+                category: "4. Liên kết Động (Dynamic Binding)",
+                q: "Quá trình ép kiểu Upcasting (Từ Con lên Cha) hoạt động như thế nào trong C++?",
+                code: "",
+                options: [
+                    "Bị cấm, phải dùng dynamic_cast.",
+                    "An toàn tuyệt đối và diễn ra ngầm định (Implicitly).",
+                    "Nguy hiểm vì con trỏ sẽ bị null.",
+                    "Ngầm định nhưng thay đổi nội dung vùng nhớ của Object."
+                ],
+                correct: 1,
+                explanation: "<b>Giải thích:</b> 'Mọi Xe Tải đều là Xe Cộ'. Quá trình Upcast (`Base* p = new Derived();`) là hoàn toàn an toàn và tự động theo tư duy IS-A. Trình biên dịch không cần ép kiểu tường minh. Nội dung Object dưới RAM không hề bị sứt mẻ, chỉ là con trỏ bị thu hẹp góc nhìn (trừ các hàm virtual)."
+            },
+
+            // CATEGORY 4: VTable & VPTR (21-25)
+            {
+                category: "5. VTable & VPTR (Under the hood)",
+                q: "VTABLE (Virtual Table) được tạo ra vào thời điểm nào và ở đâu?",
+                code: "",
+                options: [
+                    "Tạo ra vào lúc Runtime (lúc chạy) cho mỗi đối tượng.",
+                    "Tạo ra vào lúc Compile-time (lúc biên dịch), mỗi Class có chứa hàm ảo sẽ sở hữu duy nhất MỘT VTable tĩnh trong bộ nhớ ROM/Data.",
+                    "Nằm trong heap memory của mỗi object.",
+                    "Hệ điều hành tạo ra khi cấp phát new."
+                ],
+                correct: 1,
+                explanation: "<b>Giải thích:</b> <strong>VTable là cấu trúc thuộc về CLASS, không phải của Object.</strong> Trình biên dịch tạo sẵn một mảng con trỏ hàm (VTable) cho từng Class có chứa hàm ảo (ngay lúc Compile). VTable này là tĩnh và dùng chung cho tất cả các đối tượng sinh ra từ class đó."
+            },
+            {
+                category: "5. VTable & VPTR (Under the hood)",
+                q: "VPTR (Virtual Pointer) nằm ở đâu?",
+                code: "",
+                options: [
+                    "Nằm trong thanh ghi CPU.",
+                    "Nằm trong VTable.",
+                    "Là một con trỏ ẩn (hidden pointer) được nhúng vào bên trong MỖI ĐỐI TƯỢNG (Object) của class đa hình, trỏ tới VTable của class đó.",
+                    "Nằm ở biến toàn cục."
+                ],
+                correct: 2,
+                explanation: "<b>Giải thích:</b> Ngược với VTable thuộc về Class. <strong>VPTR thuộc về Object.</strong> Khi bạn `new` một object, C++ âm thầm chèn thêm 1 con trỏ (thường là 8 bytes ở byte đầu tiên của object) trỏ tới VTable của class tương ứng. Đây là lý do object có virtual to hơn object bình thường."
+            },
+            {
+                category: "5. VTable & VPTR (Under the hood)",
+                q: "Khi lớp Con (Derived) không ghi đè (không override) một hàm ảo của lớp Cha (Base), VTable của lớp Con sẽ lưu gì tại slot của hàm đó?",
+                code: "",
+                options: [
+                    "Slot đó bị bỏ trống (NULL).",
+                    "Nó chứa địa chỉ hàm của lớp Cha (Base::virtualFunc).",
+                    "Nó tự sinh ra một hàm rỗng.",
+                    "Lớp con sẽ không có VTable."
+                ],
+                correct: 1,
+                explanation: "<b>Giải thích:</b> VTable của lớp Con copy nguyên bản VTable của lớp Cha. Nếu hàm nào Con Ghi đè, C++ sẽ đè địa chỉ mới (`Derived::func`) vào slot đó. Hàm nào Con KHÔNG Ghi đè, slot đó vẫn trỏ giữ nguyên địa chỉ trỏ về hàm gốc của Cha (`Base::func`)."
+            },
+            {
+                category: "5. VTable & VPTR (Under the hood)",
+                q: "Hiệu năng (Performance) của việc gọi Hàm Ảo so với Hàm Tĩnh như thế nào?",
+                code: "",
+                options: [
+                    "Nhanh hơn nhờ có VTable hỗ trợ.",
+                    "Bằng nhau vì CPU hiện đại tự tối ưu.",
+                    "Chậm hơn một chút do phải chịu thêm chi phí 'Truy xuất gián tiếp' (Indirection) qua con trỏ VPTR để mở VTable.",
+                    "Chậm đi hàng trăm lần, không nên dùng."
+                ],
+                correct: 2,
+                explanation: "<b>Giải thích:</b> Gọi hàm thường (Static Binding) thì CPU nhảy thẳng tới địa chỉ hàm (Direct call). Gọi hàm ảo (Dynamic Binding) thì CPU phải làm 3 bước: (1) Đọc VPTR từ object -> (2) Chạy tới VTable -> (3) Đọc địa chỉ hàm rồi mới nhảy tới (Indirect call). Nó tốn thêm chi phí tra cứu (overhead), chậm hơn một chút nhưng xứng đáng vì tính linh hoạt."
+            },
+            {
+                category: "5. VTable & VPTR (Under the hood)",
+                q: "Đoạn code sau in ra bao nhiêu bytes trên kiến trúc 64-bit?\n<pre><code class=\"language-cpp\">class Empty1 {};\nclass Empty2 { virtual void f(); };\ncout << sizeof(Empty1) << \" \" << sizeof(Empty2);</code></pre>",
+                code: "",
+                options: [
+                    "0 và 8",
+                    "1 và 1",
+                    "1 và 8",
+                    "4 và 4"
+                ],
+                correct: 2,
+                explanation: "<b>Giải thích:</b> Class rỗng trong C++ chiếm <strong>1 byte</strong> (để đảm bảo địa chỉ bộ nhớ khác nhau khi tạo mảng). `Empty2` chứa hàm ảo, nên C++ nhúng thêm con trỏ `VPTR` vào object. Trên 64-bit, con trỏ chiếm <strong>8 bytes</strong>. VPTR nuốt luôn cái 1 byte kia do memory alignment. Kết quả là 1 và 8."
+            },
+
+            // CATEGORY 5: Hàm Ảo Cơ Bản (26-30)
+            {
+                category: "6. Hàm Ảo (Virtual Functions)",
+                q: "Nếu một hàm được khai báo là `virtual` trong Lớp Cơ Sở, điều gì đúng đối với hàm đó khi nó xuất hiện ở Lớp Dẫn Xuất (Lớp con)?",
+                code: "",
+                options: [
+                    "Lớp con bắt buộc phải ghi chữ virtual trước hàm đó.",
+                    "Nó tự động trở thành hàm ảo trong toàn bộ chuỗi kế thừa bên dưới, dù lớp con có ghi từ khóa virtual hay không.",
+                    "Lớp con không được phép đổi kiểu trả về (trừ covariant).",
+                    "Cả B và C đều đúng."
+                ],
+                correct: 3,
+                explanation: "<b>Giải thích:</b> Tính chất `virtual` có tính chất <strong>lây lan (Propagate)</strong>. Một khi Cha đã là virtual, thì hàm ghi đè ở Con, Cháu, Chắt... đều tự động là virtual ngầm định. Tuy nhiên, style code chuẩn C++11 là bỏ chữ virtual ở con, thêm chữ `override` ở đuôi. Kèm theo quy tắc nghiêm ngặt về chữ ký và kiểu trả về đồng biến (Covariant)."
+            },
+            {
+                category: "6. Hàm Ảo (Virtual Functions)",
+                q: "Đoạn mã sau in ra gì?\n<pre><code class=\"language-cpp\">class A { public: virtual void show() { cout<<\"A\"; } };\nclass B : public A { public: void show() override { cout<<\"B\"; } };\nclass C : public B { public: void show() override { cout<<\"C\"; } };\nint main() {\n    A* ptr = new C();\n    ptr->show();\n}</code></pre>",
+                code: "",
+                options: [
+                    "A",
+                    "B",
+                    "C",
+                    "Lỗi biên dịch"
+                ],
+                correct: 2,
+                explanation: "<b>Giải thích:</b> Đa hình động xuyên thấu đa cấp. Con trỏ `A*` trỏ tới đối tượng `C` dưới cùng. VPTR của object này trỏ vào VTable của lớp `C`. Do đó hàm `show()` của lớp `C` được triệu gọi. In ra C."
+            },
+            {
+                category: "6. Hàm Ảo (Virtual Functions)",
+                q: "Hàm ảo (Virtual function) có thể là hàm private của Lớp Cơ Sở không?",
+                code: "",
+                options: [
+                    "Không thể. Trình biên dịch sẽ báo lỗi.",
+                    "Có thể. Tuy nhiên, nó vẫn có thể được gọi đa hình thông qua giao diện public (ví dụ: Template Method Pattern), và lớp con có thể ghi đè hàm private này.",
+                    "Có thể, nhưng lớp con không được phép ghi đè.",
+                    "Chỉ C++20 mới hỗ trợ."
+                ],
+                correct: 1,
+                explanation: "<b>Giải thích:</b> Hàm ảo <strong>hoàn toàn có thể là private</strong>. Đây là cốt lõi của NVI Idiom (Non-Virtual Interface). Lớp cha cung cấp 1 hàm `public` thường (để check bảo mật/logging), bên trong hàm đó gọi `this->doWork()`. Hàm `doWork()` là `private virtual`. Lớp con ghi đè `doWork()`. Người dùng ngoài không gọi thẳng hàm ảo được."
+            },
+            {
+                category: "6. Hàm Ảo (Virtual Functions)",
+                q: "Một hàm ảo có thể được định nghĩa là `static` (tĩnh) không?",
+                code: "",
+                options: [
+                    "Có, bình thường.",
+                    "Không bao giờ. Hàm static thuộc về Class, không có con trỏ 'this', trong khi hàm virtual cần con trỏ 'this' để truy cập VPTR nhằm hỗ trợ đa hình thuộc về Object.",
+                    "Có, nhưng gọi sẽ chậm.",
+                    "Chỉ khi đi kèm từ khóa const."
+                ],
+                correct: 1,
+                explanation: "<b>Giải thích:</b> <strong>Lỗi cơ bản: Cấm kết hợp `static` và `virtual`.</strong> Hàm ảo là Dynamic Binding (dựa trên Object đang tồn tại). Hàm static là Class-level, không có object, không có con trỏ `this`, không có `VPTR`. Do đó không có cơ sở nào để thực hiện đa hình động."
+            },
+            {
+                category: "6. Hàm Ảo (Virtual Functions)",
+                q: "Hàm dựng (Constructor) có thể là `virtual` không?",
+                code: "",
+                options: [
+                    "Có, để đa hình khởi tạo.",
+                    "Không thể. Vì lúc chạy Constructor, Object còn chưa hình thành đầy đủ, VPTR chưa được thiết lập trỏ tới VTable của lớp con cuối cùng. Việc gọi đa hình là vô nghĩa.",
+                    "Chỉ trong C++17.",
+                    "Có thể nếu viết dạng virtual Base() {}."
+                ],
+                correct: 1,
+                explanation: "<b>Giải thích:</b> C++ cấm <strong>Virtual Constructor</strong>. Logical: Bạn dùng Đa hình khi bạn CHƯA BIẾT đích xác kiểu object (VD gọi qua con trỏ Base). Nhưng để tạo object (`new Derived()`), bạn BẮT BUỘC PHẢI BIẾT đích xác kiểu muốn tạo. Hơn nữa, VPTR chỉ được khởi tạo trong quá trình Constructor chạy, nên chưa có VPTR để mà đa hình."
+            },
+
+            // CATEGORY 6: Default Arguments trong Hàm Ảo (31-35)
+            {
+                category: "7. Default Arguments trong Hàm Ảo (Tricky)",
+                q: "Đoạn code sau in ra gì? (Rất hay hỏi phỏng vấn)\n<pre><code class=\"language-cpp\">class Base {\npublic:\n    virtual void print(int x = 10) { cout << \"Base:\" << x; }\n};\nclass Derived : public Base {\npublic:\n    void print(int x = 20) override { cout << \"Derived:\" << x; }\n};\nint main() {\n    Base* p = new Derived();\n    p->print();\n}</code></pre>",
+                code: "",
+                options: [
+                    "Base:10",
+                    "Derived:20",
+                    "Derived:10",
+                    "Base:20"
+                ],
+                correct: 2,
+                explanation: "<b>Giải thích:</b> <strong>Derived:10</strong>. Tại sao? <br>1. Việc gọi hàm ảo `print` quyết định lúc RUNTIME -> Gọi `Derived::print` (In ra 'Derived:').<br>2. Giá trị tham số mặc định (Default arguments) được quyết định lúc COMPILE-TIME dựa vào kiểu con trỏ. Con trỏ `p` kiểu `Base*`, Compiler bốc số `10` nhét vào hàm. Kết quả chắp vá: Gọi hàm Con nhưng mớm tham số Cha."
+            },
+            {
+                category: "7. Default Arguments trong Hàm Ảo (Tricky)",
+                q: "Từ câu hỏi trên, Best Practice (Cách code chuẩn) của C++ khi xử lý Default Arguments trong hàm ảo là gì?",
+                code: "",
+                options: [
+                    "Cấm dùng default arguments trong hàm ảo.",
+                    "LUÔN LUÔN định nghĩa default argument giống hệt nhau ở cả Lớp Cha và Lớp Con để tránh hành vi chắp vá (Undefined-like behavior).",
+                    "Xóa default argument ở lớp con.",
+                    "Dùng #define để định nghĩa giá trị."
+                ],
+                correct: 1,
+                explanation: "<b>Giải thích:</b> Guideline chuẩn của C++ (Meyers' Effective C++): 'Không bao giờ định nghĩa lại các tham số mặc định được kế thừa'. Nếu hàm ảo Cha có tham số mặc định là 10, thì tất cả các hàm ghi đè ở Con bắt buộc phải set mặc định là 10 để tránh lỗi logic khó hiểu như câu trên."
+            },
+            {
+                category: "7. Default Arguments trong Hàm Ảo (Tricky)",
+                q: "Nếu gọi `p->print()` trong câu 31 bên trong Constructor của Lớp Base. Kết quả in ra là gì?",
+                code: "",
+                options: [
+                    "Base:10",
+                    "Derived:20",
+                    "Derived:10",
+                    "Crash"
+                ],
+                correct: 0,
+                explanation: "<b>Giải thích:</b> Khi `new Derived()`, Constructor của Base chạy trước. Tại thời điểm Base Constructor đang chạy, phần Derived CHƯA TỒN TẠI. C++ hạ cấp con trỏ VPTR của nó để chỉ trỏ vào VTable của Base. Do đó mọi lời gọi hàm ảo bên trong Constructor đều bị giáng cấp thành <strong>Static Binding</strong> -> Gọi `Base::print` với tham số Base -> <strong>Base:10</strong>."
+            },
+            {
+                category: "7. Default Arguments trong Hàm Ảo (Tricky)",
+                q: "Kỹ thuật 'Non-Virtual Interface (NVI)' khuyên chúng ta nên giải quyết Default arguments trong đa hình như thế nào?",
+                code: "",
+                options: [
+                    "Để hàm ảo ở public và dùng default args thoải mái.",
+                    "Hàm public KHÔNG ẢO chứa default args. Nó gọi một hàm private/protected ảo (không có default args) để lớp con ghi đè.",
+                    "Dùng macro C++.",
+                    "Không thể dùng NVI cho trường hợp này."
+                ],
+                correct: 1,
+                explanation: "<b>Giải thích:</b> NVI pattern: <br>`public: void run(int x = 10) { doRun(x); }`<br>`private: virtual void doRun(int x) = 0;`<br>Lớp con chỉ ghi đè `doRun(int x)`. Mọi tham số mặc định được chốt cứng ở hàm Non-virtual của Cha. Khắc phục triệt để lỗi chắp vá default arguments."
+            },
+            {
+                category: "7. Default Arguments trong Hàm Ảo (Tricky)",
+                q: "Lỗi cảnh báo (Warning) nào trình biên dịch thường ném ra liên quan đến Đa hình và Constructor?",
+                code: "",
+                options: [
+                    "Calling virtual function during construction or destruction.",
+                    "Missing default argument.",
+                    "VPTR is not initialized.",
+                    "Virtual inline function."
+                ],
+                correct: 0,
+                explanation: "<b>Giải thích:</b> Trình biên dịch tĩnh mã nguồn (như Clang/GCC) sẽ thường đưa ra cảnh báo: 'Calling virtual function during construction or destruction'. Vì lời gọi này không thực hiện đa hình động (nó chạy hàm của chính class đang khởi tạo/hủy), dễ làm lập trình viên hiểu lầm."
+            },
+
+            // CATEGORY 7: Destructor Ảo & Memory Leak (36-40)
+            {
+                category: "8. Destructor Ảo (Virtual Destructor)",
+                q: "Điều gì XẢY RA CỤ THỂ khi bạn dùng `delete basePtr` (đang trỏ tới lớp Con) mà hàm hủy của Base KHÔNG phải là `virtual`?",
+                code: "",
+                options: [
+                    "Báo lỗi biên dịch.",
+                    "Chương trình bị Crash (Segmentation fault) ngay lập tức.",
+                    "Chỉ Hàm hủy của Base được gọi. Hàm hủy của Derived BỊ BỎ QUA. Bất kỳ vùng nhớ nào cấp phát động (`new`) trong Derived sẽ bị rò rỉ (Memory Leak).",
+                    "Cả Hàm hủy Base và Derived đều được gọi bình thường."
+                ],
+                correct: 2,
+                explanation: "<b>Giải thích:</b> Không có `virtual`, C++ dùng Static Binding. Trình biên dịch thấy lệnh `delete basePtr` (kiểu Base*), nó CHỈ gắn lệnh gọi `Base::~Base()`. Hậu quả là phần 'Lõi' Base bị hủy, nhưng phần 'Vỏ' của Derived mắc kẹt trên RAM mãi mãi."
+            },
+            {
+                category: "8. Destructor Ảo (Virtual Destructor)",
+                q: "Trong C++, một class có nên LUÔN LUÔN định nghĩa `virtual destructor` không?",
+                code: "",
+                options: [
+                    "Có, luôn luôn nên đặt cho an toàn.",
+                    "Không! Chỉ đặt virtual destructor nếu class ĐÓ DỰ ĐỊNH LÀM LỚP CƠ SỞ (Base class) cho các lớp khác kế thừa. Thêm virtual bừa bãi làm phình to kích thước class vô ích do VPTR.",
+                    "Chỉ C++11 mới cho phép.",
+                    "Chỉ đặt virtual nếu class đó là trừu tượng."
+                ],
+                correct: 1,
+                explanation: "<b>Giải thích:</b> Rule of Thumb: Nếu bạn không thiết kế class để ai đó kế thừa (ví dụ class đại diện cho Điểm 2D nhỏ gọn x, y), thì TUYỆT ĐỐI không thêm `virtual`. Thêm virtual làm struct 8-byte phình thành 16-byte (thêm vptr), phá hỏng tính tương thích C-struct và cache bộ nhớ."
+            },
+            {
+                category: "8. Destructor Ảo (Virtual Destructor)",
+                q: "Lệnh `delete basePtr` kích hoạt quá trình dọn dẹp theo thứ tự nào (nếu Dtor là virtual)?",
+                code: "",
+                options: [
+                    "~Base() rồi tới ~Derived()",
+                    "~Derived() rồi tự động trồi lên gọi ~Base()",
+                    "~Derived() chạy xong thì dừng.",
+                    "Gọi đồng thời đa luồng."
+                ],
+                correct: 1,
+                explanation: "<b>Giải thích:</b> Khi gọi `delete`, đa hình động tra VPTR và gọi đúng `~Derived()`. Lệnh hủy này dọn dẹp phần tài nguyên của Con. Khi kết thúc thân hàm `~Derived()`, C++ <strong>tự động nội suy</strong> để gọi tiếp `~Base()` lên trên, giúp dọn dẹp phần lõi của Cha. Trình tự: Dỡ nhà từ nóc xuống nền móng."
+            },
+            {
+                category: "8. Destructor Ảo (Virtual Destructor)",
+                q: "Khái niệm `Pure Virtual Destructor` (Destructor thuần ảo) có hợp lệ không?\n<pre><code class=\"language-cpp\">class Base { public: virtual ~Base() = 0; };</code></pre>",
+                code: "",
+                options: [
+                    "Không hợp lệ (Lỗi biên dịch).",
+                    "Hợp lệ. Nhưng BẮT BUỘC phải cung cấp thân hàm (Implementation) cho nó ở bên ngoài class: `Base::~Base() {}`",
+                    "Hợp lệ, nó khiến mọi lớp con không thể bị hủy.",
+                    "Hợp lệ nhưng lớp cha sẽ tự hủy."
+                ],
+                correct: 1,
+                explanation: "<b>Giải thích:</b> Hoàn toàn hợp lệ để dùng Destructor thuần ảo nhằm ép Class đó thành Abstract Class (khi class không có hàm nào khác để làm pure virtual). NHƯNG, do C++ luôn tự động gọi Dtor của cha sau Dtor của con, nên C++ lúc Linker sẽ tìm thân hàm `~Base()`. Nếu bạn không viết thân hàm rỗng `{}` ở đâu đó, Linker sẽ báo lỗi 'Unresolved external symbol'."
+            },
+            {
+                category: "8. Destructor Ảo (Virtual Destructor)",
+                q: "Đoạn mã sau bị lỗi gì liên quan đến Destructor?\n<pre><code class=\"language-cpp\">class X {\npublic:\n    virtual ~X() {}\n};\nclass Y : public X {\npublic:\n    ~Y() override {}\n};</code></pre>",
+                code: "",
+                options: [
+                    "Lỗi biên dịch vì Destructor không thể dùng chữ override.",
+                    "Hợp lệ hoàn toàn (C++11). Việc thêm override vào Destructor của Lớp con giúp đảm bảo Lớp cha đã đánh dấu virtual Dtor.",
+                    "Lỗi vì tên hàm ~X và ~Y khác nhau, override không khớp.",
+                    "Lỗi Runtime."
+                ],
+                correct: 1,
+                explanation: "<b>Giải thích:</b> Mặc dù tên Destructor khác nhau (`~X` và `~Y`), ngôn ngữ C++ coi tất cả các Destructor là cùng một hàm mang tên nội bộ chung trong VTable (thường gọi là vdtor). Việc gắn `override` vào `~Y()` ở C++11 là cực kỳ thông minh: Nó báo lỗi ngay nếu ai đó lỡ tay xóa chữ `virtual` ở `~X()`, ngăn ngừa memory leak từ trong trứng nước."
+            },
+
+            // CATEGORY 8: Lớp Trừu Tượng (Abstract Class) (41-45)
+            {
+                category: "9. Lớp Trừu Tượng (Abstract Class)",
+                q: "Điều kiện CẦN VÀ ĐỦ để một Class trong C++ trở thành Abstract Class (Lớp trừu tượng) là gì?",
+                code: "",
+                options: [
+                    "Phải có từ khóa `abstract` trước chữ class (như Java).",
+                    "Tất cả các hàm trong class phải là hàm ảo.",
+                    "Chứa ít nhất MỘT hàm ảo thuần túy (Pure Virtual Function: `virtual type func() = 0;`).",
+                    "Không được có bất kỳ biến thành viên nào."
+                ],
+                correct: 2,
+                explanation: "<b>Giải thích:</b> Khác với Java có từ khóa riêng, C++ biến một lớp thành Lớp trừu tượng một cách gián tiếp. Chỉ cần bạn gán cờ `= 0` (Pure virtual) cho ít nhất 1 hàm, class đó lập tức bị khóa, không thể khởi tạo instance (đối tượng). Nó chỉ có thể làm Lớp Cha."
+            },
+            {
+                category: "9. Lớp Trừu Tượng (Abstract Class)",
+                q: "Chuyện gì xảy ra nếu Lớp Con kế thừa từ Lớp Trừu Tượng, nhưng QUÊN định nghĩa (override) một hàm thuần ảo của Lớp Cha?",
+                code: "",
+                options: [
+                    "Lỗi biên dịch ngay tại dòng class Con.",
+                    "Lớp Con sẽ TỰ ĐỘNG trở thành một Lớp Trừu Tượng. Sẽ có lỗi biên dịch NẾU bạn cố tình tạo đối tượng từ Lớp Con đó.",
+                    "C++ sinh ra hàm rỗng ngầm định.",
+                    "Lỗi Runtime."
+                ],
+                correct: 1,
+                explanation: "<b>Giải thích:</b> Thuộc tính 'Thuần ảo' lây lan. Nếu bạn không chịu implement cái nợ `= 0` đó, thì Lớp con của bạn tiếp tục ôm cái nợ đó, và nó cũng biến thành Abstract Class. Trình biên dịch sẽ báo lỗi: 'Cannot declare variable of abstract type' khi bạn `new` object."
+            },
+            {
+                category: "9. Lớp Trừu Tượng (Abstract Class)",
+                q: "Bạn CÓ THỂ làm gì với một Abstract Class (Lớp trừu tượng)?",
+                code: "",
+                options: [
+                    "Khởi tạo đối tượng: `Base b;`",
+                    "Gán theo giá trị trong tham số hàm: `void print(Base b);`",
+                    "Tạo Con trỏ hoặc Tham chiếu: `Base* ptr;` hoặc `Base& ref;` để chứa các đối tượng lớp Con.",
+                    "Tạo mảng đối tượng giá trị: `Base arr[10];`"
+                ],
+                correct: 2,
+                explanation: "<b>Giải thích:</b> Không thể tạo biến chứa GIÁ TRỊ trực tiếp của Abstract Class (Vì nó không hoàn chỉnh). Tuy nhiên, Khai báo CON TRỎ hoặc THAM CHIẾU thì hoàn toàn bình thường, vì con trỏ chỉ chiếm 8-byte địa chỉ trỏ đi nơi khác. Đây là cốt lõi của tính đa hình (`Base* ptr = new Derived()`)."
+            },
+            {
+                category: "9. Lớp Trừu Tượng (Abstract Class)",
+                q: "Hàm thuần ảo (Pure Virtual Function) CÓ THỂ có thân hàm (Implementation) không?",
+                code: "",
+                options: [
+                    "Tuyệt đối không. Báo lỗi biên dịch.",
+                    "Có thể! C++ cho phép cung cấp thân hàm ở ngoài file .cpp (ví dụ `void Base::func() { ... }`). Lớp con VẪN BỊ ÉP PHẢI GHI ĐÈ, nhưng có thể gọi lại code mặc định của cha bằng `Base::func()`.",
+                    "Có thể, viết trực tiếp `{}` thay cho `= 0;`.",
+                    "Chỉ trong C++17 trở lên."
+                ],
+                correct: 1,
+                explanation: "<b>Giải thích:</b> Tính năng độc đáo của C++: Bạn khai báo `virtual void work() = 0;` trong class để ÉP buộc con cái phải ghi đè. Nhưng bạn vẫn có thể viết `void Base::work() { cout << \"Default\"; }` ở file .cpp. Lớp con bắt buộc phải có hàm `work() override`, nhưng bên trong nó có thể tái sử dụng sức cha bằng lệnh `Base::work();`."
+            },
+            {
+                category: "9. Lớp Trừu Tượng (Abstract Class)",
+                q: "Làm thế nào để tạo ra một 'Interface' (Giao diện thuần túy) đúng nghĩa giống như C#/Java trong C++?",
+                code: "",
+                options: [
+                    "Dùng từ khóa `__interface`.",
+                    "Tạo một Lớp chỉ toàn là Pure Virtual Functions, không có thuộc tính (biến) nào, và có một Virtual Destructor rỗng.",
+                    "Dùng #define INTERFACE class.",
+                    "Chỉ cần tất cả các hàm là public."
+                ],
+                correct: 1,
+                explanation: "<b>Giải thích:</b> C++ không có từ khóa `interface`. Một class được coi là Interface thuần túy nếu nó: Không chứa dữ liệu trạng thái (không biến), tất cả các method đều `= 0` (pure virtual), và có 1 `virtual ~Interface() = default;` (Bảo đảm hủy an toàn). Lớp con sẽ Đa kế thừa các Interface này."
+            },
+
+            // CATEGORY 9: Nâng Cao (46-50)
+            {
+                category: "10. Nâng cao (Advanced Polymorphism)",
+                q: "Cross-casting (Ép kiểu ngang) bằng `dynamic_cast` áp dụng trong trường hợp nào?",
+                code: "",
+                options: [
+                    "Ép từ kiểu int sang float.",
+                    "Ép từ Lớp Con lên Lớp Cha.",
+                    "Khi một lớp Đa Kế Thừa từ 2 Interface (I1, I2). Bạn đang cầm con trỏ `I1*` trỏ tới object, bạn muốn ép chéo sang `I2*` để gọi hàm của giao diện kia.",
+                    "Ép từ lớp trừu tượng sang lớp thường."
+                ],
+                correct: 2,
+                explanation: "<b>Giải thích:</b> Trong Đa kế thừa: `class Object : public I1, public I2`. Nếu bạn có `I1* ptr = new Object()`. Con trỏ này chỉ gọi được hàm của I1. `dynamic_cast<I2*>(ptr)` sẽ tra cứu VTable lúc runtime, phát hiện ra vỏ bọc Object này thực chất cũng là I2, và tự động điều chỉnh địa chỉ con trỏ để chuyển ngang sang I2 an toàn."
+            },
+            {
+                category: "10. Nâng cao (Advanced Polymorphism)",
+                q: "Tại sao nên dùng `dynamic_cast` thay vì ép kiểu kiểu C (C-style cast `(Derived*)ptr`) khi Downcasting?",
+                code: "",
+                options: [
+                    "C-style cast chậm hơn.",
+                    "dynamic_cast kiểm tra loại đối tượng (Type checking) lúc Runtime bằng RTTI. Nếu ép sai (ép Cha xuống Con nhưng nó không phải là Con đó), nó trả về `nullptr` an toàn. C-style cast ép mù quáng gây Crash.",
+                    "C-style cast không tồn tại trong C++.",
+                    "dynamic_cast không cần virtual function."
+                ],
+                correct: 1,
+                explanation: "<b>Giải thích:</b> (Lưu ý: `dynamic_cast` CHỈ hoạt động với các class đa hình - tức là có ít nhất 1 hàm virtual). Nó dùng RTTI (Run-Time Type Information) để tra xét kiểu thực tế. An toàn tuyệt đối khi ép xuống (Downcast), trả về Null hoặc ném Exception bad_cast nếu ép thất bại."
+            },
+            {
+                category: "10. Nâng cao (Advanced Polymorphism)",
+                q: "Từ khóa `final` tối ưu hóa (Devirtualization) như thế nào ở mức trình biên dịch?",
+                code: "",
+                options: [
+                    "Không tối ưu gì.",
+                    "Xóa bỏ hàm ảo khỏi bộ nhớ.",
+                    "Khi trình biên dịch thấy một hàm hoặc class `final`, nó biết chắc chắn không có lớp con nào ghi đè nó. Nó sẽ gỡ bỏ cơ chế tra cứu VTable tốn kém và chuyển hàm ảo đó thành Liên kết tĩnh (Static binding) - gọi trực tiếp cực nhanh.",
+                    "Tăng giới hạn bộ nhớ ảo."
+                ],
+                correct: 2,
+                explanation: "<b>Giải thích:</b> Đây là sức mạnh ẩn của C++11 `final`. Nó cho phép Compiler thực hiện **Devirtualization**. Bỏ qua lệnh nhảy gián tiếp của VTable, Inline luôn hàm đó vào chỗ gọi, giúp mã Assembly siêu nhanh tương đương hàm thường."
+            },
+            {
+                category: "10. Nâng cao (Advanced Polymorphism)",
+                q: "Nếu class A có hàm ảo, class B kế thừa A. Trình tự cấp phát vùng nhớ VTABLE như thế nào?",
+                code: "",
+                options: [
+                    "A và B dùng chung 1 VTable duy nhất.",
+                    "Trình biên dịch tạo 1 VTable cho A, và tạo 1 VTable riêng rẽ cho B (Copy từ A và thay đổi các slot bị ghi đè).",
+                    "Mỗi đối tượng của A có 1 VTable.",
+                    "B không có VTable nếu nó không thêm hàm ảo mới."
+                ],
+                correct: 1,
+                explanation: "<b>Giải thích:</b> Mỗi Class đa hình độc lập có 1 VTable riêng. VTable của Derived (B) ban đầu là clone (bản sao) của Base (A). Sau đó, nó vá (patch) các pointer nào mà B đã `override`. Slot nào B không đụng tới, nó vẫn lưu địa chỉ trỏ về hàm của A."
+            },
+            {
+                category: "10. Nâng cao (Advanced Polymorphism)",
+                q: "C++17 cung cấp thư viện nào hỗ trợ 'Đa hình lúc chạy (Runtime Polymorphism)' mà KHÔNG cần dùng Kế thừa (Inheritance)?",
+                code: "",
+                options: [
+                    "std::vector",
+                    "std::variant và std::visit",
+                    "std::string",
+                    "std::tuple"
+                ],
+                correct: 1,
+                explanation: "<b>Giải thích:</b> C++17 ra mắt `<variant>`. Thay vì bắt các Class phải kế thừa từ 1 Base Class ảo (tốn kém heap allocation và vptr), bạn có thể gộp các class hoàn toàn không liên quan vào `std::variant<Dog, Cat, Robot>`. Sau đó dùng `std::visit` để thực thi đa hình trên đó. Đây gọi là Đa hình tĩnh an toàn kiểu (Type-safe union / Compile-time duck typing)."
+            }
+        ];
+
+        let score = 0;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const container = document.getElementById('questions-list');
+            const scoreDisplay = document.getElementById('score-display');
+            let currentCategory = "";
+
+            quizData.forEach((qObj, index) => {
+                // Section Headers
+                if (qObj.category !== currentCategory) {
+                    currentCategory = qObj.category;
+                    const catId = `cat-${index / 5}`; // Approximate grouping id
+                    const sectionDivider = document.createElement('div');
+                    sectionDivider.className = "mt-16 mb-8";
+                    sectionDivider.id = catId;
+                    sectionDivider.innerHTML = `
+                        <div class="flex items-center gap-4">
+                            <h2 class="text-lg md:text-xl font-bold uppercase tracking-widest text-secondary border-l-4 border-primary pl-4 py-1">${currentCategory}</h2>
+                            <div class="h-px bg-slate-200 flex-grow"></div>
+                        </div>
+                    `;
+                    container.appendChild(sectionDivider);
+                }
+
+                // Question Block
+                const qBlock = document.createElement('div');
+                qBlock.className = "mb-10 p-6 bg-slate-50/50 rounded-xl border border-slate-200 hover:border-slate-300 transition-colors shadow-sm";
+
+                // Title
+                const qTitle = document.createElement('h3');
+                qTitle.className = "font-semibold text-slate-800 mb-4 text-base md:text-lg leading-relaxed";
+                qTitle.innerHTML = `<span class="bg-primary text-white px-2.5 py-1 rounded-md text-sm mr-2 shadow-sm font-mono">Q${index + 1}</span> ` + qObj.q.replace(/\n/g, '<br>');
+                qBlock.appendChild(qTitle);
+
+                // Code Snippet (if exists)
+                if (qObj.code) {
+                    const pre = document.createElement('pre');
+                    pre.className = "language-cpp";
+                    const code = document.createElement('code');
+                    code.textContent = qObj.code;
+                    pre.appendChild(code);
+                    qBlock.appendChild(pre);
+                }
+
+                // Options
+                const optionsGrid = document.createElement('div');
+                optionsGrid.className = "flex flex-col gap-3 mt-4";
+                
+                const answerDiv = document.createElement('div');
+                answerDiv.className = "answer-block mt-6";
+                answerDiv.innerHTML = `
+                    <div class="flex items-start gap-3">
+                        <i class="fa-solid fa-microchip text-primary mt-1"></i>
+                        <div>${qObj.explanation}</div>
+                    </div>
+                `;
+
+                let isAnswered = false;
+
+                qObj.options.forEach((optText, optIndex) => {
+                    const btn = document.createElement('button');
+                    btn.className = "option-btn text-left px-5 py-4 rounded-lg border border-slate-200 text-slate-700 bg-white hover:bg-slate-50 hover:border-slate-400 focus:outline-none text-sm md:text-base font-medium shadow-sm flex items-center";
+                    
+                    const charLabel = String.fromCharCode(65 + optIndex);
+                    btn.innerHTML = `<span class="font-bold w-8 inline-block text-slate-400 flex-shrink-0">${charLabel}.</span> <span>${optText}</span>`;
+
+                    btn.addEventListener('click', () => {
+                        if (isAnswered) return;
+                        isAnswered = true;
+
+                        const allBtns = optionsGrid.querySelectorAll('button');
+                        allBtns.forEach((b, i) => {
+                            b.classList.add('disabled');
+                            b.classList.remove('hover:bg-slate-50', 'hover:border-slate-400');
+                            
+                            if (i === qObj.correct) {
+                                // Mark the correct answer (Green)
+                                if (i === optIndex) {
+                                    b.classList.add('selected-correct');
+                                    b.innerHTML += `<i class="fa-solid fa-check-circle ml-auto mt-1 text-emerald-600 text-lg flex-shrink-0"></i>`;
+                                } else {
+                                    b.classList.add('show-correct');
+                                }
+                            } 
+                            else if (i === optIndex && i !== qObj.correct) {
+                                // Mark the user's WRONG answer explicitly in RED
+                                b.classList.add('selected-wrong');
+                                b.innerHTML += `<i class="fa-solid fa-times-circle ml-auto mt-1 text-red-600 text-lg flex-shrink-0"></i>`;
+                            }
+                        });
+
+                        // Score logic
+                        if (optIndex === qObj.correct) {
+                            score++;
+                            scoreDisplay.innerText = `Điểm: ${score}/50`;
+                            scoreDisplay.classList.add('bg-emerald-100', 'text-emerald-800', 'border-emerald-300');
+                            setTimeout(() => {
+                                scoreDisplay.classList.remove('bg-emerald-100', 'text-emerald-800', 'border-emerald-300');
+                            }, 500);
+                        }
+
+                        // Always show explanation
+                        answerDiv.classList.add('show');
+                    });
+
+                    optionsGrid.appendChild(btn);
+                });
+
+                qBlock.appendChild(optionsGrid);
+                qBlock.appendChild(answerDiv);
+                container.appendChild(qBlock);
+            });
+            
+            if (window.Prism) {
+                Prism.highlightAll();
+            }
+        });
+    </script>
+</body>
+</html>

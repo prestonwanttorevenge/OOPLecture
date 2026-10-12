@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="vi" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C++11 OOP - Lý Thuyết Đa Hình Chuyên Sâu</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        primary: '#4338ca', // indigo-700
+                        secondary: '#1e1b4b', // indigo-950
+                        accent: '#e0e7ff', // indigo-100
+                    }
+                }
+            }
+        }
+    </script>
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+
+    <style>
+        body { background-color: #f8fafc; color: #0f172a; }
+        
+        .deep-dive {
+            background-color: #f0fdfa;
+            border-left: 4px solid #0d9488;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 0 0.5rem 0.5rem 0;
+        }
+
+        .important-note {
+            background-color: #fffbeb;
+            border-left: 4px solid #f59e0b;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 0 0.5rem 0.5rem 0;
+        }
+
+        h2 { scroll-margin-top: 5rem; }
+        h3 { scroll-margin-top: 5rem; margin-top: 2.5rem; }
+        
+        .inline-code { 
+            font-family: 'JetBrains Mono', monospace; 
+            background-color: #e2e8f0; 
+            padding: 0.15rem 0.4rem; 
+            border-radius: 0.25rem; 
+            font-size: 0.85em; 
+            color: #b91c1c; 
+        }
+
+        pre[class*="language-"] { 
+            border-radius: 0.5rem; 
+            margin: 1.5em 0; 
+            border: 1px solid #cbd5e1;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
+
+        .toc-link {
+            transition: all 0.2s;
+            border-left: 2px solid transparent;
+        }
+        .toc-link:hover, .toc-link.active {
+            border-left-color: #4338ca;
+            color: #4338ca;
+            background-color: #e0e7ff;
+            font-weight: 600;
+        }
+
+        table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; }
+        th, td { border: 1px solid #cbd5e1; padding: 0.75rem; text-align: left; }
+        th { background-color: #f1f5f9; font-weight: 600; }
+    </style>
+</head>
+
+<body class="antialiased min-h-screen flex flex-col font-sans selection:bg-indigo-200">
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-4">
+                <div class="w-10 h-10 bg-primary text-white flex items-center justify-center font-bold font-mono rounded text-xl">C++</div>
+                <div>
+                    <h1 class="text-2xl font-bold tracking-tight text-secondary leading-none">Chuyên Đề Đa Hình (Polymorphism)</h1>
+                    <p class="text-sm text-slate-500 mt-1">C++11 OOP | Abstract, Virtual, Overriding & Dynamic Binding</p>
+                </div>
+            </div>
+            <button onclick="window.print()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 text-sm font-semibold transition-colors rounded border border-slate-300 shadow-sm">
+                <i class="fa-solid fa-print mr-2"></i> Xuất PDF
+            </button>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 py-8 flex flex-col lg:flex-row gap-8">
+        
+        <aside class="w-full lg:w-72 flex-shrink-0 hidden lg:block">
+            <div class="sticky top-28 bg-white p-6 border border-slate-200 rounded-xl shadow-sm">
+                <h2 class="text-xs uppercase tracking-widest text-slate-400 font-black mb-4">Mục lục chuyên đề</h2>
+                <nav class="flex flex-col text-sm font-medium text-slate-600">
+                    <a href="#sec-1" class="toc-link py-2 px-3 block rounded-r">1. Đa hình là gì?</a>
+                    <a href="#sec-2" class="toc-link py-2 px-3 block rounded-r">2. Đa hình hàm (Function Polymorphism)</a>
+                    <a href="#sec-3" class="toc-link py-2 px-3 block rounded-r">3. Đa hình và Hướng đối tượng</a>
+                    <a href="#sec-4" class="toc-link py-2 px-3 block rounded-r">4. Đa hình Tĩnh & Đa hình Động</a>
+                    <a href="#sec-5" class="toc-link py-2 px-3 block rounded-r">5. Liên kết Động (Dynamic Binding)</a>
+                    <a href="#sec-6" class="toc-link py-2 px-3 block rounded-r">6. Overloading vs Overriding</a>
+                    <a href="#sec-7" class="toc-link py-2 px-3 block rounded-r">7. Hàm ảo (Virtual Function)</a>
+                    <a href="#sec-8" class="toc-link py-2 px-3 block rounded-r">8. Destructor Ảo (Virtual Destructor)</a>
+                    <a href="#sec-9" class="toc-link py-2 px-3 block rounded-r">9. Lớp Trừu Tượng (Abstract Class)</a>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <article class="flex-grow bg-white border border-slate-200 p-6 md:p-10 rounded-xl shadow-sm max-w-4xl text-slate-700 leading-relaxed">
+            
+            <section id="sec-1" class="mb-16">
+                <h2 class="text-3xl font-bold text-secondary mb-6 border-b-2 border-primary pb-2">1. Đa hình là gì?</h2>
+                <p class="mb-4">Thuật ngữ <strong>Polymorphism</strong> có nguồn gốc từ tiếng Hy Lạp, trong đó <em>"poly"</em> nghĩa là nhiều, và <em>"morphs"</em> nghĩa là hình thái. Do đó, <strong>Đa hình (Polymorphism)</strong> có nghĩa là "có nhiều hình thái khác nhau".</p>
+                <p class="mb-4">Trong lập trình, Đa hình là khả năng một thông điệp (message) hoặc một tên gọi (name) có thể đại diện cho nhiều loại đối tượng khác nhau hoặc hành vi khác nhau, tùy thuộc vào ngữ cảnh mà nó được sử dụng.</p>
+                
+                <div class="important-note">
+                    <h4 class="font-bold text-amber-800 mb-2"><i class="fa-solid fa-lightbulb mr-2"></i>Ví dụ thực tế</h4>
+                    <p class="text-sm text-amber-900">Hãy tưởng tượng hành động <strong>"Phát tiếng kêu"</strong>. Nếu bạn yêu cầu một con Chó phát tiếng kêu, nó sẽ sủa "Gâu Gâu". Nếu bạn yêu cầu một con Mèo, nó sẽ kêu "Meo Meo". Hành động là MỘT (Phát tiếng kêu), nhưng HÌNH THÁI thực thi lại ĐA DẠNG tùy thuộc vào đối tượng tiếp nhận lệnh.</p>
+                </div>
+            </section>
+
+            <section id="sec-2" class="mb-16">
+                <h2 class="text-3xl font-bold text-secondary mb-6 border-b-2 border-primary pb-2">2. Đa hình hàm (Function Polymorphism)</h2>
+                <p class="mb-4"><strong>Đa hình hàm</strong> xảy ra khi chúng ta có nhiều hàm <strong>cùng tên</strong>, nhưng khác nhau về <strong>chữ ký tham số</strong> (số lượng tham số, kiểu dữ liệu tham số). Trình biên dịch sẽ tự động xác định hàm nào được gọi dựa trên ngữ cảnh truyền tham số.</p>
+                <p class="mb-4">Biểu hiện rõ nhất của đa hình hàm trong C++ là <strong>Function Overloading (Nạp chồng hàm)</strong> và <strong>Function Templates (Khuôn mẫu hàm)</strong>.</p>
+                
+<pre><code class="language-cpp">// Ví dụ Nạp chồng hàm (Function Overloading)
+class MathUtils {
+public:
+    // Hình thái 1: Tính tổng 2 số nguyên
+    int add(int a, int b) { return a + b; }
+    
+    // Hình thái 2: Tính tổng 3 số nguyên
+    int add(int a, int b, int c) { return a + b + c; }
+    
+    // Hình thái 3: Tính tổng 2 số thực
+    double add(double a, double b) { return a + b; }
+};
+
+int main() {
+    MathUtils math;
+    math.add(5, 10);       // Gọi hình thái 1
+    math.add(5.5, 2.3);    // Gọi hình thái 3
+}</code></pre>
+            </section>
+
+            <section id="sec-3" class="mb-16">
+                <h2 class="text-3xl font-bold text-secondary mb-6 border-b-2 border-primary pb-2">3. Đa hình và Hướng đối tượng</h2>
+                <p class="mb-4">Trong triết lý Hướng đối tượng (OOP), Đa hình thường gắn liền với <strong>Kế thừa (Inheritance)</strong>. Nó cho phép ta xử lý các đối tượng thuộc các Lớp dẫn xuất (Derived Classes) khác nhau thông qua một giao diện chung của Lớp cơ sở (Base Class).</p>
+                
+                <h3 class="text-xl font-bold text-secondary">Tại sao cần đa hình trong OOP?</h3>
+                <ul class="list-disc pl-5 mt-2 space-y-2">
+                    <li><strong>Mở rộng linh hoạt (Extensibility):</strong> Cốt lõi của OOP là nguyên lý Open/Closed (Mở để mở rộng, Đóng để sửa đổi). Bạn có thể thêm các lớp con mới vào hệ thống mà không cần sửa đổi các hàm đang sử dụng lớp cha.</li>
+                    <li><strong>Tái sử dụng giao diện:</strong> Ta có thể tạo một mảng duy nhất chứa con trỏ của Lớp Cha, và duyệt qua mảng này để gọi một hàm duy nhất. Từng Lớp Con sẽ tự biết cách thực thi đúng logic của mình.</li>
+                </ul>
+            </section>
+
+            <section id="sec-4" class="mb-16">
+                <h2 class="text-3xl font-bold text-secondary mb-6 border-b-2 border-primary pb-2">4. Đa hình tĩnh (Static Polymorphism) là gì?</h2>
+                <p class="mb-4">Đa hình trong C++ được chia làm hai loại dựa trên <strong>thời điểm</strong> mà Trình biên dịch đưa ra quyết định liên kết hàm.</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="border border-slate-200 rounded-lg p-5 bg-indigo-50">
+                        <h3 class="text-lg font-bold text-primary mt-0">1. Đa hình Tĩnh (Compile-time)</h3>
+                        <p class="text-sm mt-2">Mọi quyết định về việc gọi hàm nào được đưa ra ngay lúc <strong>Biên dịch chương trình (Compile time)</strong>. Còn gọi là <em>Early Binding (Liên kết sớm)</em>.</p>
+                        <p class="text-sm mt-2 font-semibold">Hiện thực thông qua:</p>
+                        <ul class="list-disc pl-5 text-sm space-y-1">
+                            <li>Nạp chồng hàm (Function Overloading)</li>
+                            <li>Nạp chồng toán tử (Operator Overloading)</li>
+                            <li>Templates (C++ Templates)</li>
+                        </ul>
+                        <p class="text-sm mt-2 text-slate-600">Ưu điểm: Chạy siêu nhanh vì mọi thứ đã được chốt từ trước.</p>
+                    </div>
+
+                    <div class="border border-slate-200 rounded-lg p-5 bg-emerald-50">
+                        <h3 class="text-lg font-bold text-emerald-700 mt-0">2. Đa hình Động (Runtime)</h3>
+                        <p class="text-sm mt-2">Quyết định gọi hàm của đối tượng nào chỉ được đưa ra vào <strong>Lúc chương trình đang chạy (Runtime)</strong>. Còn gọi là <em>Late Binding (Liên kết trễ)</em>.</p>
+                        <p class="text-sm mt-2 font-semibold">Hiện thực thông qua:</p>
+                        <ul class="list-disc pl-5 text-sm space-y-1">
+                            <li>Kế thừa (Inheritance)</li>
+                            <li>Ghi đè phương thức (Method Overriding)</li>
+                            <li><strong>Hàm ảo (Virtual Functions)</strong></li>
+                        </ul>
+                        <p class="text-sm mt-2 text-slate-600">Ưu điểm: Tính linh hoạt cực cao, cốt lõi của OOP.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="sec-5" class="mb-16">
+                <h2 class="text-3xl font-bold text-secondary mb-6 border-b-2 border-primary pb-2">5. Liên kết động (Dynamic Binding)</h2>
+                <p class="mb-4">Liên kết (Binding) là quá trình gán một lời gọi hàm tới một khối mã thực thi của hàm đó.</p>
+                <ul class="list-disc pl-5 mt-2 space-y-2 mb-4">
+                    <li><strong>Liên kết tĩnh (Static Binding):</strong> Xảy ra khi dùng lời gọi trực tiếp (như <code>obj.show()</code>). Compiler biết <code>obj</code> thuộc lớp nào, nó gắn chặt lệnh gọi với hàm của lớp đó.</li>
+                    <li><strong>Liên kết động (Dynamic Binding):</strong> C++ sử dụng Con trỏ (Pointer) hoặc Tham chiếu (Reference) của Lớp Cha để chứa đối tượng Lớp Con (Upcast). Trình biên dịch lúc này <em>nhắm mắt</em> phó thác việc tra cứu hàm cho quá trình Runtime.</li>
+                </ul>
+
+                <div class="deep-dive">
+                    <h4 class="font-bold text-teal-800 mb-2"><i class="fa-solid fa-microchip mr-2"></i>Under The Hood: VTABLE và VPTR</h4>
+                    <p class="text-sm text-teal-900 mb-2">Để hiện thực Liên kết động, C++ âm thầm tạo ra 2 cấu trúc dưới gầm máy:</p>
+                    <ol class="list-decimal pl-5 text-sm text-teal-900 space-y-1">
+                        <li><strong>VTABLE (Virtual Table):</strong> Một mảng tĩnh chứa con trỏ hàm (function pointers). Mỗi Lớp có tối thiểu 1 hàm ảo sẽ sở hữu 1 VTABLE riêng. VTABLE ghi chú rõ hàm ảo nào trỏ về khối code nào.</li>
+                        <li><strong>VPTR (Virtual Pointer):</strong> Một con trỏ ẩn được tự động nhúng vào mỗi ĐỐI TƯỢNG (object) khi nó sinh ra. VPTR này trỏ thẳng đến VTABLE của lớp mà đối tượng đó thực sự thuộc về.</li>
+                    </ol>
+                    <p class="text-sm text-teal-900 mt-2 font-semibold">Khi gọi <code>basePtr->virtualFunc()</code>, C++ tra cứu VPTR -> Mở VTABLE -> Tìm địa chỉ hàm chính xác -> Nhảy tới thực thi. Đó là Liên kết động!</p>
+                </div>
+            </section>
+
+            <section id="sec-6" class="mb-16">
+                <h2 class="text-3xl font-bold text-secondary mb-6 border-b-2 border-primary pb-2">6. So sánh Overloading và Method Overriding</h2>
+                
+                <h3 class="text-xl font-bold text-secondary">Method Overriding (Ghi đè phương thức) là gì?</h3>
+                <p class="mb-4">Overriding xảy ra khi Lớp con cung cấp một định nghĩa <strong>MỚI hoàn toàn</strong> cho một hàm đã được khai báo ở Lớp cha. Để Ghi đè hợp lệ, Hàm con phải có <strong>chữ ký hàm (tên, tham số, kiểu trả về) GIỐNG HỆT</strong> hàm cha.</p>
+
+                <p class="font-semibold text-primary">Bảng Phân Biệt Chi Tiết:</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="w-1/4">Tiêu chí</th>
+                            <th>Nạp chồng (Overloading)</th>
+                            <th>Ghi đè (Overriding)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="font-semibold bg-slate-50">Định nghĩa</td>
+                            <td>Nhiều hàm <strong>cùng tên</strong> nhưng <strong>khác tham số</strong>.</td>
+                            <td>Hàm ở lớp con <strong>cùng tên</strong>, <strong>cùng tham số</strong> với hàm lớp cha.</td>
+                        </tr>
+                        <tr>
+                            <td class="font-semibold bg-slate-50">Phạm vi (Scope)</td>
+                            <td>Thường xảy ra <strong>trong cùng một Class</strong>.</td>
+                            <td>Xảy ra <strong>giữa 2 Class</strong> có quan hệ Kế thừa (Cha - Con).</td>
+                        </tr>
+                        <tr>
+                            <td class="font-semibold bg-slate-50">Chữ ký hàm</td>
+                            <td>BẮT BUỘC phải <strong>khác nhau</strong>.</td>
+                            <td>BẮT BUỘC phải <strong>giống hệt nhau</strong>.</td>
+                        </tr>
+                        <tr>
+                            <td class="font-semibold bg-slate-50">Kiểu liên kết</td>
+                            <td>Liên kết tĩnh (Compile-time).</td>
+                            <td>Liên kết động (Runtime) - nếu dùng <code class="inline-code">virtual</code>.</td>
+                        </tr>
+                        <tr>
+                            <td class="font-semibold bg-slate-50">Từ khóa <code>virtual</code></td>
+                            <td>Không cần.</td>
+                            <td>Bắt buộc lớp cha phải có từ khóa <code class="inline-code">virtual</code>.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <section id="sec-7" class="mb-16">
+                <h2 class="text-3xl font-bold text-secondary mb-6 border-b-2 border-primary pb-2">7. Hàm ảo (Virtual Function)</h2>
+                <p class="mb-4">Hàm ảo là trái tim của Đa hình Động. Để kích hoạt liên kết trễ (Dynamic Binding), bạn phải khai báo hàm trong Lớp cơ sở bằng từ khóa <code class="inline-code font-bold">virtual</code>.</p>
+                
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+using namespace std;
+
+class Animal {
+public:
+    // HÀM ẢO: Cho phép lớp con Ghi đè và C++ sẽ dùng VTABLE để gọi
+    virtual void makeSound() {
+        cout << "Some generic sound..." << endl;
+    }
+};
+
+class Dog : public Animal {
+public:
+    // C++11 override: Cưỡng ép compiler kiểm tra xem có đúng là đang ghi đè không
+    void makeSound() override {
+        cout << "Gau Gau!" << endl;
+    }
+};
+
+class Cat : public Animal {
+public:
+    void makeSound() override {
+        cout << "Meo Meo!" << endl;
+    }
+};
+
+void playSound(Animal* animal) {
+    // ĐA HÌNH ĐỘNG Ở ĐÂY:
+    // animal đang trỏ tới Dog hay Cat? Compiler KHÔNG BIẾT lúc biên dịch.
+    // Lúc Runtime, VPTR của object sẽ mách bảo phải gọi hàm nào.
+    animal->makeSound();
+}
+
+int main() {
+    Dog d;
+    Cat c;
+    playSound(&d); // Output: Gau Gau!
+    playSound(&c); // Output: Meo Meo!
+}</code></pre>
+            </section>
+
+            <section id="sec-8" class="mb-16">
+                <h2 class="text-3xl font-bold text-secondary mb-6 border-b-2 border-primary pb-2">8. Destructor ảo (Virtual Destructor)</h2>
+                <p class="mb-4">Trong C++, nếu một lớp được thiết kế để làm Lớp cơ sở (Base class), <strong>bắt buộc phải khai báo Destructor của nó là hàm ảo (virtual ~Base())</strong>.</p>
+                
+                <div class="important-note border-red-500 bg-red-50 text-red-900">
+                    <h4 class="font-bold mb-2"><i class="fa-solid fa-skull-crossbones mr-2"></i>Nguy cơ Rò rỉ bộ nhớ (Memory Leak)</h4>
+                    <p class="text-sm">Khi bạn thực hiện thao tác xóa vùng nhớ qua con trỏ lớp cha: <code>delete basePtr;</code>. Nếu Destructor KHÔNG ảo, C++ sẽ dùng <strong>Liên kết tĩnh</strong>. Nó thấy <code>basePtr</code> có kiểu là Lớp Cha, nó CHỈ gọi Hàm hủy của Lớp Cha.</p>
+                    <p class="text-sm mt-2">Hậu quả: Đối tượng Lớp Con bị chém bay phần lõi cha, phần mở rộng của Lớp Con (các biến new trong con) bị mắc kẹt lại trong RAM vĩnh viễn.</p>
+                </div>
+
+<pre><code class="language-cpp">class Base {
+public:
+    Base() { cout << "Base constructor\n"; }
+    
+    // Nếu quên chữ virtual ở đây, ~Derived() sẽ KHÔNG BAO GIỜ được gọi
+    virtual ~Base() { cout << "Base destructor\n"; } 
+};
+
+class Derived : public Base {
+    int* array;
+public:
+    Derived() { 
+        array = new int[100]; 
+        cout << "Derived constructor\n"; 
+    }
+    ~Derived() { 
+        delete[] array; // Dọn dẹp tài nguyên
+        cout << "Derived destructor\n"; 
+    }
+};
+
+int main() {
+    Base* ptr = new Derived();
+    delete ptr; // An toàn nhờ Virtual Destructor!
+}</code></pre>
+            </section>
+
+            <section id="sec-9" class="mb-16">
+                <h2 class="text-3xl font-bold text-secondary mb-6 border-b-2 border-primary pb-2">9. Lớp Trừu Tượng (Abstract Class) & Pure Virtual Function</h2>
+                
+                <p class="mb-4">Đôi khi, Lớp Cha quá chung chung đến mức việc khởi tạo một đối tượng từ nó là vô nghĩa (Ví dụ: Class <code>Shape</code>, bạn không thể vẽ một "Hình" chung chung, phải là Hình Tròn hoặc Vuông).</p>
+                <p class="mb-4">C++ hỗ trợ định nghĩa Lớp Trừu Tượng thông qua khái niệm <strong>Hàm ảo thuần túy (Pure Virtual Function)</strong>.</p>
+
+                <h3 class="text-xl font-bold text-secondary">Hàm ảo thuần túy (Pure Virtual Function)</h3>
+                <p class="mb-2">Khai báo bằng cách thêm <code>= 0</code> ở cuối khai báo hàm. Hàm này chỉ có khai báo giao diện, <strong>không có thân hàm</strong>. Ép buộc các Lớp Con <strong>bắt buộc phải Ghi đè</strong>.</p>
+
+<pre><code class="language-cpp">class Shape {
+public:
+    // Pure Virtual Function -> Shape trở thành Abstract Class
+    virtual void draw() = 0; 
+    virtual double getArea() = 0;
+    
+    virtual ~Shape() {} // Luôn nhớ Virtual Destructor
+};
+
+class Circle : public Shape {
+    double radius;
+public:
+    Circle(double r) : radius(r) {}
+    
+    // BẮT BUỘC phải cài đặt draw() và getArea()
+    void draw() override { cout << "Drawing Circle\n"; }
+    double getArea() override { return 3.14 * radius * radius; }
+};
+
+int main() {
+    // Shape s; // LỖI BIÊN DỊCH! Không thể khởi tạo đối tượng từ Lớp Trừu Tượng
+    Shape* s = new Circle(5.0); // HỢP LỆ: Con trỏ lớp trừu tượng trỏ tới con
+    s->draw();
+    delete s;
+}</code></pre>
+
+                <div class="deep-dive mt-6">
+                    <h4 class="font-bold text-teal-800 mb-2"><i class="fa-solid fa-code mr-2"></i>Quy tắc Lớp Trừu Tượng</h4>
+                    <ul class="list-disc pl-5 text-sm text-teal-900 space-y-1">
+                        <li>Chỉ cần class chứa ÍT NHẤT MỘT Pure Virtual Function, class đó trở thành Abstract Class.</li>
+                        <li><strong>Không thể tạo Object (Instance)</strong> trực tiếp từ Abstract Class.</li>
+                        <li>Nếu Lớp con kế thừa từ Lớp trừu tượng mà QUÊN KHÔNG định nghĩa (ghi đè) hàm thuần ảo, Lớp con đó cũng TỰ ĐỘNG trở thành Lớp trừu tượng.</li>
+                        <li>Mục đích chính của Lớp trừu tượng là tạo ra <strong>Interfaces (Giao diện chuẩn)</strong> cho kiến trúc phần mềm.</li>
+                    </ul>
+                </div>
+            </section>
+
+        </article>
+    </main>
+
+    <footer class="bg-secondary text-slate-400 py-8 mt-12 text-center text-sm">
+        <p>Tài liệu chuẩn OOP Masterclass - C++11 (Chuyên Đề Đa Hình & Liên Kết Động)</p>
+    </footer>
+
+    <script>
+        // Smooth scrolling & active state for TOC
+        const tocLinks = document.querySelectorAll('.toc-link');
+        const sections = document.querySelectorAll('section');
+
+        tocLinks.forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Simple Intersection Observer to highlight active TOC item
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const id = entry.target.getAttribute('id');
+                    tocLinks.forEach(link => {
+                        link.classList.remove('active');
+                        if (link.getAttribute('href') === `#${id}`) {
+                            link.classList.add('active');
+                        }
+                    });
+                }
+            });
+        }, { threshold: 0.5 });
+
+        sections.forEach(section => observer.observe(section));
+    </script>
+</body>
+</html>
