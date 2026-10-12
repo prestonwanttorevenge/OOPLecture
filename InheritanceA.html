@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="vi" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C++11 OOP - Lý Thuyết Kế Thừa Chuyên Sâu</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        primary: '#0369a1', // sky-700
+                        secondary: '#0f172a', // slate-900
+                        accent: '#e2e8f0', // slate-200
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Syntax Highlighting -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+
+    <style>
+        body { background-color: #f8fafc; color: #0f172a; }
+        
+        .deep-dive {
+            background-color: #f0fdf4;
+            border-left: 4px solid #16a34a;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 0 0.5rem 0.5rem 0;
+        }
+
+        .important-note {
+            background-color: #fffbeb;
+            border-left: 4px solid #f59e0b;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 0 0.5rem 0.5rem 0;
+        }
+
+        /* Custom typography for technical reading */
+        h2 { scroll-margin-top: 5rem; }
+        h3 { scroll-margin-top: 5rem; margin-top: 2.5rem; }
+        
+        .inline-code { 
+            font-family: 'JetBrains Mono', monospace; 
+            background-color: #e2e8f0; 
+            padding: 0.15rem 0.4rem; 
+            border-radius: 0.25rem; 
+            font-size: 0.85em; 
+            color: #b91c1c; 
+        }
+
+        pre[class*="language-"] { 
+            border-radius: 0.5rem; 
+            margin: 1.5em 0; 
+            border: 1px solid #cbd5e1;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
+
+        .toc-link {
+            transition: all 0.2s;
+            border-left: 2px solid transparent;
+        }
+        .toc-link:hover {
+            border-left-color: #0369a1;
+            color: #0369a1;
+            background-color: #f1f5f9;
+        }
+
+        table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; }
+        th, td { border: 1px solid #cbd5e1; padding: 0.75rem; text-align: left; }
+        th { background-color: #f1f5f9; font-weight: 600; }
+    </style>
+</head>
+
+<body class="antialiased min-h-screen flex flex-col font-sans selection:bg-sky-200">
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-4">
+                <div class="w-10 h-10 bg-primary text-white flex items-center justify-center font-bold font-mono rounded text-xl">C++</div>
+                <div>
+                    <h1 class="text-2xl font-bold tracking-tight text-secondary leading-none">Chuyên Đề Kế Thừa (Inheritance)</h1>
+                    <p class="text-sm text-slate-500 mt-1">Chuẩn C++11 | Phân Tích Cơ Chế Dưới Gầm Máy (Under The Hood)</p>
+                </div>
+            </div>
+            <button onclick="window.print()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 text-sm font-semibold transition-colors rounded border border-slate-300">
+                <i class="fa-solid fa-print mr-2"></i> Xuất PDF
+            </button>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 py-8 flex flex-col lg:flex-row gap-8">
+        
+        <!-- Sidebar Navigation -->
+        <aside class="w-full lg:w-72 flex-shrink-0 hidden lg:block">
+            <div class="sticky top-28 bg-white p-6 border border-slate-200 rounded-xl shadow-sm">
+                <h2 class="text-xs uppercase tracking-widest text-slate-400 font-black mb-4">Mục lục khóa học</h2>
+                <nav class="flex flex-col text-sm font-medium text-slate-600">
+                    <a href="#sec-0" class="toc-link py-2 px-3 block rounded-r">0. Nền Tảng: Con trỏ & Tham chiếu</a>
+                    <a href="#sec-1" class="toc-link py-2 px-3 block rounded-r">1. Bản chất Kế Thừa (IS-A & HAS-A)</a>
+                    <a href="#sec-2" class="toc-link py-2 px-3 block rounded-r">2. Quyền Truy Cập (Access Modifiers)</a>
+                    <a href="#sec-3" class="toc-link py-2 px-3 block rounded-r">3. Trật tự Hàm Dựng & Hàm Hủy</a>
+                    <a href="#sec-4" class="toc-link py-2 px-3 block rounded-r">4. Ghi Đè & Che Khuất Tên (Name Hiding)</a>
+                    <a href="#sec-5" class="toc-link py-2 px-3 block rounded-r">5. Upcast, Downcast & Slicing</a>
+                    <a href="#sec-6" class="toc-link py-2 px-3 block rounded-r">6. Đa Kế Thừa & Khử Mơ Hồ</a>
+                    <a href="#sec-7" class="toc-link py-2 px-3 block rounded-r">7. C++11: override & final</a>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <article class="flex-grow bg-white border border-slate-200 p-6 md:p-10 rounded-xl shadow-sm max-w-4xl text-slate-700 leading-relaxed">
+            
+            <!-- SECTION 0 -->
+            <section id="sec-0" class="mb-16">
+                <h2 class="text-3xl font-bold text-secondary mb-6 border-b-2 border-primary pb-2">0. Kiến Thức Nền Tảng: Con Trỏ & Tham Chiếu</h2>
+                <p class="mb-4">Trước khi làm chủ OOP và Đa hình, ta bắt buộc phải hiểu rõ hai công cụ thao tác với bộ nhớ cực kỳ quyền lực của C/C++: <strong>Con trỏ (Pointer)</strong> và <strong>Tham chiếu (Reference)</strong>.</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                    <!-- Con trỏ -->
+                    <div class="border border-slate-200 rounded-lg p-5 bg-slate-50">
+                        <h3 class="text-xl font-bold text-primary mb-3 mt-0"><i class="fa-solid fa-location-crosshairs mr-2"></i>Con Trỏ (Pointer)</h3>
+                        <p class="text-sm mb-3">Con trỏ là một <strong>biến độc lập</strong> có vùng nhớ riêng. Nó không lưu giá trị thông thường (như 5, 10), mà lưu <strong>địa chỉ bộ nhớ (RAM)</strong> của một biến khác.</p>
+                        <ul class="list-disc pl-5 space-y-1 text-sm mb-4">
+                            <li>Khai báo bằng dấu <code class="inline-code">*</code>: <code class="inline-code">int* p;</code></li>
+                            <li>Lấy địa chỉ bằng <code class="inline-code">&</code>: <code class="inline-code">p = &x;</code></li>
+                            <li>Giải tham chiếu (truy cập giá trị) bằng <code class="inline-code">*</code>: <code class="inline-code">*p = 10;</code></li>
+                            <li><strong>Đặc điểm:</strong> Có thể mang giá trị <code class="inline-code">nullptr</code> (không trỏ đi đâu cả) và có thể thay đổi mục tiêu trỏ liên tục.</li>
+                        </ul>
+<pre><code class="language-cpp">int x = 5;
+int* p = &x; // p trỏ vào địa chỉ của x
+*p = 10;     // Thay đổi giá trị tại địa chỉ đó thành 10
+// Kết quả: x = 10
+p = nullptr; // p nghỉ chơi, không trỏ x nữa</code></pre>
+                    </div>
+
+                    <!-- Tham chiếu -->
+                    <div class="border border-slate-200 rounded-lg p-5 bg-slate-50">
+                        <h3 class="text-xl font-bold text-primary mb-3 mt-0"><i class="fa-solid fa-tags mr-2"></i>Tham Chiếu (Reference)</h3>
+                        <p class="text-sm mb-3">Tham chiếu KHÔNG phải là một biến mới. Nó là một <strong>bí danh (nickname)</strong> của một biến đã tồn tại. Mọi thao tác trên tham chiếu chính là thao tác trực tiếp trên biến gốc.</p>
+                        <ul class="list-disc pl-5 space-y-1 text-sm mb-4">
+                            <li>Khai báo bằng dấu <code class="inline-code">&</code>: <code class="inline-code">int& ref = x;</code></li>
+                            <li>Sử dụng như biến bình thường: <code class="inline-code">ref = 10;</code></li>
+                            <li><strong>Đặc điểm:</strong> BẮT BUỘC phải khởi tạo ngay lúc khai báo. KHÔNG thể mang giá trị null, và KHÔNG THỂ thay đổi đối tượng mà nó tham chiếu tới sau khi đã gán.</li>
+                        </ul>
+<pre><code class="language-cpp">int x = 5;
+int& ref = x; // ref là tên gọi khác của x
+ref = 10;     // Tương đương lệnh: x = 10
+// Kết quả: x = 10
+// ref = y;   // LỖI: Không thể đổi mục tiêu tham chiếu</code></pre>
+                    </div>
+                </div>
+
+                <div class="deep-dive mt-6">
+                    <h4 class="font-bold text-green-800 mb-2"><i class="fa-solid fa-microchip mr-2"></i>Under The Hood: Tham chiếu có thực sự tốn RAM không?</h4>
+                    <p class="text-sm text-green-900">Về mặt ngôn ngữ (C++ Standard), tham chiếu không phải là một object, không có địa chỉ riêng (`&ref` sẽ trả về địa chỉ của biến gốc). Tuy nhiên, <strong>khi biên dịch xuống mã máy (Assembly)</strong>, hầu hết các Trình biên dịch (GCC, Clang) cài đặt Tham chiếu hoàn toàn giống hệt Con trỏ (một con trỏ hằng `int* const`). Compiler tự động thêm dấu `*` ngầm định (auto-dereferencing) để bạn không phải viết `*ref`. Tham chiếu sinh ra để làm cho code an toàn hơn (chống NullPointer) và cú pháp sạch hơn con trỏ.</p>
+                </div>
+            </section>
+
+            <!-- SECTION 1 -->
+            <section id="sec-1" class="mb-16">
+                <h2 class="text-3xl font-bold text-secondary mb-6 border-b-2 border-primary pb-2">1. Khái Niệm Thừa Kế & Tính Tái Sử Dụng</h2>
+                <p>Thừa kế (Inheritance) là một trong ba trụ cột của OOP (Đóng gói, Kế thừa, Đa hình). Nó cho phép một lớp mới (Lớp dẫn xuất / Derived Class) <strong>thừa hưởng</strong> các thuộc tính và phương thức từ một lớp đã có (Lớp cơ sở / Base Class). Mục tiêu tối thượng của Thừa kế là <strong>Tái sử dụng mã (Code Reusability)</strong>.</p>
+
+                <h3 class="text-xl font-bold text-secondary">Phân loại Quan hệ trong Thiết kế OOP (Luật Dr. Guru)</h3>
+                <p class="mt-2">Người học OOP thường lạm dụng Kế thừa. Giáo trình nhấn mạnh việc phân biệt rõ hai loại quan hệ:</p>
+                
+                <table class="mt-4">
+                    <thead>
+                        <tr>
+                            <th>Quan hệ IS-A (Là một)</th>
+                            <th>Quan hệ HAS-A (Có một / Chứa)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Ví dụ:</strong> Xe Tải (Truck) <em>LÀ MỘT</em> Xe Cộ (MotorVehicle).</td>
+                            <td><strong>Ví dụ:</strong> Xe Cộ (MotorVehicle) <em>CÓ MỘT</em> Động cơ (Engine).</td>
+                        </tr>
+                        <tr>
+                            <td>Lớp này là một trường hợp đặc thù, cụ thể hóa của lớp kia.</td>
+                            <td>Lớp này là một bộ phận cấu thành nên lớp kia.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Cài đặt C++:</strong> Dùng cú pháp Kế thừa <code class="inline-code">class B : public A</code>.</td>
+                            <td><strong>Cài đặt C++:</strong> Dùng Bao gộp (Composition). Khai báo lớp B làm <em>biến thành viên</em> bên trong lớp A: <code class="inline-code">class A { B obj; };</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="important-note">
+                    <h4 class="font-bold text-amber-800 mb-2"><i class="fa-solid fa-triangle-exclamation mr-2"></i>Ký hiệu UML / Sơ đồ lớp (ORD)</h4>
+                    <p class="text-sm text-amber-900">Trong biểu đồ thiết kế, mũi tên Kế thừa <strong>LUÔN LUÔN trỏ từ Lớp Con hướng lên Lớp Cha</strong> (B -> A). Đọc là "B is a A" hoặc "B trỏ tới bản thể A của nó". Mũi tên Bao gộp (HAS-A) là mũi tên hình quả trám (Diamond).</p>
+                </div>
+            </section>
+
+            <!-- SECTION 2 -->
+            <section id="sec-2" class="mb-16">
+                <h2 class="text-3xl font-bold text-secondary mb-6 border-b-2 border-primary pb-2">2. Cú Pháp & Quyền Truy Cập (Access Modifiers)</h2>
+                
+                <h3 class="text-xl font-bold text-secondary">Cú pháp khai báo</h3>
+<pre><code class="language-cpp">class Lớp_Dẫn_Xuất : [Từ_khóa_quyền_truy_cập] Lớp_Cơ_Sở {
+    // Phần mở rộng riêng của lớp con
+};
+// Ví dụ:
+class Truck : public MotorVehicle { ... };</code></pre>
+
+                <h3 class="text-xl font-bold text-secondary">Từ khóa <code class="inline-code">protected</code> (Được bảo vệ)</h3>
+                <p class="mt-2">Đây là từ khóa sinh ra DÀNH RIÊNG cho kế thừa. 
+                    <br>- Với thế giới bên ngoài (hàm main, các object khác), <code class="inline-code">protected</code> hoạt động như <code class="inline-code">private</code> (Bị cấm truy cập).
+                    <br>- Nhưng với các <strong>Lớp dẫn xuất (Lớp con)</strong>, <code class="inline-code">protected</code> hoạt động như <code class="inline-code">public</code> (Được phép truy cập trực tiếp). Nó là di sản truyền lại cho gia tộc nhưng giấu kín với người ngoài.
+                </p>
+
+                <h3 class="text-xl font-bold text-secondary mt-6">Ma trận Quyền Thừa Kế (Inheritance Modes)</h3>
+                <p class="mt-2">Từ khóa đứng trước tên lớp cha quyết định <strong>Giới hạn Tối Đa</strong> về quyền hạn của các biến kế thừa khi xuống tới lớp con.</p>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="w-1/4">Lớp Cha có</th>
+                            <th>Kế thừa <code>public Base</code></th>
+                            <th>Kế thừa <code>protected Base</code></th>
+                            <th>Kế thừa <code>private Base</code></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code class="inline-code text-green-700">public</code></td>
+                            <td>Giữ nguyên <strong>public</strong></td>
+                            <td>Hạ xuống <strong>protected</strong></td>
+                            <td>Bị giam thành <strong>private</strong></td>
+                        </tr>
+                        <tr>
+                            <td><code class="inline-code text-yellow-700">protected</code></td>
+                            <td>Giữ nguyên <strong>protected</strong></td>
+                            <td>Giữ nguyên <strong>protected</strong></td>
+                            <td>Bị giam thành <strong>private</strong></td>
+                        </tr>
+                        <tr>
+                            <td><code class="inline-code text-red-700">private</code></td>
+                            <td colspan="3" class="text-center italic text-slate-500 bg-slate-50">Vẫn được thừa kế vào RAM, nhưng <strong>BỊ ẨN (Inaccessible)</strong>. Lớp con không thể gọi trực tiếp.</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="deep-dive">
+                    <h4 class="font-bold text-green-800 mb-2"><i class="fa-solid fa-microchip mr-2"></i>Under The Hood: Mặc định của C++</h4>
+                    <p class="text-sm text-green-900 mb-2">C++ ưu tiên bảo mật. Nếu bạn viết <code>class Derived : Base {};</code> (quên từ khóa public). C++ sẽ tự động ép nó thành <strong>Kế thừa private</strong>. Lúc này Base trở thành <em>"Lớp cơ sở riêng" (Private Base Class)</em> của Derived. Tức là hàm main sẽ không biết Derived có gốc gác từ Base, và toàn bộ hàm public của Base bị khóa kín trong lòng Derived.</p>
+                    <p class="text-sm text-green-900">(Lưu ý: Nếu dùng <code>struct Derived : Base {};</code>, mặc định sẽ là <strong>Kế thừa public</strong>).</p>
+                </div>
+            </section>
+
+            <!-- SECTION 3 -->
+            <section id="sec-3" class="mb-16">
+                <h2 class="text-3xl font-bold text-secondary mb-6 border-b-2 border-primary pb-2">3. Trật Tự Hàm Dựng & Hàm Hủy (Constructors/Destructors)</h2>
+                
+                <h3 class="text-xl font-bold text-secondary">Quy tắc Khởi tạo (Xây móng trước, cất nhà sau)</h3>
+                <p class="mt-2">Khi tạo một đối tượng của Lớp Dẫn Xuất (ví dụ: <code class="inline-code">Truck t;</code>), phần lõi của Lớp Cơ Sở (<code class="inline-code">MotorVehicle</code>) <strong>phải được xây dựng trước</strong>. Trình tự chạy Hàm dựng:</p>
+                <ol class="list-decimal pl-5 mt-2 mb-4 space-y-1 font-semibold text-primary">
+                    <li>Hàm dựng của Lớp Cơ Sở (Base).</li>
+                    <li>Hàm dựng của Lớp Dẫn Xuất (Derived).</li>
+                </ol>
+
+                <h3 class="text-xl font-bold text-secondary">Chuyền Tham Số Bằng Danh Sách Khởi Tạo (Initializer List)</h3>
+                <p class="mt-2">Nếu lớp Base <strong>không có</strong> Hàm dựng mặc định (không tham số), C++ sẽ không tự biết cách tạo móng. Lớp con bắt buộc phải mớm tham số lên cho lớp cha thông qua Cú pháp Khởi tạo:</p>
+<pre><code class="language-cpp">class MotorVehicle {
+public:
+    MotorVehicle(int vin, string make) { ... } // Không có hàm rỗng
+};
+
+class Truck : public MotorVehicle {
+    int payload;
+public:
+    // CÚ PHÁP CHUẨN MỰC:
+    // Truck lấy 3 tham số. Đẩy 2 tham số (v, m) ngược lên cho MotorVehicle.
+    // 1 tham số (p) giữ lại để khởi tạo cho mình.
+    Truck(int v, string m, int p) : MotorVehicle(v, m), payload(p) {
+        // Thân hàm
+    }
+};</code></pre>
+                
+                <h3 class="text-xl font-bold text-secondary mt-6">Quy tắc Phá hủy (Dỡ nhà từ nóc xuống, LIFO)</h3>
+                <p class="mt-2">Hàm hủy hoạt động ngược lại với Hàm dựng. C++ dọn dẹp các phần mở rộng của Lớp con trước, sau đó mới dọn lõi Base. Trình tự:</p>
+                <ol class="list-decimal pl-5 mt-2 mb-4 space-y-1 font-semibold text-red-600">
+                    <li>Hàm hủy của Lớp Dẫn Xuất (~Derived).</li>
+                    <li>Hàm hủy của Lớp Cơ Sở (~Base).</li>
+                </ol>
+                <p class="text-sm italic text-slate-500">Lưu ý: Không bao giờ được gọi tường minh hàm hủy của lớp cha (như <code>Base::~Base()</code>) bên trong hàm hủy của lớp con. C++ tự động làm việc này ngầm định tại dấu <code>}</code> của hàm hủy con.</p>
+
+                <div class="deep-dive mt-6 border-red-500 bg-red-50">
+                    <h4 class="font-bold text-red-800 mb-2"><i class="fa-solid fa-skull-crossbones mr-2"></i>Lỗi Chết Người: Thiếu Virtual Destructor</h4>
+                    <p class="text-sm text-red-900 mb-2">Khi bạn thao tác Đa hình (dùng con trỏ Base trỏ vào object Derived), rồi gọi lệnh <code>delete basePtr;</code>. Nếu Hàm hủy của lớp Base <strong>KHÔNG CÓ từ khóa virtual</strong>, C++ sẽ chỉ nhìn thấy và chạy hàm hủy của lớp Base. Hàm hủy của lớp Derived <strong>BỊ BỎ QUA HOÀN TOÀN</strong>. Mọi vùng nhớ động (new) được cấp phát trong Derived sẽ bị Rò rỉ vĩnh viễn (Memory Leak). <br><strong>Luật bất thành văn C++:</strong> Nếu class của bạn dự định cho class khác kế thừa, BẮT BUỘC phải viết <code>virtual ~Base() {}</code>.</p>
+                </div>
+            </section>
+
+            <!-- SECTION 4 -->
+            <section id="sec-4" class="mb-16">
+                <h2 class="text-3xl font-bold text-secondary mb-6 border-b-2 border-primary pb-2">4. Ghi Đè (Overriding) & Che Khuất Tên (Name Hiding)</h2>
+
+                <h3 class="text-xl font-bold text-secondary">Ghi đè phương thức (Overriding)</h3>
+                <p class="mt-2">Khi lớp dẫn xuất không hài lòng với cài đặt phương thức của cha, nó có thể tạo một phương thức <strong>MỚI, có CHỮ KÝ HÀM (Tên + Tham số + Kiểu trả về) y hệt</strong> để định nghĩa lại hành vi. Việc này gọi là Ghi đè.</p>
+                <p class="mt-2">Để tái sử dụng sức lao động, hàm con thường gọi lại hàm cha bằng <strong>Toán tử định phạm vi (Scope Resolution Operator <code>::</code>)</strong>:</p>
+<pre><code class="language-cpp">void GVCN::tinhLuong() {
+    // Lấy lương cơ bản của GiaoVien, rồi cộng thêm phụ cấp chủ nhiệm
+    return GiaoVien::tinhLuong() + 500000;
+}</code></pre>
+
+                <div class="important-note">
+                    <h4 class="font-bold text-amber-800 mb-2"><i class="fa-solid fa-eye-slash mr-2"></i>Cơ chế Che khuất tên (Name Hiding / Shadowing)</h4>
+                    <p class="text-sm text-amber-900 mb-2">Trong C++, quá trình tra cứu tên (Name Lookup) dừng lại <strong>ngay lập tức</strong> khi nó tìm thấy cái tên đó ở phạm vi hẹp nhất (Phạm vi của Lớp Con). C++ <strong>KHÔNG</strong> tự động Overload (nạp chồng) hàm qua biên giới Cha-Con.</p>
+<pre><code class="language-cpp">class Base { public: void draw(int color); };
+class Derived : public Base { public: void draw(); }; // Hàm không tham số
+
+int main() {
+    Derived d;
+    d.draw(255); // LỖI BIÊN DỊCH !
+}</code></pre>
+                    <p class="text-sm text-amber-900 mt-2">Dù Base có hàm <code>draw(int)</code>, nhưng khi Compiler thấy Derived có hàm tên là <code>draw</code>, nó dừng lại và cố nhét số 255 vào hàm không tham số -> Gây lỗi. Hàm <code>draw(int)</code> của cha đã bị <strong>Che khuất hoàn toàn</strong>. <br>Khắc phục: Phải viết lệnh <code>using Base::draw;</code> bên trong lớp Derived.</p>
+                </div>
+            </section>
+
+            <!-- SECTION 5 -->
+            <section id="sec-5" class="mb-16">
+                <h2 class="text-3xl font-bold text-secondary mb-6 border-b-2 border-primary pb-2">5. Upcast, Downcast & Hiện tượng Cắt Xén (Slicing)</h2>
+
+                <p class="mb-4">Đây là trái tim của sự tương tác bộ nhớ trong Kế thừa.</p>
+
+                <h3 class="text-xl font-bold text-secondary text-green-700">1. Upcast (Ép kiểu lên - Luôn an toàn)</h3>
+                <p class="mt-2">Là quá trình đối xử với thực thể của Lớp Dẫn Xuất như là thực thể của Lớp Cơ Sở. Vì "Mọi xe tải (Truck) đều LÀ một phương tiện (MotorVehicle)".</p>
+                <ul class="list-disc pl-5 mt-2 space-y-1">
+                    <li>Hoạt động <strong>ngầm định (Implicit)</strong>, không cần toán tử ép kiểu.</li>
+                    <li>Ví dụ con trỏ: <code class="inline-code">MotorVehicle* mv = new Truck();</code></li>
+                    <li>Ví dụ tham chiếu: <code class="inline-code">MotorVehicle& mvRef = truckObj;</code></li>
+                    <li><strong>Giới hạn:</strong> Dù đang trỏ vào Truck, con trỏ <code>mv</code> bị giới hạn "lăng kính". Nó CHỈ nhìn thấy và gọi được các hàm định nghĩa trong <code>MotorVehicle</code>. (Lệnh <code>mv->Load_Cargo()</code> sẽ báo lỗi biên dịch).</li>
+                </ul>
+
+                <h3 class="text-xl font-bold text-secondary text-red-600 mt-6">2. Downcast (Ép kiểu xuống - Nguy hiểm)</h3>
+                <p class="mt-2">Suy diễn ngược: "Chưa chắc mọi phương tiện đều là Xe Tải". Bắt một con trỏ Lớp Cơ Sở ép xuống Lớp Dẫn Xuất.</p>
+                <ul class="list-disc pl-5 mt-2 space-y-1">
+                    <li>KHÔNG hoạt động ngầm định. Trình biên dịch sẽ báo lỗi nếu bạn cố tình gán <code class="inline-code">Truck* t = mv;</code>.</li>
+                    <li>Phải ép kiểu tường minh: <code class="inline-code">Truck* t = static_cast&lt;Truck*&gt;(mv);</code></li>
+                    <li><strong>Nguy hiểm:</strong> Trình biên dịch tin bạn mù quáng khi dùng <code class="inline-code">static_cast</code>. Nếu <code>mv</code> thực chất đang trỏ vào một chiếc Xe Máy (Motorcycle), ép nó thành Truck và gọi hàm của Truck sẽ làm chương trình truy xuất RAM sai lệch và <strong>CRASH (Đổ vỡ)</strong>.</li>
+                </ul>
+
+                <h3 class="text-xl font-bold text-secondary text-purple-700 mt-6">3. Object Slicing (Hiện tượng cắt xén đối tượng)</h3>
+                <p class="mt-2">Upcast/Downcast ở trên nói về <strong>Con trỏ và Tham chiếu</strong> (Bản chất chỉ là gán địa chỉ, nên dữ liệu dưới RAM của đối tượng hoàn toàn NGUYÊN VẸN).</p>
+                <p class="mt-2">Nhưng nếu bạn Upcast bằng <strong>Phép gán GIÁ TRỊ (Pass-by-value)</strong>, thảm họa Slicing sẽ xảy ra:</p>
+<pre><code class="language-cpp">Truck truckObj;        // Truck có 3 biến: số khung, loại máy, và tải trọng
+MotorVehicle mv = truckObj; // Cố gắng copy vùng nhớ Truck vào khuôn MotorVehicle</code></pre>
+                <p class="mt-2"><strong>Cơ chế:</strong> Trình biên dịch khởi tạo đối tượng <code>mv</code> mới trên RAM. Không gian của <code>mv</code> chỉ có kích thước đủ chứa 2 biến (số khung, loại máy). Nó sẽ tiến hành copy từng byte phần lõi của <code>truckObj</code> sang. Toàn bộ phần biến mở rộng (tải trọng) của <code>truckObj</code> vì không có chỗ chứa nên <strong>bị dùng "dao" gọt sạch (Sliced off)</strong> và vứt đi.</p>
+                <p class="text-sm font-semibold mt-2 text-primary">-> Khuyến cáo: Luôn sử dụng Con trỏ (*) hoặc Tham chiếu (&) khi truyền đối tượng đa hình để tránh Slicing.</p>
+            </section>
+
+            <!-- SECTION 6 -->
+            <section id="sec-6" class="mb-16">
+                <h2 class="text-3xl font-bold text-secondary mb-6 border-b-2 border-primary pb-2">6. Đa Kế Thừa (Multiple Inheritance) & Khử Mơ Hồ</h2>
+
+                <h3 class="text-xl font-bold text-secondary">Cú pháp & Lưới Hàm dựng</h3>
+                <p class="mt-2">C++ cho phép một Lớp con có nhiều Lớp cha. Phải chỉ định rõ quyền truy cập cho TỪNG lớp cha phân cách bằng dấu phẩy.</p>
+<pre><code class="language-cpp">class Menu : public OptionList, public Window {
+public:
+    // Lớp Menu phải nuôi (truyền tham số) cho cả 2 ông bố
+    Menu(int optCount, Rect bounds) : OptionList(optCount), Window(bounds) { ... }
+};</code></pre>
+
+                <div class="important-note">
+                    <h4 class="font-bold text-amber-800 mb-2"><i class="fa-solid fa-code-branch mr-2"></i>Sự Cấp Nghĩa / Mơ hồ (Ambiguity)</h4>
+                    <p class="text-sm text-amber-900 mb-2">Nếu cả <code>OptionList</code> và <code>Window</code> đều có chung 1 hàm tên là <code>Highlight()</code>. Khi gọi <code>menuObj.Highlight()</code>, Compiler sẽ bị đứng hình vì không biết gọi hàm của cha nào. <br><strong>Cách khử mơ hồ:</strong> Phải chỉ đường dẫn tường minh bằng toán tử phạm vi: <code>menuObj.Window::Highlight();</code>.</p>
+                </div>
+
+                <h3 class="text-xl font-bold text-secondary mt-6">Vấn đề Kim Cương (Diamond Problem) & Lớp Cơ Sở Ảo</h3>
+                <p class="mt-2">Đây là rắc rối lớn nhất của Đa kế thừa. Nếu <code class="inline-code">OptionList</code> và <code class="inline-code">Window</code> cùng kế thừa từ ông nội <code class="inline-code">Widget</code>. Khi <code class="inline-code">Menu</code> kế thừa cả hai, vô tình <code>Menu</code> chứa trong bụng mình <strong>TẬN 2 BẢN SAO</strong> của <code>Widget</code>. Dư thừa bộ nhớ và nhập nhằng dữ liệu.</p>
+                
+                <h4 class="font-bold mt-4">Giải pháp: Virtual Base Class (Kế thừa ảo)</h4>
+                <p class="text-sm mb-2">C++ yêu cầu ngay từ lúc OptionList và Window sinh ra, chúng phải khai báo <code>virtual public Widget</code>. Thông điệp này có nghĩa: "Gốc rễ Widget này là của chung. Ai đa kế thừa tôi thì xin hãy gộp bản sao Widget lại làm một".</p>
+<pre><code class="language-cpp">class Widget { ... };
+class OptionList : virtual public Widget { ... };
+class Window : virtual public Widget { ... };
+
+class Menu : public OptionList, public Window {
+public:
+    // NHIỆM VỤ ĐẶC BIỆT: Lớp xa nhất (Menu) phải đích thân gọi Constructor của ông nội
+    Menu(...) : Widget(...), OptionList(...), Window(...) {}
+};</code></pre>
+            </section>
+
+            <!-- SECTION 7 -->
+            <section id="sec-7">
+                <h2 class="text-3xl font-bold text-secondary mb-6 border-b-2 border-primary pb-2">7. Tiêu Chuẩn Hiện Đại: C++11 Keywords</h2>
+                <p class="mb-4">Chuẩn C++11 mang đến hai từ khóa tuyệt vời giúp OOP trở nên cực kỳ chặt chẽ, chống lại các sai lầm do con người gây ra khi Kế thừa.</p>
+
+                <h3 class="text-xl font-bold text-secondary"><code class="text-primary">override</code> (Cưỡng ép Ghi đè)</h3>
+                <p class="mt-2 text-sm">Hành động ghi đè đòi hỏi bạn phải viết chữ ký hàm Y HỆT lớp cha. Nếu bạn lỡ gõ sai chính tả (`Drw()` thay vì `Draw()`), hoặc nhầm tham số (`int` thành `double`). C++ cũ sẽ coi đó là hàm mới, không báo lỗi, gây bug logic. <br>Thêm từ khóa <code>override</code> ở cuối hàm con. Compiler sẽ dò lên hàm cha, nếu không thấy hàm nào y hệt để ghi đè, nó sẽ BÁO LỖI BIÊN DỊCH BẢO VỆ BẠN.</p>
+<pre><code class="language-cpp">class Base { virtual void draw() {} };
+class Derived : public Base {
+    void draw() override { ... } // An toàn tuyệt đối
+    void draw(int color) override { ... } // Báo lỗi ngay lập tức vì không khớp chữ ký
+};</code></pre>
+
+                <h3 class="text-xl font-bold text-secondary mt-6"><code class="text-primary">final</code> (Tuyệt tự / Khóa hàm)</h3>
+                <p class="mt-2 text-sm">Cấm kế thừa tiếp, hoặc cấm ghi đè tiếp.</p>
+                <ul class="list-disc pl-5 mt-2 space-y-1 text-sm">
+                    <li><code class="inline-code">class String final { ... };</code>: Lớp String này bị "khóa", không class nào được phép kế thừa từ nó (Tuyệt tự). Tăng cường bảo mật cấu trúc cốt lõi.</li>
+                    <li><code class="inline-code">virtual void auth() final { ... }</code>: Hàm kiểm tra bảo mật này đã là bản chót, các lớp con bên dưới được quyền dùng, nhưng <strong>CẤM ghi đè</strong> (để tránh bị hacker viết lại hàm auth ở lớp con).</li>
+                </ul>
+
+            </section>
+        </article>
+    </main>
+
+    <footer class="bg-secondary text-slate-400 py-8 mt-12 text-center text-sm">
+        <p>Tài liệu chuẩn OOP Masterclass - C++11 (Sát với Giáo trình Đại Học)</p>
+    </footer>
+
+    <script>
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('.toc-link').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>

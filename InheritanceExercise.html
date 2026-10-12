@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="vi" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C++ OOP - Chuyên Đề Kế Thừa (Inheritance)</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        zinc: {
+                            50: '#fafafa', 100: '#f4f4f5', 200: '#e4e4e7',
+                            300: '#d4d4d8', 400: '#a1a1aa', 500: '#71717a',
+                            600: '#52525b', 700: '#3f3f46', 800: '#27272a',
+                            900: '#18181b',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Syntax Highlighting -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+
+    <style>
+        body { background-color: #fafafa; color: #18181b; }
+        
+        .option-btn { transition: all 0.2s ease; position: relative; }
+        .option-btn.selected-correct { background-color: #f0fdf4 !important; border-color: #22c55e !important; color: #14532d !important; font-weight: 500; }
+        .option-btn.selected-wrong { background-color: #fef2f2 !important; border-color: #ef4444 !important; color: #7f1d1d !important; }
+        .option-btn.show-correct { background-color: #f0fdf4 !important; border-color: #22c55e !important; color: #14532d !important; }
+        .option-btn.disabled { cursor: not-allowed; opacity: 0.6; }
+
+        .answer-block {
+            display: none; margin-top: 1.5rem; padding: 1.5rem;
+            background-color: #f4f4f5; border-left: 2px solid #52525b; 
+            color: #3f3f46; font-size: 0.95rem; line-height: 1.6;
+        }
+        .answer-block.show { display: block; animation: slideDown 0.3s ease-out; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+
+        .clrs-proof { position: relative; padding-left: 0.5rem; }
+        .clrs-proof::after {
+            content: "■"; display: block; text-align: right; margin-top: 0.5rem;
+            font-size: 0.8rem; color: #71717a;
+        }
+        
+        .calc-step { background: #fff; padding: 16px; border-left: 4px solid #1d4ed8; margin: 10px 0; font-family: 'Inter', sans-serif; font-size: 0.95em; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .inline-code { font-family: 'JetBrains Mono', monospace; background-color: #e4e4e7; padding: 2px 6px; border-radius: 4px; font-size: 0.88em; color: #1d4ed8; }
+        
+        /* Custom Prism override for minimal look */
+        pre[class*="language-"] { border-radius: 8px; margin: 1em 0; border: 1px solid #3f3f46; }
+
+        @media print {
+            body { background-color: white; }
+            .no-print { display: none !important; }
+            .answer-block { border-left: 1px solid #000; background: transparent; display: block; opacity: 1; }
+        }
+    </style>
+</head>
+
+<body class="antialiased min-h-screen flex flex-col font-sans selection:bg-zinc-200">
+    <header class="bg-white border-b border-zinc-200 sticky top-0 z-50 no-print shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 md:px-8 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-blue-700 text-white flex items-center justify-center font-bold font-mono">C++</div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight text-zinc-900 leading-none">Chương 5: Thừa Kế (Inheritance)</h1>
+                    <p class="text-xs text-zinc-500 mt-1">Chuẩn OOP C++ | Dựa trên giáo trình OOP5-Inheritance_new.pdf</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <span id="score-display" class="font-mono font-bold text-zinc-700 bg-zinc-100 px-3 py-1 rounded shadow-inner">Điểm: 0/50</span>
+                <button onclick="window.print()" class="bg-blue-700 hover:bg-blue-800 text-white px-4 py-2 text-sm font-medium transition-colors rounded">
+                    <i class="fa-solid fa-print mr-2"></i> In / Lưu PDF
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 md:px-8 py-8 flex flex-col lg:flex-row gap-10">
+        <aside class="w-full lg:w-72 flex-shrink-0 no-print">
+            <div class="sticky top-24 bg-white p-5 border border-zinc-200 rounded-lg shadow-sm">
+                <h2 class="text-xs uppercase tracking-widest text-zinc-500 font-bold mb-4">Nội dung học tập</h2>
+                <nav class="flex flex-col gap-1 border-l-2 border-zinc-200 pl-4">
+                    <a href="#lecture-section" class="text-sm font-bold text-blue-700 hover:text-blue-800 py-1.5 transition-colors"><i class="fa-solid fa-book-open mr-2"></i>Tóm tắt Bài Giảng</a>
+                    <a href="#section-Quan hệ & Tính Đóng Gói (IS-A, HAS-A, Access)" class="text-sm font-medium text-zinc-600 hover:text-zinc-900 py-1.5 transition-colors">1. Quan hệ IS-A, HAS-A & Quyền Truy Cập (10 câu)</a>
+                    <a href="#section-Hàm Dựng & Hàm Hủy trong Kế Thừa" class="text-sm font-medium text-zinc-600 hover:text-zinc-900 py-1.5 transition-colors">2. Hàm Dựng & Hàm Hủy (10 câu)</a>
+                    <a href="#section-Ghi đè (Overriding) & Lớp Thành Viên" class="text-sm font-medium text-zinc-600 hover:text-zinc-900 py-1.5 transition-colors">3. Overriding & Lớp Thành Viên (10 câu)</a>
+                    <a href="#section-Upcast, Downcast & Slicing (Core)" class="text-sm font-medium text-zinc-600 hover:text-zinc-900 py-1.5 transition-colors">4. Upcast, Downcast & Slicing (10 câu)</a>
+                    <a href="#section-Đa Kế Thừa & Lớp Cơ Sở Ảo (Virtual Base)" class="text-sm font-medium text-zinc-600 hover:text-zinc-900 py-1.5 transition-colors">5. Đa kế thừa & Khử Mơ Hồ (10 câu)</a>
+                </nav>
+            </div>
+        </aside>
+
+        <div class="flex-grow max-w-4xl">
+            <div id="lecture-section" class="bg-white border border-zinc-200 p-8 md:p-12 rounded-lg shadow-sm mb-12">
+                <h2 class="text-2xl font-bold text-zinc-900 mb-6 uppercase border-b-2 border-blue-700 pb-2">Tổng Hợp Kiến Thức Cốt Lõi: Thừa Kế</h2>
+                
+                <div class="space-y-6 text-zinc-700">
+                    <div>
+                        <h3 class="text-lg font-bold text-zinc-900"><i class="fa-solid fa-link text-blue-700 mr-2"></i>1. Khái niệm & Bản chất (IS-A vs HAS-A)</h3>
+                        <p class="mt-2">Thừa kế (Inheritance) dùng để tái sử dụng mã nguồn, giải quyết vấn đề trùng lặp thông tin giữa các lớp. C++ phân biệt rõ 2 loại quan hệ:</p>
+                        <ul class="list-disc pl-5 mt-2 space-y-1">
+                            <li><strong>Quan hệ IS-A (Là một):</strong> Lớp con là một trường hợp đặc biệt của lớp cha (Ví dụ: <code class="inline-code">ConMeo</code> IS-A <code class="inline-code">ConVat</code>). Xử lý bằng <b>Kế thừa</b>.</li>
+                            <li><strong>Quan hệ HAS-A (Có / Chứa):</strong> Lớp này là một bộ phận của lớp kia (Ví dụ: <code class="inline-code">ChiecXe</code> HAS-A <code class="inline-code">BanhXe</code>). Xử lý bằng cách khai báo lớp cũ làm <b>thuộc tính</b> (Composition/Aggregation).</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-bold text-zinc-900"><i class="fa-solid fa-lock text-blue-700 mr-2"></i>2. Quyền Truy Cập (Access Privileges)</h3>
+                        <p class="mt-2">Quyền truy cập quyết định "ai" có thể nhìn thấy tài sản của lớp cha truyền xuống lớp con:</p>
+                        <table class="w-full text-sm text-left border-collapse border border-zinc-300 mt-3">
+                            <thead class="bg-zinc-100">
+                                <tr>
+                                    <th class="border border-zinc-300 px-4 py-2">Thành viên Lớp Cơ Sở</th>
+                                    <th class="border border-zinc-300 px-4 py-2">Thừa kế <code>public</code></th>
+                                    <th class="border border-zinc-300 px-4 py-2">Thừa kế <code>protected</code></th>
+                                    <th class="border border-zinc-300 px-4 py-2">Thừa kế <code>private</code></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td class="border px-4 py-2 font-mono">public</td><td class="border px-4 py-2 font-mono text-green-600">public</td><td class="border px-4 py-2 font-mono text-yellow-600">protected</td><td class="border px-4 py-2 font-mono text-red-600">private</td></tr>
+                                <tr><td class="border px-4 py-2 font-mono">protected</td><td class="border px-4 py-2 font-mono text-yellow-600">protected</td><td class="border px-4 py-2 font-mono text-yellow-600">protected</td><td class="border px-4 py-2 font-mono text-red-600">private</td></tr>
+                                <tr><td class="border px-4 py-2 font-mono">private</td><td class="border px-4 py-2 italic text-zinc-400">Ẩn (Không truy cập trực tiếp)</td><td class="border px-4 py-2 italic text-zinc-400">Ẩn</td><td class="border px-4 py-2 italic text-zinc-400">Ẩn</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-bold text-zinc-900"><i class="fa-solid fa-layer-group text-blue-700 mr-2"></i>3. Trật tự Hàm Dựng & Hàm Hủy</h3>
+                        <ul class="list-disc pl-5 mt-2 space-y-1">
+                            <li><strong>Khởi tạo (Constructor):</strong> Cha xây móng trước, Con xây tầng sau. Trình tự: <code class="inline-code">Base() -> Derived()</code>.</li>
+                            <li><strong>Phá hủy (Destructor):</strong> Dỡ từ trên xuống dưới (LIFO). Trình tự: <code class="inline-code">~Derived() -> ~Base()</code>.</li>
+                            <li>Phải dùng danh sách khởi tạo (Initializer List) ở lớp con để truyền tham số lên cho constructor của lớp cha: <code class="inline-code">Derived(int x) : Base(x) {}</code>.</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-bold text-zinc-900"><i class="fa-solid fa-arrow-right-arrow-left text-blue-700 mr-2"></i>4. Upcast, Downcast & Slicing</h3>
+                        <ul class="list-disc pl-5 mt-2 space-y-2">
+                            <li><strong>Upcast (An toàn 100%):</strong> Ép kiểu từ Con lên Cha. Ví dụ: <code class="inline-code">MotorVehicle* mv = new Car();</code>. Vì mọi Car đều CHẮC CHẮN là MotorVehicle.</li>
+                            <li><strong>Downcast (Nguy hiểm):</strong> Ép kiểu từ Cha xuống Con. Phải dùng ép kiểu tường minh <code class="inline-code">static_cast&lt;Car*&gt;(mv)</code>. Nếu con trỏ Cha thực chất đang trỏ vào Truck, ép xuống Car sẽ gây Crash (Undefined Behavior).</li>
+                            <li><strong>Slicing (Cắt xén):</strong> Xảy ra khi ta gán giá trị (không phải con trỏ/tham chiếu) từ đối tượng Con vào đối tượng Cha. Các thuộc tính dư thừa của Con sẽ bị <i>"gọt bỏ" (sliced off)</i> để vừa vặn với kích thước bộ nhớ của Cha.</li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-lg font-bold text-zinc-900"><i class="fa-solid fa-code-merge text-blue-700 mr-2"></i>5. Đa Kế Thừa & Kế Thừa Ảo (Virtual Base Class)</h3>
+                        <p class="mt-2">Khi một lớp kế thừa từ nhiều lớp (Ví dụ <code class="inline-code">class Menu : public Window, public OptionList</code>). Nguy cơ cao gặp <b>Sự Mơ Hồ (Ambiguity)</b> nếu cả 2 lớp cha có hàm cùng tên. Cách giải quyết:</p>
+                        <ul class="list-disc pl-5 mt-2 space-y-1">
+                            <li>Dùng toán tử định phạm vi: <code class="inline-code">obj.Window::Highlight();</code></li>
+                            <li><strong>Vấn đề Kim cương (Diamond Problem):</strong> Dư thừa dữ liệu khi A sinh ra B, C. Rồi D kế thừa cả B và C. D sẽ có 2 bản sao của A. <b>Cách khắc phục:</b> Dùng kế thừa ảo <code class="inline-code">class B : virtual public A</code>.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white border border-zinc-200 p-8 md:p-12 rounded-lg shadow-sm">
+                <div class="mb-8 border-b-2 border-zinc-200 pb-4">
+                    <h2 class="text-2xl font-bold text-zinc-900 uppercase">Bài Tập Trắc Nghiệm Chuyên Sâu (50 Câu)</h2>
+                    <p class="text-sm text-zinc-500 mt-2">Đọc kỹ code, giải thích chi tiết cơ chế chuẩn C++11 dựa trên giáo trình.</p>
+                </div>
+                <div id="questions-list" class="space-y-12"></div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const quizData = [
+            // ================== CATEGORY 1: IS-A, HAS-A & ACCESS (1-10) ==================
+            {
+                category: "Quan hệ & Tính Đóng Gói (IS-A, HAS-A, Access)",
+                q: "Theo thiết kế chuẩn OOP, mối quan hệ giữa <code>Hình Tròn</code> và <code>Hình Ellipse</code> nên được cài đặt như thế nào?",
+                options: [
+                    "Sử dụng quan hệ HAS-A: Lớp HinhTron chứa một đối tượng HinhEllipse.",
+                    "Sử dụng quan hệ IS-A: Lớp HinhTron kế thừa (thừa kế) từ lớp HinhEllipse.",
+                    "Sử dụng quan hệ IS-A: Lớp HinhEllipse kế thừa từ lớp HinhTron.",
+                    "Sử dụng quan hệ HAS-A: Lớp HinhEllipse chứa một mảng HinhTron."
+                ],
+                correct: 1,
+                explanation: "<b>1. Khái niệm (Tr. 46-48):</b> Kế thừa (IS-A) dùng khi A là một trường hợp đặc biệt của B. Bao hàm (HAS-A) dùng khi B là một bộ phận cấu thành A.<br><br><b>2. Phân tích:</b> Về mặt hình học, Hình Tròn (Circle) chính là một trường hợp đặc biệt của Hình Ellipse (khi 2 tiêu cự trùng nhau). Do đó 'Hình Tròn IS-A Hình Ellipse'. Ta cho `HinhTron` kế thừa từ `HinhEllipse`.<br><br><b>3. Phản biện:</b> C sai vì Ellipse rộng hơn, không thể nói Ellipse là một Hình tròn. A và D sai vì Hình tròn không 'chứa' Ellipse như một bộ phận (như kiểu Xe chứa Bánh xe).",
+                citation: "Trang 46-47: Quan hệ IS-A và Bài tập 5.1."
+            },
+            {
+                category: "Quan hệ & Tính Đóng Gói (IS-A, HAS-A, Access)",
+                q: "Một nhà phát triển thiết kế lớp <code>NhanVien</code> và lớp <code>GiamDoc</code>. Cách thiết kế nào sau đây tuân thủ đúng nguyên lý thừa kế (IS-A) theo giáo trình?",
+                options: [
+                    "class NhanVien : public GiamDoc {};",
+                    "class GiamDoc : public NhanVien {};",
+                    "class GiamDoc { NhanVien* dsNV; }; (Đây là kế thừa).",
+                    "class NhanVien { GiamDoc boss; };"
+                ],
+                correct: 1,
+                explanation: "<b>1. Khái niệm:</b> Lớp dẫn xuất (Derived/Sub class) phải mang tính cụ thể hóa, đặc thù hóa hơn so với Lớp cơ sở (Base/Super class).<br><br><b>2. Phân tích:</b> Giám đốc BẢN CHẤT vẫn là một Nhân viên (được trả lương, có ngày công), nhưng có thêm các quyền hạn và phụ cấp đặc biệt. Vì vậy 'Giám đốc IS-A Nhân viên' -> `GiamDoc` phải kế thừa `NhanVien`.<br><br><b>3. Phản biện:</b> A bị ngược logic (Không phải nhân viên nào cũng là giám đốc). C và D là quan hệ HAS-A (Chứa), không phải Kế thừa (IS-A).",
+                citation: "Trang 46-47: Quan hệ IS-A và Bài tập 5.1."
+            },
+            {
+                category: "Quan hệ & Tính Đóng Gói (IS-A, HAS-A, Access)",
+                q: "Khi một lớp dẫn xuất <code>Derived</code> thực hiện kế thừa dạng <code>private</code> từ lớp cơ sở <code>Base</code>, điều gì xảy ra với các thành viên <code>public</code> của <code>Base</code>?",
+                options: [
+                    "Chúng vẫn là public trong Derived.",
+                    "Chúng trở thành protected trong Derived.",
+                    "Chúng trở thành private trong Derived, do đó các đối tượng bên ngoài KHÔNG THỂ gọi các hàm này thông qua đối tượng của Derived.",
+                    "Chúng bị xóa hoàn toàn khỏi bộ nhớ của Derived."
+                ],
+                correct: 2,
+                explanation: "<b>1. Khái niệm (Tr. 33, 39):</b> Kế thừa private ép tất cả tài sản thừa kế từ lớp cha (dù là public hay protected) trở thành private bên trong lớp con.<br><br><b>2. Phân tích:</b> Khi kế thừa private, chỉ bản thân lớp con biết nó kế thừa từ lớp cha. Người dùng bên ngoài (hàm `main`) khi gọi `derived_obj.base_public_method()` sẽ bị trình biên dịch báo lỗi Access Violation vì lúc này method đó đã bị giam vào vùng private của Derived.<br><br><b>3. Phản biện:</b> A là tính chất của kế thừa public. B là tính chất của kế thừa protected. D sai vì dữ liệu vẫn tồn tại trong RAM, chỉ bị giới hạn quyền truy cập.",
+                citation: "Trang 33 & 39: Bảng Quyền Truy Nhập - Thừa kế private."
+            },
+            {
+                category: "Quan hệ & Tính Đóng Gói (IS-A, HAS-A, Access)",
+                q: "Từ khóa nào được sử dụng trong khai báo lớp cơ sở để cấp cho Lớp Dẫn Xuất quyền truy cập trực tiếp vào các biến thành viên, nhưng VẪN ĐÓNG KÍN (ẩn) đối với mọi đối tượng khác bên ngoài hàm main()?",
+                options: [
+                    "private",
+                    "public",
+                    "virtual",
+                    "protected"
+                ],
+                correct: 3,
+                explanation: "<b>1. Khái niệm (Tr. 36):</b> `protected` sinh ra ĐẶC BIỆT dành cho kế thừa. Nó hoạt động như `private` đối với thế giới bên ngoài, nhưng hoạt động như `public` đối với con cháu (Lớp dẫn xuất).<br><br><b>2. Phân tích:</b> Nếu để biến là `private`, ngay cả lớp con cũng không gọi trực tiếp được (phải dùng getter/setter). Nếu để `public`, hàm `main` sẽ sửa bậy bạ được (vi phạm Encapsulation). `protected` là giải pháp cân bằng hoàn hảo trong gia phả kế thừa.<br><br><b>3. Phản biện:</b> A sai vì cấm luôn cả lớp con. B sai vì public cho phép mọi nơi truy cập. C sai vì `virtual` dùng cho hàm ảo, không phải access modifier.",
+                citation: "Trang 36: Quyền truy cập protected."
+            },
+            {
+                category: "Quan hệ & Tính Đóng Gói (IS-A, HAS-A, Access)",
+                q: "Đoạn mã sau bị lỗi biên dịch tại dòng nào?\n<pre><code class=\"language-cpp\">class MotorVehicle {\nprivate:\n    int vin;\n};\nclass Truck : public MotorVehicle {\npublic:\n    void Load() { vin = 100; } // Dòng (1)\n};\nint main() {\n    Truck t;\n    t.Load(); // Dòng (2)\n}</code></pre>",
+                options: [
+                    "Lỗi ở Dòng (1) vì Truck không có quyền truy cập trực tiếp vào thành viên private `vin` của MotorVehicle.",
+                    "Lỗi ở Dòng (2) vì t.Load() là phương thức private.",
+                    "Lỗi ở hàm main do chưa cấp phát động (new) cho Truck.",
+                    "Đoạn mã không có lỗi, chạy bình thường."
+                ],
+                correct: 0,
+                explanation: "<b>1. Khái niệm (Tr. 34):</b> Các thành viên `private` của lớp cơ sở thì NGAY CẢ LỚP DẪN XUẤT (con ruột) CŨNG KHÔNG THỂ TRUY CẬP TRỰC TIẾP.<br><br><b>2. Phân tích:</b> Dòng `vin = 100;` nằm trong lớp `Truck`. Nhưng `vin` là tài sản riêng `private` của `MotorVehicle`. Trình biên dịch C++ sẽ từ chối việc truy cập này để bảo vệ tính Đóng gói (Encapsulation). Cần đổi `vin` thành `protected` hoặc viết thêm hàm `public void setVin()` ở lớp cha.<br><br><b>3. Phản biện:</b> B sai vì Load() nằm trong vùng public. C sai vì đối tượng stack `Truck t;` hoàn toàn hợp lệ trong C++.",
+                citation: "Trang 34: Quyền truy cập private - Lớp Truck không thể truy cập thành viên private."
+            },
+            {
+                category: "Quan hệ & Tính Đóng Gói (IS-A, HAS-A, Access)",
+                q: "Khi xây dựng lớp <code>TaiKhoanTietKiem</code> kế thừa từ lớp <code>TaiKhoan</code> (Bài tập 5.2). Nếu <code>TaiKhoan</code> có thuộc tính <code>private: float m_fSoDu;</code>. Lớp con <code>TaiKhoanTietKiem</code> muốn tính lãi suất dựa trên số dư thì phải làm cách nào để đúng chuẩn OOP nhất?",
+                options: [
+                    "Ép kiểu con trỏ this để truy cập thẳng vào m_fSoDu.",
+                    "Sử dụng hàm public float baoSoDu() đã được kế thừa từ lớp cha để lấy giá trị.",
+                    "Khai báo lại một biến float m_fSoDu mới trong lớp con.",
+                    "Yêu cầu đổi m_fSoDu thành public."
+                ],
+                correct: 1,
+                explanation: "<b>1. Cơ chế Đóng gói:</b> Khi biến được bảo vệ (private), cách duy nhất hợp lệ, an toàn và đúng chuẩn OOP để lấy dữ liệu là thông qua các hàm giao tiếp public (getter) của lớp cha.<br><br><b>2. Phân tích:</b> Đề bài Bài tập 5.2 (Tr.78) đã cung cấp sẵn hàm `public: float baoSoDu() { return m_fSoDu; }`. Lớp con thừa hưởng hàm này, do đó lớp con chỉ cần gọi `baoSoDu()` để lấy số dư tính lãi. Không phá vỡ Encapsulation.<br><br><b>3. Phản biện:</b> C (Khai báo lại) gọi là Variable Shadowing, cực kỳ nguy hiểm và gây sai lệch logic số dư thật. D vi phạm nghiêm trọng tính Đóng gói của OOP.",
+                citation: "Trang 78-79: Bài tập 5.2 Xây dựng lớp kế thừa với Encapsulation."
+            },
+            {
+                category: "Quan hệ & Tính Đóng Gói (IS-A, HAS-A, Access)",
+                q: "Cú pháp C++ nào sau đây là KHAI BÁO ĐÚNG để lớp <code>Manager</code> kế thừa <code>public</code> từ lớp <code>Employee</code>?",
+                options: [
+                    "class Manager inherits Employee { ... };",
+                    "class Manager extends Employee { ... };",
+                    "class Manager : public Employee { ... };",
+                    "class Manager :: public Employee { ... };"
+                ],
+                correct: 2,
+                explanation: "<b>1. Cú pháp C++ (Tr. 15):</b> Ngôn ngữ C++ dùng dấu hai chấm `:` để thể hiện sự kế thừa, theo sau là TỪ KHÓA QUYỀN TRUY CẬP (public, protected, private) và tên Lớp Cơ Sở.<br><br><b>2. Phân tích:</b> `class Manager : public Employee` là cú pháp chuẩn mực duy nhất trong C++. Chữ `extends` là của Java. Chữ `inherits` là của VB. Dấu `::` là toán tử định phạm vi (Scope resolution operator).",
+                citation: "Trang 15: Định nghĩa thừa kế (Cú pháp class Derived : <keyword> Base)."
+            },
+            {
+                category: "Quan hệ & Tính Đóng Gói (IS-A, HAS-A, Access)",
+                q: "Nếu bạn quên viết từ khóa quyền truy cập khi kế thừa lớp (ví dụ: <code>class Derived : Base {};</code>). Trình biên dịch C++ sẽ ngầm định sử dụng kiểu kế thừa nào?",
+                options: [
+                    "Kế thừa public.",
+                    "Kế thừa protected.",
+                    "Kế thừa private.",
+                    "Lỗi biên dịch ngay lập tức."
+                ],
+                correct: 2,
+                explanation: "<b>1. Đặc thù C++ (Defaults):</b> Khác với Java mặc định public/package, C++ có nguyên tắc mặc định khắt khe nhất để bảo mật dữ liệu. Đối với từ khóa `class`, mặc định kế thừa là `private`. (Lưu ý: Nếu dùng `struct`, mặc định kế thừa là `public`).<br><br><b>2. Phân tích:</b> Lệnh `class Derived : Base` hoàn toàn hợp lệ, trình biên dịch ngầm dịch thành `class Derived : private Base`. Toàn bộ hàm public của Base sẽ bị biến thành private trong Derived.<br><br><b>3. Phản biện:</b> Không có lỗi biên dịch. Lỗi chỉ xảy ra khi bạn dùng đối tượng Derived gọi hàm của Base trong main() do vi phạm quyền.",
+                citation: "Kiến thức chuẩn C++11 (Ánh xạ từ Trang 38-39 bảng quyền truy cập)."
+            },
+            {
+                category: "Quan hệ & Tính Đóng Gói (IS-A, HAS-A, Access)",
+                q: "Xác định loại quan hệ giữa <code>ThuVien</code> (Thư viện) và <code>Sach</code> (Sách) theo Bài tập 5.1?",
+                options: [
+                    "Thư Viện IS-A Sách.",
+                    "Thư Viện HAS-A Sách.",
+                    "Sách IS-A Thư Viện.",
+                    "Cả hai không liên quan."
+                ],
+                correct: 1,
+                explanation: "<b>1. Khái niệm (Tr. 47):</b> Mối quan hệ HAS-A (Bao hàm) mang ý nghĩa 'A chứa B' hoặc 'B là một bộ phận của A'.<br><br><b>2. Phân tích:</b> Thư viện rõ ràng không phải là một cuốn sách đặc biệt (Không thể IS-A). Thư viện là một thực thể CHỨA nhiều cuốn Sách bên trong nó. Vậy quan hệ chuẩn xác là Thư viện HAS-A Sách (ThuVien class sẽ có thuộc tính mảng/vector chứa các đối tượng Sach).",
+                citation: "Trang 47 & 77: Bài tập 5.1 - Phân tích quan hệ IS-A / HAS-A."
+            },
+            {
+                category: "Quan hệ & Tính Đóng Gói (IS-A, HAS-A, Access)",
+                q: "Giả sử <code>class C : private A {};</code>. Đối với một đối tượng của lớp C trong hàm <code>main()</code>, lớp A được xem là gì đối với lớp C?",
+                options: [
+                    "Lớp cơ sở chung (Truy cập được public từ hàm main).",
+                    "Lớp cơ sở riêng (Ẩn hoàn toàn với hàm main, chỉ nội bộ C được dùng).",
+                    "Lớp cơ sở ảo (Khử mơ hồ).",
+                    "Không phải lớp cơ sở."
+                ],
+                correct: 1,
+                explanation: "<b>1. Khái niệm (Tr. 39):</b> Trong kế thừa private, lớp cha (A) trở thành 'Lớp cơ sở riêng' (private base class) của lớp con (C).<br><br><b>2. Phân tích:</b> Bản chất C thừa hưởng mọi thứ của A, nhưng C khóa kín cửa, không cho ai ở bên ngoài (như hàm `main`) biết rằng C có dính dáng đến A. Mọi thành viên public của A đều bị hạ cấp thành private trong C. Điều này dùng để 'vay mượn cài đặt' (Implement in terms of) chứ không phải kế thừa giao diện.<br><br><b>3. Phản biện:</b> A sai vì đó là mô tả của `public A`. C sai vì lớp ảo dùng từ khóa `virtual`.",
+                citation: "Trang 39: Code mẫu - `class C : private A { // A là lớp cơ sở riêng của B}` (Trong slide ghi chú B, nhưng context là C)."
+            },
+
+            // ================== CATEGORY 2: HÀM DỰNG & HÀM HỦY (11-20) ==================
+            {
+                category: "Hàm Dựng & Hàm Hủy trong Kế Thừa",
+                q: "Quy tắc cốt lõi về Thứ tự gọi Hàm dựng (Constructor) khi khởi tạo đối tượng của Lớp Dẫn Xuất là gì?",
+                options: [
+                    "Hàm dựng lớp con gọi trước, hàm dựng lớp cha gọi sau.",
+                    "Chỉ hàm dựng lớp con được gọi, lớp cha bị bỏ qua.",
+                    "Hàm dựng lớp cha (Lớp cơ sở) được gọi trước, sau đó mới đến hàm dựng lớp con (Lớp dẫn xuất).",
+                    "C++ gọi ngẫu nhiên tùy theo bộ nhớ."
+                ],
+                correct: 2,
+                explanation: "<b>1. Khái niệm (Tr. 29):</b> 'Xây móng trước, xây nhà sau'. Nguyên tắc bất di bất dịch của C++ là phải khởi tạo phần 'Lớp Cơ Sở' cho vững chắc rồi mới đắp thêm các tính năng của 'Lớp Dẫn Xuất'.<br><br><b>2. Phân tích:</b> Nếu lớp `Car` kế thừa `MotorVehicle`. Khi lệnh `Car c;` chạy, C++ tự động chạy Constructor của `MotorVehicle` để thiết lập số khung, số máy trước. Xong xuôi, nó mới chạy Constructor của `Car` để thiết lập số ghế hành khách.<br><br><b>3. Phản biện:</b> A bị ngược quy trình (Destructor mới đi ngược). B sai vì tạo object con đồng nghĩa với tạo luôn object cha bên trong nó.",
+                citation: "Trang 29: Sơ đồ A::A -> B::B -> C::C."
+            },
+            {
+                category: "Hàm Dựng & Hàm Hủy trong Kế Thừa",
+                q: "Quy tắc cốt lõi về Thứ tự gọi Hàm hủy (Destructor) khi một đối tượng Lớp Dẫn Xuất kết thúc vòng đời là gì?",
+                options: [
+                    "Dỡ nhà từ móng: Hàm hủy cha gọi trước, hàm hủy con gọi sau.",
+                    "Nguyên tắc LIFO (Last In, First Out): Hàm hủy của Lớp Dẫn Xuất (con) được gọi trước, sau đó mới đến Hàm hủy của Lớp Cơ Sở (cha).",
+                    "Chỉ hàm hủy lớp cha được gọi để chống rò rỉ bộ nhớ.",
+                    "Hàm hủy được gọi đồng thời bằng đa luồng."
+                ],
+                correct: 1,
+                explanation: "<b>1. Khái niệm (Tr. 29):</b> 'Phá nhà từ mái xuống'. C++ dọn dẹp các thuộc tính mở rộng của lớp con trước, sau đó mới dọn dẹp phần lõi của lớp cha.<br><br><b>2. Phân tích:</b> Đây là nguyên tắc đối xứng (Mirror) với Hàm dựng. Nếu tạo là Cha -> Con. Thì hủy sẽ là Con -> Cha (LIFO). Điều này an toàn vì lúc Destructor Con đang chạy, nó vẫn có thể cần gọi các hàm/biến của phần Cha. Nếu hủy Cha trước, Destructor Con sẽ thao tác trên vùng nhớ chết (Dangling pointer).",
+                citation: "Trang 29: Sơ đồ Hàm hủy: ~C -> ~B -> ~A."
+            },
+            {
+                category: "Hàm Dựng & Hàm Hủy trong Kế Thừa",
+                q: "Đoạn code sau in ra kết quả gì?\n<pre><code class=\"language-cpp\">class Base { public: Base() { cout << \"B\"; } };\nclass Derived : public Base { public: Derived() { cout << \"D\"; } };\nint main() { Derived obj; return 0; }</code></pre>",
+                options: [
+                    "D",
+                    "DB",
+                    "BD",
+                    "Lỗi biên dịch"
+                ],
+                correct: 2,
+                explanation: "<b>1. Truy vết (Tr. 29):</b> Khởi tạo đối tượng `Derived obj`.<br><b>2. Phân tích bước chạy:</b><br>- B1: Trình biên dịch thấy Derived kế thừa Base. Nó gọi Default Constructor `Base()` -> In ra chữ <b>B</b>.<br>- B2: Khởi tạo xong phần Base, nó tiếp tục gọi Constructor `Derived()` -> In ra chữ <b>D</b>.<br>Kết quả trên luồng I/O là <b>BD</b>.",
+                citation: "Trang 29 & Bài tập 1 trang 78 (OOP5-Inheritance_Baitap.pdf)."
+            },
+            {
+                category: "Hàm Dựng & Hàm Hủy trong Kế Thừa",
+                q: "Nếu Hàm dựng của lớp Cơ Sở YÊU CẦU có tham số (ví dụ <code>Diem(double x, double y)</code>), Lớp Dẫn Xuất BẮT BUỘC phải làm gì?",
+                options: [
+                    "Bỏ qua lớp Cơ Sở và chỉ khởi tạo các biến của Lớp Dẫn Xuất.",
+                    "Lớp dẫn xuất cũng phải có hàm dựng và dùng Danh sách khởi tạo (Initializer List) để cung cấp tham số, gọi hàm dựng của lớp Cơ Sở.",
+                    "Sử dụng lệnh gán trực tiếp trong thân hàm dựng lớp con: x = tx; y = ty;",
+                    "Khai báo một hàm dựng ảo (virtual constructor)."
+                ],
+                correct: 1,
+                explanation: "<b>1. Khái niệm (Tr. 30):</b> C++ không thể 'đoán' được bạn muốn truyền giá trị gì cho lớp Cha nếu lớp Cha không có Default Constructor (hàm không tham số). Lớp con PHẢI chịu trách nhiệm lấy dữ liệu từ ngoài vào và 'đẩy' lên cho hàm dựng của lớp Cha thông qua Cú pháp Khởi tạo.<br><br><b>2. Phân tích:</b> Cú pháp chuẩn là: `HinhTron(double tx, double ty, double r) : Diem(tx, ty), r(rr) {}`. Dòng `: Diem(tx, ty)` chính là lệnh gọi Hàm dựng có tham số của lớp cơ sở.<br><br><b>3. Phản biện:</b> C sai vì `x, y` là private của lớp `Diem`, lớp con không thể gán trực tiếp bằng dấu `=`. D sai vì C++ KHÔNG CÓ virtual constructor.",
+                citation: "Trang 30: Code mẫu `HinhTron : Diem` - Gọi constructor lớp cha."
+            },
+            {
+                category: "Hàm Dựng & Hàm Hủy trong Kế Thừa",
+                q: "Xét đoạn mã trong Danh sách Khởi tạo (Initializer List) sau: <code>Car::Car(int vin) : MotorVehicle(vin) {}</code>. Nếu lập trình viên XÓA BỎ đoạn <code>: MotorVehicle(vin)</code>, chuyện gì sẽ xảy ra?",
+                options: [
+                    "Lỗi biên dịch do sai cú pháp C++.",
+                    "Trình biên dịch sẽ tự động chèn thêm lời gọi Hàm dựng mặc định (không tham số) của lớp MotorVehicle (nếu có).",
+                    "Phần MotorVehicle sẽ bị cấp phát bộ nhớ rác (Garbage values).",
+                    "Chương trình bỏ qua khởi tạo lớp cha để chạy nhanh hơn."
+                ],
+                correct: 1,
+                explanation: "<b>1. Cơ chế Ngầm định (Tr. 28):</b> Bạn không thể cản C++ khởi tạo lớp cha. Nếu bạn KHÔNG gọi tường minh một constructor có tham số, C++ sẽ tự động chèn lời gọi đến Default Constructor `MotorVehicle()`.<br><br><b>2. Phân tích:</b> Nếu lớp `MotorVehicle` CÓ hàm dựng mặc định, code vẫn biên dịch và chạy (chỉ là giá trị vin của cha không được set theo ý bạn). NHƯNG nếu lớp `MotorVehicle` CHỈ CÓ hàm dựng cần tham số mà không có hàm mặc định, lúc đó mới phát sinh LỖI BIÊN DỊCH vì C++ không tìm thấy hàm mặc định để gọi ngầm.",
+                citation: "Trang 28: 'Nếu ta bỏ qua lời gọi constructor lớp cơ sở... trình biên dịch sẽ tự động chèn thêm lời gọi constructor mặc định'."
+            },
+            {
+                category: "Hàm Dựng & Hàm Hủy trong Kế Thừa",
+                q: "Bài tập 1 - PDF (Tr.78): Đoạn mã sau gọi hàm dựng bao nhiêu lần?\n<pre><code class=\"language-cpp\">class X {}; class Y : public X {}; class Z : public Y {};\nvoid main() { Z obj; }</code></pre>",
+                options: [
+                    "1 lần (Chỉ Z).",
+                    "2 lần (Y và Z).",
+                    "3 lần (X, rồi Y, rồi Z).",
+                    "Trình biên dịch lỗi vì không có hàm dựng tường minh."
+                ],
+                correct: 2,
+                explanation: "<b>1. Cơ chế Truyền Thừa (Cascade):</b> Khởi tạo đối tượng của gia phả nhiều đời sẽ kích hoạt phản ứng dây chuyền từ Thủy tổ đến Đời hiện tại.<br><br><b>2. Phân tích:</b> Khi lệnh `Z obj` kích hoạt. Z kế thừa Y, Y kế thừa X. C++ sẽ gọi `X()` (Ông nội), sau đó gọi `Y()` (Cha), cuối cùng gọi `Z()` (Cháu). Tất cả là 3 lần gọi Default Constructor ngầm định (Compiler-generated).<br><br><b>3. Phản biện:</b> D sai vì nếu ta không viết hàm dựng, C++ Compiler sẽ TỰ ĐỘNG sinh ra Default Constructor rỗng cho tất cả các class này.",
+                citation: "Phát triển từ Bài tập 1 trang 78 - Trật tự kế thừa nhiều cấp."
+            },
+            {
+                category: "Hàm Dựng & Hàm Hủy trong Kế Thừa",
+                q: "Trong quá trình khởi tạo một Lớp Dẫn Xuất, tại sao người ta <b>KHUYÊN KHÔNG NÊN</b> truy cập và gán giá trị trực tiếp cho các biến của lớp Cơ Sở bên trong thân hàm <code>{ }</code> của lớp Dẫn Xuất?",
+                options: [
+                    "Vì nó sẽ làm máy tính tiêu thụ nhiều điện năng hơn.",
+                    "Vì thiếu tính Đóng gói (Encapsulation), đòi hỏi lớp con phải biết quá sâu về chi tiết lớp cha, và không tái sử dụng được mã khởi tạo của lớp cha.",
+                    "Vì nó sẽ làm hỏng con trỏ this.",
+                    "Vì C++ sẽ cấm lệnh gán (Assignment) trong hàm dựng."
+                ],
+                correct: 1,
+                explanation: "<b>1. Nguyên tắc Đóng Gói (Tr. 26):</b> Thay vì viết `this->vin = v; this->make = m;` bên trong thân hàm `Car(...)`, hãy gọi `MotorVehicle(v, m)`.<br><br><b>2. Phân tích:</b> Lý do 1: Có thể các biến `vin, make` là private, bạn không thể gán trực tiếp. Lý do 2: Lớp cha có thể có các logic kiểm tra (Validation) phức tạp lúc khởi tạo (VD: kiểm tra số khung xe có đúng định dạng không). Nếu bạn tự gán tay ở lớp con, bạn phải COPY toàn bộ đoạn code kiểm tra đó, vi phạm DRY (Don't Repeat Yourself) và tước đoạt quyền đóng gói của lớp cha.",
+                citation: "Trang 26: Nhược điểm của việc gán trực tiếp: 'Thiếu tính đóng gói, không tái sử dụng mã khởi tạo'."
+            },
+            {
+                category: "Hàm Dựng & Hàm Hủy trong Kế Thừa",
+                q: "Xét bài toán Tính bao gộp (Composition / HAS-A) trên Slide 30. Một đối tượng <code>Car</code> chứa một đối tượng thành viên <code>Engine eng;</code>. Thứ tự gọi hàm dựng khi tạo <code>Car</code> là gì?",
+                options: [
+                    "Hàm dựng Engine() chạy trước, sau đó mới đến hàm dựng Car().",
+                    "Hàm dựng Car() chạy trước, sau đó mới đến hàm dựng Engine().",
+                    "Cả hai chạy song song đa luồng.",
+                    "Tùy thuộc vào thứ tự khai báo trong hàm main()."
+                ],
+                correct: 0,
+                explanation: "<b>1. Cơ chế Bao gộp (Tr. 30, Bổ sung từ Bài tập 3 - Tr. 78):</b> Nguyên tắc 'Xây dựng từ trong ra ngoài'. Khi một lớp B chứa một đối tượng thành viên của lớp A, thì A phải được sinh ra và hoàn thiện trước khi lớp bao bọc bên ngoài B hoàn thiện.<br><br><b>2. Phân tích:</b> Lớp `Car` (chiếc xe) HAS-A `Engine` (động cơ). Chiếc xe không thể hình thành nếu động cơ chưa được lắp ráp. Do đó C++ bắt buộc gọi `Engine()` để hoàn tất thuộc tính `eng` trước, rồi mới vào thực thi thân hàm `Car()`.<br><b>Trình tự đúng: Lớp Cơ Sở -> Đối Tượng Thành Viên -> Bản thân Lớp.</b>",
+                citation: "Trang 30 (Sơ đồ thứ tự) & Bài tập 3 Cấu trúc Composition."
+            },
+            {
+                category: "Hàm Dựng & Hàm Hủy trong Kế Thừa",
+                q: "Trong C++, ta <b>KHÔNG CẦN</b> gọi hàm hủy (Destructor) của lớp Cơ Sở một cách tường minh từ bên trong hàm hủy của lớp Dẫn Xuất. Tại sao?",
+                options: [
+                    "Vì lớp cơ sở không bao giờ chết.",
+                    "Vì Garbage Collector (Bộ thu gom rác) của Java sẽ xử lý nó.",
+                    "Việc gọi hàm hủy của Lớp Cơ Sở được C++ thực hiện TỰ ĐỘNG ngay sau khi hàm hủy của Lớp Dẫn Xuất chạy xong.",
+                    "Vì biến của lớp cơ sở đã bị xóa bởi lệnh delete của lớp dẫn xuất."
+                ],
+                correct: 2,
+                explanation: "<b>1. Cơ chế Tự Động (Tr. 28):</b> C++ Compiler tự động chèn một lời gọi ngầm định (Implicit call) đến Destructor của lớp cha `~Base()` ngay tại dấu ngoặc nhọn kết thúc `}` của Destructor lớp con `~Derived()`.<br><br><b>2. Phân tích:</b> Không giống như Constructor (đôi khi phải chỉ định rõ tham số truyền cho lớp cha), Destructor không bao giờ nhận tham số. Do đó Compiler hoàn toàn có khả năng TỰ GỌI mà không sợ nhầm lẫn. Bạn không bao giờ phải viết lệnh `Base::~Base();` thủ công, việc đó sẽ gây lỗi gọi hàm hủy 2 lần (Double Free).",
+                citation: "Trang 28: 'Lời gọi tương tự cho destructor của lớp cơ sở là không cần thiết - việc này được thực hiện tự động'."
+            },
+            {
+                category: "Hàm Dựng & Hàm Hủy trong Kế Thừa",
+                q: "Bài tập 4 (Tr. 79) - Mảng đối tượng tĩnh cục bộ: Đoạn mã <code>void func() { D d1(1); D d2(2); }</code> kết thúc sẽ in ra chuỗi gọi hàm hủy như thế nào?",
+                options: [
+                    "1 2",
+                    "2 1",
+                    "Ngẫu nhiên tùy hệ điều hành.",
+                    "Lỗi tràn bộ nhớ (Stack Overflow)."
+                ],
+                correct: 1,
+                explanation: "<b>1. Nguyên lý Stack (Tr. 79):</b> Các đối tượng khai báo tĩnh trong hàm (Local variables) được cấp phát trên Stack (Ngăn xếp). Stack hoạt động theo nguyên tắc LIFO (Vào sau ra trước).<br><br><b>2. Phân tích:</b><br>- Khởi tạo: `d1` được đưa vào stack trước. `d2` được đưa vào stack sau.<br>- Khi hàm `func()` kết thúc, nó phá hủy (Pop) các biến trên Stack.<br>- Biến vào sau cùng (`d2`) nằm ở trên đỉnh Stack -> Phá hủy trước -> In ra số 2.<br>- Tiếp đến biến (`d1`) -> Phá hủy -> In ra số 1.<br>Kết quả in ra là <b>2 1</b>.",
+                citation: "Bài tập 4 (Trang 79) - Quy tắc dọn dẹp biến cục bộ (LIFO)."
+            },
+
+            // ================== CATEGORY 3: OVERRIDING & HAS-A (21-30) ==================
+            {
+                category: "Ghi đè (Overriding) & Lớp Thành Viên",
+                q: "Khái niệm 'Overriding' (Định nghĩa lại / Ghi đè) trong kế thừa mang ý nghĩa gì?",
+                options: [
+                    "Xóa hoàn toàn hàm của lớp cha khỏi bộ nhớ máy tính.",
+                    "Lớp kế thừa tạo ra một hàm mới CÙNG TÊN với lớp cha, nhưng có Danh sách Tham số (Parameters) khác nhau.",
+                    "Lớp kế thừa định nghĩa lại một hàm đã có từ lớp cơ sở (cùng tên, cùng tham số) để thay đổi cách thức hoạt động (Cài đặt) cho phù hợp với lớp con.",
+                    "Lớp kế thừa đổi tên hàm của lớp cha."
+                ],
+                correct: 2,
+                explanation: "<b>1. Định nghĩa Overriding (Tr. 40):</b> Kế thừa một phần - Không kế thừa máy móc. Lớp con có quyền CHỐI TỪ hành vi mặc định của cha bằng cách cung cấp một thân hàm (implementation) mới hoàn toàn.<br><br><b>2. Phân tích:</b> Chữ ký hàm (Signature: Tên + Tham số + Kiểu trả về) phải GIỮ NGUYÊN. Ví dụ lớp `GiaoVien` tính lương bằng [Lương Cơ Bản]. Lớp `GVCN` ghi đè lại hàm `TinhLuong()` = [Lương Cơ Bản] + [Phụ cấp chủ nhiệm].<br><br><b>3. Phản biện:</b> Phương án B mô tả kỹ thuật Overloading (Nạp chồng), chứ không phải Overriding (Ghi đè).",
+                citation: "Trang 40: Overriding - 'Định nghĩa lại phương thức đã kế thừa'."
+            },
+            {
+                category: "Ghi đè (Overriding) & Lớp Thành Viên",
+                q: "Khi một lớp dẫn xuất đã Ghi đè (Override) phương thức của lớp cơ sở. Làm thế nào để lớp dẫn xuất GỌI LẠI ĐƯỢC phương thức nguyên bản của lớp cơ sở bên trong thân hàm của nó?",
+                options: [
+                    "Sử dụng toán tử định phạm vi (Scope Resolution Operator): TenLopCoSo::TenPhuongThuc()",
+                    "Sử dụng từ khóa super.TenPhuongThuc()",
+                    "Sử dụng từ khóa base->TenPhuongThuc()",
+                    "Không thể gọi lại được nữa, phương thức gốc đã bị ghi đè vĩnh viễn."
+                ],
+                correct: 0,
+                explanation: "<b>1. Cú pháp C++ (Tr. 41 & 44):</b> C++ không có từ khóa `super` như Java hay C#. Để truy cập một hàm đã bị che khuất (Hidden/Overridden) của lớp cha, ta bắt buộc phải sử dụng Toán tử định phạm vi `::`.<br><br><b>2. Phân tích:</b> Ở Slide 44, hàm `tinhLuong()` của `GVCN` được viết là: <br>`return GiaoVien::tinhLuong() + 50000;`<br>Cú pháp `GiaoVien::` báo cho Trình biên dịch biết: 'Hãy chạy cái hàm tinhLuong nguyên thủy của cha tao, lấy kết quả, rồi tao sẽ cộng thêm 50k'.",
+                citation: "Trang 41 & 44: 'Sử dụng toán tử định phạm vi và tên lớp cơ sở trước tên hàm'."
+            },
+            {
+                category: "Ghi đè (Overriding) & Lớp Thành Viên",
+                q: "Bài tập 5.3 (Tr.80): 'Một chiếc Xe Máy chạy 100km tốn 2L xăng... Xe Tải tốn 20L xăng'. Hành động 'Cho xe chạy một đoạn đường' và tiêu thụ xăng nên được thiết kế như thế nào trong lập trình OOP?",
+                options: [
+                    "Viết một hàm if-else khổng lồ trong lớp cha Xe để kiểm tra xem nó là loại xe gì rồi trừ xăng tương ứng.",
+                    "Khai báo phương thức ChayXe() chung trong lớp cơ sở Xe. Sau đó GHI ĐÈ (Override) phương thức ChayXe() trong từng lớp XeMay và XeTai với thuật toán trừ xăng đặc thù.",
+                    "Chỉ viết hàm ChayXe() ở XeMay, còn XeTai không cần chạy.",
+                    "Sử dụng kế thừa private để khóa hàm."
+                ],
+                correct: 1,
+                explanation: "<b>1. Ứng dụng Overriding (Đa hình cơ bản):</b> Thay vì tập trung mọi logic vào một hàm `switch/case` khổng lồ tồi tệ ở lớp Cha, ta phân tán logic về từng lớp Con.<br><br><b>2. Phân tích:</b> Lớp cha `Xe` có thuộc tính `m_luongXang` và hành vi ảo `void chay(float km)`. Lớp con `XeMay` Ghi đè hàm này: `m_luongXang -= (km/100)*2`. Lớp con `XeTai` Ghi đè hàm này: `m_luongXang -= (km/100)*20`. Mỗi lớp tự biết cách xử lý công việc của mình. Đây là trái tim của Lập trình Hướng Đối Tượng.",
+                citation: "Áp dụng tư duy Overriding (Tr. 40-42) để giải Bài tập 5.3 (Tr. 80)."
+            },
+            {
+                category: "Ghi đè (Overriding) & Lớp Thành Viên",
+                q: "Nếu một phương thức trong Lớp Dẫn Xuất CÙNG TÊN nhưng KHÁC THAM SỐ với phương thức của Lớp Cơ Sở, trình biên dịch C++ sẽ xử lý như thế nào khi gọi bằng đối tượng của Lớp Dẫn Xuất?",
+                options: [
+                    "Nó Ghi đè (Override) phương thức của Lớp Cơ Sở.",
+                    "Nó tự động chuyển kiểu tham số.",
+                    "Nó CHE KHUẤT (Name Hiding/Shadowing) hoàn toàn phương thức của Lớp Cơ Sở. Lệnh gọi bằng hàm của cha sẽ bị lỗi biên dịch trừ khi dùng toán tử ::.",
+                    "Trình biên dịch báo lỗi Duplicate Name."
+                ],
+                correct: 2,
+                explanation: "<b>1. Cơ chế Name Hiding (C++ Name Lookup Rule):</b> C++ không tự động nạp chồng (Overload) qua biên giới của class cha-con.<br><br><b>2. Phân tích:</b> Giả sử Cha có `void draw(int color)`. Con có `void draw()`. Khi dùng `objCon.draw(255)`, C++ tìm hàm `draw` từ lớp Con ra ngoài. Nó thấy hàm `draw()` ở lớp Con, nó lập tức DỪNG QUÁ TRÌNH TÌM KIẾM, và cố nhét số 255 vào hàm không tham số này -> Báo lỗi biên dịch Mismatch! Hàm `draw(int)` của Cha đã bị che khuất (Shadowed) hoàn toàn.<br><br>Để mang hàm cha xuống overload, phải dùng lệnh `using Base::draw;` trong lớp con.",
+                citation: "Hệ quả từ cơ chế Scope Resolution và Overriding (Trang 41)."
+            },
+            {
+                category: "Ghi đè (Overriding) & Lớp Thành Viên",
+                q: "Trong quá trình xây dựng mã nguồn (Theo Dr. Guru - Tr. 48). Mệnh đề nào sau đây diễn giải ĐÚNG luật xây dựng lớp?",
+                options: [
+                    "Nếu A có quan hệ IS-A với B -> Cho A là một thuộc tính của B.",
+                    "Nếu A có quan hệ HAS-A với B -> Cho A kế thừa B.",
+                    "Nếu A có quan hệ IS-A với B -> Cho A thừa kế B. Nếu A có quan hệ HAS-A với B -> Cho B là một thuộc tính bên trong A.",
+                    "Mọi quan hệ đều phải dùng Kế thừa để tận dụng mã."
+                ],
+                correct: 2,
+                explanation: "<b>1. Dr. Guru Rules (Tr. 48):</b> Đây là kim chỉ nam để không lạm dụng Kế thừa.<br><br><b>2. Phân tích:</b><br>- <b>IS-A:</b> Mèo là Động Vật (`ConMeo : public ConVat`). Dùng Kế Thừa (Inheritance).<br>- <b>HAS-A:</b> Xe có Bánh xe (Xe không 'là' Bánh xe). Do đó Bánh xe phải được khai báo làm thuộc tính (Biến thành viên / Con trỏ) bên trong Lớp Xe (`BanhXe* m_pBanhXe;`). Dùng Tính bao gộp (Composition/Aggregation).<br><br><b>3. Lỗi thường gặp:</b> Người mới học OOP thường lạm dụng Kế thừa cho mọi thứ (VD: Cho Xe kế thừa Bánh xe) dẫn đến cấu trúc class phi logic.",
+                citation: "Trang 48: Dr. Guru khuyên: Luật xây dựng lớp (IS-A vs HAS-A)."
+            },
+            {
+                category: "Ghi đè (Overriding) & Lớp Thành Viên",
+                q: "Lớp <code>Employee</code> có quan hệ HAS-A với lớp <code>Person</code> (Tr. 5). Khai báo nào sau đây thể hiện đúng mã nguồn của quan hệ này?",
+                options: [
+                    "class Employee : public Person { };",
+                    "class Employee { private: Person me; double salary; };",
+                    "class Person { private: Employee emp; };",
+                    "class Employee { friend class Person; };"
+                ],
+                correct: 1,
+                explanation: "<b>1. Code thực tế HAS-A (Tr. 5):</b> Kế thừa không phải là cách duy nhất để Tái sử dụng code. Ta có thể dùng lại bằng cách 'Nhúng' đối tượng cũ vào lớp mới.<br><br><b>2. Phân tích:</b> Trong slide số 5, lớp `Employee` không hề sử dụng cú pháp kế thừa `: public Person`. Thay vào đó, nó chứa một biến thành viên `Person me;`. Khi `Employee` cần lấy tên, nó gọi giao diện ủy quyền: `return me.getName();`. Đây là mô hình Composition (Bao gộp).",
+                citation: "Trang 5: Đoạn mã C++ minh họa quan hệ HAS-A (Sử dụng lại cài đặt với giao diện mới)."
+            },
+            {
+                category: "Ghi đè (Overriding) & Lớp Thành Viên",
+                q: "Nhược điểm lớn nhất của việc tái sử dụng code thông qua quan hệ HAS-A (Bao gộp) thay vì IS-A (Kế thừa) là gì?",
+                options: [
+                    "Lỗi biên dịch khi biên dịch chéo.",
+                    "Làm tăng dung lượng ổ cứng đột biến.",
+                    "Chưa đủ mềm dẻo và PHẢI VIẾT LẠI GIAO DIỆN (Viết lại các hàm bọc (wrapper) để gọi các phương thức của đối tượng bên trong).",
+                    "Gây rò rỉ bộ nhớ nghiêm trọng (Memory leak)."
+                ],
+                correct: 2,
+                explanation: "<b>1. Nhược điểm HAS-A (Tr. 4):</b><br><br><b>2. Phân tích:</b> Nếu bạn kế thừa (IS-A), mọi hàm public của Cha tự động thò ra ngoài cho người dùng gọi. Nhưng nếu bạn dùng HAS-A (`Person me;`), đối tượng `me` bị chôn giấu trong vùng private. Để bên ngoài lấy được Name, lớp Employee phải 'Viết lại giao diện':<br>`String getName() { return me.getName(); }`<br>Nếu lớp Person có 100 hàm, bạn phải viết bằng tay 100 hàm Wrapper bọc ngoài như vậy -> Cực kỳ thủ công và kém linh hoạt so với Kế thừa tự động.",
+                citation: "Trang 4: Nhược điểm của quan hệ has_a: 'Phải viết lại giao diện, chưa đủ mềm dẻo'."
+            },
+            {
+                category: "Ghi đè (Overriding) & Lớp Thành Viên",
+                q: "Dựa vào Sơ đồ Quan hệ Đối tượng (ORD - Object Relationship Diagram), một mũi tên trỏ từ Lớp B lên Lớp A (B -> A) mang ý nghĩa gì?",
+                options: [
+                    "Lớp A kế thừa từ Lớp B.",
+                    "Lớp B kế thừa từ Lớp A (B là lớp con, A là lớp cha).",
+                    "Lớp B có chứa đối tượng A.",
+                    "Lớp B chuyển kiểu thành A."
+                ],
+                correct: 1,
+                explanation: "<b>1. Chuẩn UML/ORD (Tr. 11):</b> Trong sơ đồ thiết kế Hướng đối tượng, mũi tên Kế thừa LUÔN LUÔN trỏ từ Lớp Dẫn Xuất (Con) HƯỚNG LÊN Lớp Cơ Sở (Cha).<br><br><b>2. Phân tích:</b> Tại sao mũi tên lại đi ngược lên? Vì mũi tên này đọc là 'B IS-A A' (B tham chiếu đến bản thể của A). Hoặc hiểu theo cây Phả hệ, cha (Root) luôn nằm ở đỉnh, các cành nhánh (Con) chỉa mũi tên hướng về gốc rễ.",
+                citation: "Trang 11: ORD - 'Biểu diễn một quan hệ thừa kế... bằng một mũi tên trỏ từ lớp con đến lớp cha'."
+            },
+            {
+                category: "Ghi đè (Overriding) & Lớp Thành Viên",
+                q: "Xét bài toán: Lớp <code>Nguoi</code> có phương thức <code>Xuat()</code> in ra Họ tên. Lớp <code>SinhVien</code> kế thừa từ <code>Nguoi</code>, có thêm biến <code>MaSo</code>. Cách chuẩn nhất để ghi đè hàm <code>Xuat()</code> trong SinhVien là:",
+                options: [
+                    "void Xuat() const { cout << MaSo << HoTen; } (Truy cập thẳng HoTen dù HoTen bị private).",
+                    "void Xuat() const { cout << MaSo; Nguoi::Xuat(); } (In mã số rồi gọi lại hàm Xuat của Cha).",
+                    "Chỉ cần viết hàm XuatSinhVien(), không cần ghi đè.",
+                    "Xóa hàm Xuat() ở Nguoi."
+                ],
+                correct: 1,
+                explanation: "<b>1. Cơ chế Tái sử dụng (Tr. 45):</b><br><br><b>2. Phân tích:</b> Ở lớp `SinhVien`, ta cần in ra [Mã số] và [Họ tên]. Nhưng [Họ tên] nằm trong lớp `Nguoi` và thường bị khóa `private`. Ta không thể lấy thẳng. <br>Giải pháp thông minh nhất của Overriding là tái sử dụng sức lao động: In cái mới của mình `cout << MaSo`, sau đó bắt lớp Cha tự in cái của Cha `Nguoi::Xuat()`. Code vừa gọn, vừa tuân thủ tuyệt đối tính đóng gói.",
+                citation: "Trang 45: Ví dụ SinhVien : Nguoi (Gọi hàm hiển thị hỗn hợp)."
+            },
+            {
+                category: "Ghi đè (Overriding) & Lớp Thành Viên",
+                q: "Bài tập 5.2 (TaiKhoanTietKiem): Một <code>TaiKhoan</code> thông thường có hành vi Nạp Tiền và Rút Tiền bất cứ lúc nào. <code>TaiKhoanTietKiem</code> kế thừa từ TaiKhoan nhưng CHỈ CHO PHÉP rút tiền khi đến kỳ hạn. Phải áp dụng tính chất OOP nào?",
+                options: [
+                    "Tính Đa hình (Polymorphism) bằng Overloading (Nạp chồng).",
+                    "Tính Đa hình bằng cách Overriding (Ghi đè) phương thức <code>rutTien()</code> của lớp TaiKhoan. Đưa thêm vòng if kiểm tra kỳ hạn vào thân hàm mới.",
+                    "Xóa phương thức rutTien() khỏi lớp cha.",
+                    "Sử dụng toán tử new để đè bộ nhớ."
+                ],
+                correct: 1,
+                explanation: "<b>1. Bài toán Thực tế (Tr. 79):</b> Hành vi cơ bản của Tài khoản là có thể rút tiền. Nhưng Lớp Con (Tài khoản tiết kiệm) lại có một LUẬT RÚT TIỀN ĐẶC THÙ (Phải đến hạn mới rút được).<br><br><b>2. Phân tích:</b> Đây là kịch bản kinh điển của việc <b>Ghi Đè (Overriding)</b>. Lớp `TaiKhoanTietKiem` sẽ viết lại thân hàm `void rutTien(float tien)`: <br>`if (soThangDaGui >= kyHan) TaiKhoan::rutTien(tien); else in_loi();`<br>Ta đã thay đổi hành vi mặc định của lớp Cha để phù hợp với bản chất nghiệp vụ của lớp Con.",
+                citation: "Trang 79: Bài tập 5.2 - Yêu cầu 'Chỉ được rút tiền khi đến kỳ hạn'."
+            },
+
+            // ================== CATEGORY 4: UPCAST, DOWNCAST & SLICING (31-40) ==================
+            {
+                category: "Upcast, Downcast & Slicing (Core)",
+                q: "Phát biểu nào sau đây miêu tả chính xác bản chất của Upcast (Ép kiểu lên) trong C++?",
+                options: [
+                    "Đổi một đối tượng thuộc Lớp Cơ Sở thành một đối tượng thuộc Lớp Dẫn Xuất.",
+                    "Tương tác với thể hiện (Instance) của Lớp Dẫn Xuất như thể nó là thể hiện của Lớp Cơ Sở, bằng cách gán con trỏ/tham chiếu lớp Cơ Sở trỏ tới vùng nhớ của lớp Dẫn Xuất.",
+                    "Tăng giới hạn bộ nhớ cho một tiến trình.",
+                    "Khởi động lại hàm dựng của lớp con một lần nữa."
+                ],
+                correct: 1,
+                explanation: "<b>1. Khái niệm Upcast (Tr. 59):</b> Upcast là việc nhìn một đối tượng Con dưới lăng kính của đối tượng Cha.<br><br><b>2. Phân tích:</b> Một đối tượng `Car` bao giờ cũng chứa một hạt nhân `MotorVehicle` bên trong nó (Mọi chiếc Xe Hơi đều LÀ một chiếc Phương tiện Động cơ). Do đó, việc lấy một con trỏ `MotorVehicle*` trỏ thẳng vào vùng nhớ của `Car` là HỢP LỆ, TỰ ĐỘNG và AN TOÀN 100%. Lăng kính con trỏ Cha chỉ nhìn thấy phần lõi Cha, mù lòa phần Con.",
+                citation: "Trang 59: Định nghĩa Upcast - 'Upcast là quá trình tương tác với thể hiện của lớp dẫn xuất như thể nó là thể hiện của lớp cơ sở'."
+            },
+            {
+                category: "Upcast, Downcast & Slicing (Core)",
+                q: "Sau khi thực hiện lệnh Upcast: <code>MotorVehicle* mvPtr = new Truck();</code>. Điều gì xảy ra nếu lập trình viên gọi lệnh <code>mvPtr->Load();</code> (với <code>Load()</code> là phương thức ĐƯỢC ĐỊNH NGHĨA RIÊNG trong lớp Truck, không có trong MotorVehicle)?",
+                options: [
+                    "Lệnh chạy thành công, gọi được hàm Load() của Truck.",
+                    "Lỗi biên dịch. Mặc dù con trỏ đang trỏ tới đối tượng Truck, nhưng trình biên dịch chỉ cho phép truy cập các thành viên/phương thức MÀ LỚP CƠ SỞ (MotorVehicle) NHÌN THẤY ĐƯỢC.",
+                    "Lỗi tràn bộ đệm (Buffer Overflow) lúc runtime.",
+                    "HĐH tự động gọi Downcast ngầm định."
+                ],
+                correct: 1,
+                explanation: "<b>1. Cơ chế Type Checking (Tr. 61):</b> Ở giai đoạn Compile time (Biên dịch), C++ C-H-Ỉ NHÌN VÀO KIỂU CỦA CON TRỎ để quyết định bạn có được gọi hàm hay không, nó KHÔNG thèm quan tâm con trỏ đang trỏ vào cái gì trong bộ nhớ RAM (Runtime).<br><br><b>2. Phân tích:</b> Con trỏ `mvPtr` mang mác `MotorVehicle*`. Trình biên dịch lật giấy khai sinh của `MotorVehicle` ra, không hề thấy hàm `Load()` nào cả. Nó lập tức ĐÁNH DẤU ĐỎ báo lỗi (Error: Load is not a member of MotorVehicle). Mặc dù dưới RAM, đối tượng Truck vẫn nguyên vẹn có hàm Load. Lăng kính nhỏ không nhìn thấy vật lớn.",
+                citation: "Trang 61: 'mvPointer2->Load(); // Error' - 'trình biên dịch sẽ chỉ cho ta xem thể hiện này như là đối tượng thuộc lớp cơ sở'."
+            },
+            {
+                category: "Upcast, Downcast & Slicing (Core)",
+                q: "Khi một con trỏ lớp cơ sở gắn vào một thể hiện của lớp dẫn xuất (Upcast), bản chất của dữ liệu đối tượng trong bộ nhớ RAM có bị thay đổi (suy giảm) thành đối tượng lớp cơ sở không?",
+                options: [
+                    "Có, các thuộc tính của lớp dẫn xuất bị xóa sổ (Slicing) ngay lập tức.",
+                    "Có, RAM tự động giải phóng vùng nhớ dư thừa.",
+                    "Không hề thay đổi bản chất của đối tượng. Dữ liệu của lớp dẫn xuất vẫn NGUYÊN VẸN trong RAM, chỉ là con trỏ bị hạn chế 'tầm nhìn' mà thôi.",
+                    "Đối tượng bị mã hóa thành định dạng nhị phân khác."
+                ],
+                correct: 2,
+                explanation: "<b>1. Bản chất Con trỏ (Tr. 62):</b> Gán con trỏ không copy dữ liệu, nó chỉ Trỏ tay (Point) vào vùng nhớ đó.<br><br><b>2. Phân tích:</b> Việc bạn đeo một cặp kính (Con trỏ) bị giới hạn góc nhìn, không làm cho cảnh vật (Đối tượng trong RAM) xung quanh biến mất. Con trỏ `MotorVehicle*` trỏ vào `Truck` thì đối tượng `Truck` vẫn còn nguyên trọng tải (payload), chức năng `Load()`. Bằng chứng là nếu ta dùng một con trỏ `Truck*` trỏ lại vào vùng nhớ đó, ta vẫn thao tác được hàm `Load()` bình thường.",
+                citation: "Trang 62: 'ta không hề thay đổi bản chất của đối tượng được trỏ tới... nó chỉ cho ta một cách nhìn khác'."
+            },
+            {
+                category: "Upcast, Downcast & Slicing (Core)",
+                q: "Hiện tượng Slicing (Cắt xén đối tượng) xảy ra CỤ THỂ khi nào trong quá trình truyền/gán đối tượng ở C++?",
+                options: [
+                    "Khi Upcast sử dụng Con trỏ (Pointer).",
+                    "Khi Upcast sử dụng Tham chiếu (Reference).",
+                    "Khi ta gán trực tiếp GIÁ TRỊ của một đối tượng Lớp Dẫn Xuất vào một biến GIÁ TRỊ của Lớp Cơ Sở (Pass-by-value / Phép gán).",
+                    "Khi Downcast bằng static_cast."
+                ],
+                correct: 2,
+                explanation: "<b>1. Cơ chế Slicing (Tr. 63-65):</b> Slicing xảy ra khi có sự SAO CHÉP DỮ LIỆU VẬT LÝ (Memory copy) từ vùng chứa lớn sang vùng chứa nhỏ.<br><br><b>2. Phân tích:</b> <br>- Gán bằng con trỏ `Base* b = new Derived()`: Không copy dữ liệu, chỉ copy địa chỉ 8-byte. KHÔNG Slicing.<br>- Gán tham chiếu `Base& b = derivedObj`: Cũng là địa chỉ ẩn. KHÔNG Slicing.<br>- Gán Giá Trị: `Base b = derivedObj`. Trình biên dịch sẽ gọi Copy Constructor của Base. Biến `b` chỉ có kích thước bằng phần Base. Các thuộc tính mở rộng của `derivedObj` (như passengers của Car) sẽ bị CHẶT BỎ (Sliced off) vì không có chỗ chứa trong khuôn bộ nhớ của `b`.",
+                citation: "Trang 63 & 65: Slicing xảy ra qua copy constructor 'MotorVehicle mv(c);' hoặc phép gán giá trị 'mv = c;'."
+            },
+            {
+                category: "Upcast, Downcast & Slicing (Core)",
+                q: "Hậu quả thực tế của Slicing (Cắt xén) là gì đối với đối tượng bị gán?",
+                options: [
+                    "Đối tượng gốc (Lớp dẫn xuất) bị xóa mất một phần dữ liệu.",
+                    "Đối tượng bản sao (Lớp cơ sở) CHỈ giữ lại được những thành viên có mặt trong định nghĩa của Lớp Cơ Sở. Các phần thuộc tính của Lớp Dẫn Xuất bị cắt bỏ vĩnh viễn khỏi bản sao.",
+                    "Chương trình bị crash ngay lập tức do lỗi RAM.",
+                    "Hệ điều hành sẽ xin thêm bộ nhớ ảo để chứa phần bị cắt."
+                ],
+                correct: 1,
+                explanation: "<b>1. Memory Truncation (Tr. 64):</b><br><br><b>2. Phân tích:</b> Đối tượng gốc `Car c` không bị sao cả. Nhưng đối tượng sao chép `MotorVehicle mv` được tạo ra trên RAM chỉ có kích thước để chứa [vin, make, model]. Thuộc tính [passengers] của chiếc `Car c` gốc không có chỗ để chép vào `mv`, nên nó bị loại bỏ (sliced off) trong quá trình copy.<br><br><b>3. Lưu ý:</b> Slicing nguy hiểm vì nó làm mất tính Đa hình (Polymorphism). Bản sao bây giờ là 1 chiếc MotorVehicle thuần túy, gọi các hàm ảo (virtual) sẽ chỉ chạy hàm của Cha.",
+                citation: "Trang 64: Mô hình sơ đồ Slicing - 'chỉ giữ lại những thành viên của Car mà có trong MotorVehicle'."
+            },
+            {
+                category: "Upcast, Downcast & Slicing (Core)",
+                q: "Vì sao thao tác Downcast (Ép kiểu từ Cơ Sở xuống Dẫn Xuất) KHÔNG BAO GIỜ là một quy trình tự động ngầm định (Implicit) trong C++?",
+                options: [
+                    "Vì trình biên dịch lười không muốn làm tự động.",
+                    "Vì không phải 'mọi xe chạy bằng máy đều là xe tải'. Một con trỏ Lớp Cơ Sở có thể đang trỏ tới Car, nhưng ta lại bắt nó ép kiểu mù quáng xuống Truck sẽ gây ra rủi ro đổ vỡ chương trình cực lớn.",
+                    "Vì Downcast sử dụng quá nhiều CPU.",
+                    "Vì C++ đã cấm hoàn toàn thao tác Downcast."
+                ],
+                correct: 1,
+                explanation: "<b>1. Cơ sở Toán logic (Tr. 67):</b> Upcast luôn đúng (Mọi hình vuông đều là hình chữ nhật). Downcast là suy diễn ngược và KHÔNG CÓ TÍNH ĐẢM BẢO (Một hình chữ nhật bất kỳ CHƯA CHẮC đã là hình vuông).<br><br><b>2. Phân tích:</b> Gán ngầm định (không thông báo lỗi) một thứ rủi ro cao là cấm kỵ trong lập trình hệ thống. Nếu `MotorVehicle* mv` đang trỏ vào `Car` (Xe hơi), mà bạn ép C++ ngầm dịch thành `Truck*` (Xe tải), rồi gọi hàm `Load()` chở 5 tấn hàng. Vùng nhớ Car không hề có biến `maxPayload`, thao tác này sẽ ghi đè RAM bậy bạ và Crash toàn hệ thống (Undefined Behavior).",
+                citation: "Trang 67: 'Downcast không phải tự động... nhớ lại rằng: không phải mọi xe chạy bằng máy đều là xe tải'."
+            },
+            {
+                category: "Upcast, Downcast & Slicing (Core)",
+                q: "Để yêu cầu C++ thực hiện Downcast một cách TƯỜNG MINH (Báo cho máy biết 'Tôi biết tôi đang làm gì, hãy ép kiểu cho tôi'), ta dùng cú pháp nào sau đây (như trong giáo trình)?",
+                options: [
+                    "dynamic_cast<Truck*>(mv)",
+                    "reinterpret_cast<Truck*>(mv)",
+                    "static_cast<Truck*>(mv)",
+                    "const_cast<Truck*>(mv)"
+                ],
+                correct: 2,
+                explanation: "<b>1. Ép kiểu C++ (Tr. 68):</b> Giáo trình chỉ rõ cú pháp ép kiểu tĩnh tại thời điểm biên dịch để Downcast khi Lập trình viên KIỂM SOÁT ĐƯỢC CHẮC CHẮN logic.<br><br><b>2. Phân tích:</b> Cú pháp: `cPointer = static_cast<Car*>(mv);`<br>Trong thực tế hiện đại, nếu lớp có hàm ảo (Virtual functions), người ta sẽ ưu tiên dùng `dynamic_cast` để kiểm tra độ an toàn lúc Runtime (Nếu không phải Car, nó trả về null). Tuy nhiên, bám sát giáo trình cơ bản, `static_cast` là công cụ ép kiểu xuống nhanh nhất (không tốn chi phí runtime) nhưng đòi hỏi bạn không được sai sót.",
+                citation: "Trang 68: Downcast tường minh: 'static_cast<Car*>(mv);'."
+            },
+            {
+                category: "Upcast, Downcast & Slicing (Core)",
+                q: "Xem xét đoạn code sau (Tr. 69):\n<pre><code class=\"language-cpp\">MotorVehicle* mv = new Car();\nTruck* tPtr = static_cast<Truck*>(mv);\ntPtr->Load();</code></pre>\nĐoạn code trên có lỗi biên dịch (Compile Error) hay không, và chuyện gì thực sự xảy ra?",
+                options: [
+                    "Báo lỗi BIÊN DỊCH ngay lập tức vì không thể ép từ Car sang Truck.",
+                    "KHÔNG LỖI BIÊN DỊCH. Code được trình biên dịch C++ chấp nhận (do dùng static_cast cưỡng ép). Nhưng LỖI ĐỔ VỠ (Crash/Runtime Error) sẽ xảy ra khi chạy tPtr->Load().",
+                    "Code chạy hoàn hảo, Car sẽ tự biến thành Truck.",
+                    "Lệnh Load() bị vô hiệu hóa."
+                ],
+                correct: 1,
+                explanation: "<b>1. Cái bẫy của static_cast (Tr. 69):</b> `static_cast` giống như một lời hứa mù quáng của bạn với Trình biên dịch: 'Tao thề cái mv này đang trỏ vào Truck, mày cứ dịch đi'. Trình biên dịch tin bạn, không báo lỗi, và biên dịch ra file .exe.<br><br><b>2. Phân tích lúc Runtime:</b> Máy chạy đến dòng `new Car()`. Sau đó `tPtr` (mang mác Truck) trỏ vào vùng nhớ của con `Car` nhỏ bé. Khi lệnh `tPtr->Load()` kích hoạt, nó lùng sục tìm biến `maxPayload` trên vùng nhớ RAM của `Car`. Không thấy! Nó đọc vào vùng nhớ rác hoặc RAM của chương trình khác -> Hệ điều hành kích hoạt Lỗi Phân Đoạn (Segmentation Fault) và Bóp chết chương trình (Crash).",
+                citation: "Trang 69: 'Hoàn toàn hợp lệ và được trình biên dịch chấp nhận... Tuy nhiên, nếu chạy, chương trình có thể bị đổ vỡ'."
+            },
+            {
+                category: "Upcast, Downcast & Slicing (Core)",
+                q: "Chuyển kiểu KHÔNG tường minh bằng phép GÁN (ví dụ: Đối tượng Lớp Con = Đối tượng Lớp Cha) trong C++ có được thực hiện hay không?",
+                options: [
+                    "Được thực hiện một cách an toàn.",
+                    "Chỉ được thực hiện nếu dùng con trỏ.",
+                    "KHÔNG được thực hiện (báo lỗi SAI). Nếu muốn thực hiện phải tự định nghĩa phép ép kiểu (toán tử ép kiểu constructor / operator).",
+                    "C++ ngầm chuyển lớp cha bằng cách thêm các trường giá trị NULL."
+                ],
+                correct: 2,
+                explanation: "<b>1. Gán ngược đối tượng (Tr. 72):</b> Hướng gán 'Cha = Con' (Slicing) là HỢP LỆ vì cha lấy phần vỏ cốt lõi của con. Nhưng hướng gán 'Con = Cha' là CẤM KỴ Ttuyệt Đối.<br><br><b>2. Phân tích:</b> Khi gọi lệnh: `Car c = MotorVehicle(100);`. Một chiếc MotorVehicle chỉ có 3 thông số [vin, make, model]. C++ làm sao biết lấy số nào để điền vào phần [passengers] (số ghế) để đắp thành 1 chiếc Car hoàn chỉnh? Thiếu hụt dữ liệu trầm trọng, nên Trình biên dịch BÁO LỖI.<br>Muốn hết lỗi, lập trình viên phải TỰ VIẾT một Constructor trong lớp Con nhận tham số là Lớp Cha: `Car(const MotorVehicle& mv) { ... tự set số ghế = 4 ... }`.",
+                citation: "Trang 72: 'Đối tượng lớp con = Đối tượng lớp cha; // SAI. Nếu muốn thực hiện phải tự định nghĩa phép ép kiểu'."
+            },
+            {
+                category: "Upcast, Downcast & Slicing (Core)",
+                q: "Trong quá trình 'Upcast đối với Tham chiếu' (Reference), đoạn mã nào sau đây là ĐÚNG?",
+                options: [
+                    "Car c; MotorVehicle& mv = c;",
+                    "Car c; MotorVehicle mv = c;",
+                    "MotorVehicle& mv = new Car();",
+                    "Car& c = new MotorVehicle();"
+                ],
+                correct: 0,
+                explanation: "<b>1. Upcast Tham chiếu (Tr. 59):</b> Tương tự con trỏ, biến tham chiếu (Dấu `&`) cung cấp một Lăng Kính Bí Danh mà KHÔNG tạo ra Bản sao Vật lý (Không bị Slicing).<br><br><b>2. Phân tích:</b> Lệnh `Car c;` tạo 1 đối tượng Xe Hơi. Lệnh `MotorVehicle& mv = c;` tạo ra một Bí danh (Reference) mang tên `mv`, nhưng cái lõi bên trong nó trỏ/ánh xạ thẳng vào địa chỉ vùng nhớ của đối tượng `c` gốc.<br><br><b>3. Phản biện:</b> B là phép gán Giá Trị -> Bị SLICING mất dữ liệu. C bị sai kiểu (tham chiếu không gán bằng `new` con trỏ). D là Downcast và sai cú pháp.",
+                citation: "Trang 59: Upcast đối với tham chiếu: 'Car c; MotorVehicle& mvReference2 = c;'."
+            },
+
+            // ================== CATEGORY 5: ĐA KẾ THỪA & LỚP CƠ SỞ ẢO (41-50) ==================
+            {
+                category: "Đa Kế Thừa & Lớp Cơ Sở Ảo (Virtual Base)",
+                q: "Cú pháp Đa thừa kế (Multiple Inheritance) chuẩn C++ để một lớp <code>Menu</code> kế thừa TỪ CẢ HAI lớp <code>OptionList</code> và <code>Window</code> là gì?",
+                options: [
+                    "class Menu : public OptionList, Window { ... };",
+                    "class Menu : public OptionList, public Window { ... };",
+                    "class Menu : public OptionList : public Window { ... };",
+                    "class Menu extends OptionList, Window { ... };"
+                ],
+                correct: 1,
+                explanation: "<b>1. Cú pháp Đa Kế Thừa (Tr. 70):</b> Kế thừa nhiều lớp phải dùng dấu phẩy `,` ngăn cách các lớp cha. ĐẶC BIỆT LƯU Ý: Phải ghi RÕ TỪ KHÓA TRUY CẬP (như `public`) trước TỪNG LỚP CHA MỘT.<br><br><b>2. Phân tích:</b> Nếu viết `class Menu : public OptionList, Window`, thì lớp `Window` bị rơi vào mặc định của C++ `class` -> Nó sẽ kế thừa dạng `private` với `Window`. Cách chuẩn mực là liệt kê rõ ràng: `class Menu : public OptionList, public Window`.",
+                citation: "Trang 70: Định nghĩa 'class Menu : public OptionList, public Window'."
+            },
+            {
+                category: "Đa Kế Thừa & Lớp Cơ Sở Ảo (Virtual Base)",
+                q: "Khi một lớp con (VD: <code>Menu</code>) kế thừa từ 2 lớp cha (VD: <code>OptionList</code> và <code>Window</code>), Hàm Dựng (Constructor) của <code>Menu</code> khởi tạo dữ liệu cho 2 lớp cha như thế nào?",
+                options: [
+                    "Nó tự động lấy biến toàn cục ném vào.",
+                    "Gọi thông qua Toán tử định phạm vi bên trong thân hàm.",
+                    "Sử dụng Danh sách Khởi tạo (Initializer List), liệt kê các lời gọi Constructor của cả 2 lớp cha, phân cách bằng dấu phẩy.",
+                    "Không thể khởi tạo cho 2 lớp cha cùng lúc."
+                ],
+                correct: 2,
+                explanation: "<b>1. Cascade Init (Tr. 70):</b> Giống như kế thừa đơn, lớp con Đa Kế Thừa có trách nhiệm phải mớm dữ liệu vào mồm tất cả các Ông Bố của nó trước khi nó chào đời.<br><br><b>2. Phân tích:</b> Code mẫu trong giáo trình:<br>`Menu::Menu(int n, Rect &bounds) : OptionList(n), Window(bounds) { ... }`<br>Danh sách khởi tạo đẩy tham số `n` cho Bố 1, đẩy tham số `bounds` cho Bố 2. Các ông bố được khởi tạo theo THỨ TỰ KHAI BÁO trong định nghĩa class.",
+                citation: "Trang 70: 'Menu::Menu (int n, Rect &bounds) : OptionList(n), Window(bounds)'."
+            },
+            {
+                category: "Đa Kế Thừa & Lớp Cơ Sở Ảo (Virtual Base)",
+                q: "Sự Cấp Nghĩa / Sự Mơ Hồ (Ambiguity) trong Đa Kế Thừa C++ xảy ra khi nào?",
+                options: [
+                    "Khi hệ điều hành không đủ RAM.",
+                    "Khi Lớp Dẫn Xuất (Con) kế thừa 2 Lớp Cơ Sở (Cha), và cả 2 Lớp Cha này đều có chứa một Phương thức hoặc Biến thành viên CÙNG TÊN với nhau.",
+                    "Khi Lớp Dẫn Xuất ghi đè phương thức của Lớp Cơ Sở.",
+                    "Khi Lớp Cơ Sở không có hàm hủy."
+                ],
+                correct: 1,
+                explanation: "<b>1. Vấn đề Mơ hồ (Tr. 71):</b> Đây là cơn ác mộng kinh điển của Đa Kế Thừa (Lý do vì sao Java/C# CẤM Đa Kế Thừa class).<br><br><b>2. Phân tích:</b> Cha `OptionList` có hàm `Highlight()`. Cha `Window` cũng có hàm `Highlight()`. Người Con `Menu` tự động hốt cả 2 hàm này về kho. Khi ra hàm `main()`, ta gọi lệnh `m1.Highlight(10);` -> Trình biên dịch C++ ĐỨNG HÌNH. Nó gào lên: 'Ý mày là gọi hàm Highlight của ông bố nào? Tao không biết! Lỗi Lỗi Lỗi (Ambiguous Call)'.",
+                citation: "Trang 71: Sự mơ hồ trong đa thừa kế - 'Gọi hàm của lớp nào? m1.Highlight(10);'."
+            },
+            {
+                category: "Đa Kế Thừa & Lớp Cơ Sở Ảo (Virtual Base)",
+                q: "Làm thế nào để KHỬ Sự Mơ Hồ (Giải quyết Ambiguity) khi gọi một hàm trùng tên từ Đa Kế Thừa?",
+                options: [
+                    "Xóa một trong hai lớp cha.",
+                    "Chỉ thị rõ ràng bằng Toán tử Định Phạm Vi (Scope Resolution Operator) khi gọi hàm. Ví dụ: obj.OptionList::Highlight(10);",
+                    "Truyền thêm tham số ảo vào hàm.",
+                    "C++ không thể giải quyết được, phải đổi ngôn ngữ lập trình."
+                ],
+                correct: 1,
+                explanation: "<b>1. Giải quyết Xung Đột (Tr. 71):</b> Ta phải đích thân dẫn đường chỉ lối cho Compiler biết chính xác hàm đó thuộc 'Namespace' (Phạm vi) của Lớp nào.<br><br><b>2. Phân tích:</b> Để xử lý, lập trình viên bẻ lệnh gọi chung chung thành lệnh có định hướng: <br>`m1.OptionList::Highlight(10);`<br>hoặc `m1.Window::Highlight(20);`. Trình biên dịch lúc này hoàn toàn tường minh.",
+                citation: "Trang 71: 'Chỉ rõ hàm của lớp nào: m1.OptionList::Highlight(10);'."
+            },
+            {
+                category: "Đa Kế Thừa & Lớp Cơ Sở Ảo (Virtual Base)",
+                q: "Dư thừa dữ liệu (Data Duplication) / Vấn đề Kim Cương (Diamond Problem) trong Đa Kế Thừa C++ là gì?",
+                options: [
+                    "Lớp con sao chép gấp đôi số biến của mình.",
+                    "Lớp OptionList và Lớp Window CÙNG KẾ THỪA từ một Lớp Ông Nội (Widget). Khi Lớp Menu đa kế thừa từ OptionList và Window, nó sẽ nhận vào TẬN 2 BẢN SAO của Lớp Ông Nội (Widget) trong bộ nhớ, gây lãng phí RAM và nhập nhằng dữ liệu.",
+                    "Lỗi sao lưu trên ổ cứng cứng.",
+                    "Khai báo hai biến giống nhau."
+                ],
+                correct: 1,
+                explanation: "<b>1. Lỗi Kim Cương (Diamond Problem - Tr. 73):</b> Widget -> OptionList, Widget -> Window. Sau đó: Menu -> [OptionList, Window]. Sơ đồ tạo thành hình thoi/kim cương.<br><br><b>2. Phân tích:</b> Mặc định, C++ cho rằng OptionList mang theo cái lõi Widget của riêng nó. Window mang theo cái lõi Widget của riêng nó. Khi thằng cháu Menu ra đời, bụng nó chứa tận 2 cái cục Widget tách biệt. Nếu ta gọi hàm `menuObj.showWidgetName()`, C++ không biết móc từ cục Widget nào ra. Cực kỳ tốn RAM và rủi ro lỗi trạng thái.",
+                citation: "Trang 73: Sơ đồ Sự mơ hồ - Dư thừa dữ liệu 'Đối tượng Menu có 2 OptionList data members và 2 Widget data members'."
+            },
+            {
+                category: "Đa Kế Thừa & Lớp Cơ Sở Ảo (Virtual Base)",
+                q: "Để giải quyết triệt để Vấn đề Dư thừa dữ liệu (Diamond Problem), ngôn ngữ C++ cung cấp giải pháp gì?",
+                options: [
+                    "Dùng từ khóa static cho lớp Ông Nội.",
+                    "Dùng Lớp Cơ Sở Ảo (Virtual Base Class). Khai báo từ khóa `virtual` khi các lớp Cha kế thừa từ lớp Ông Nội.",
+                    "Xóa lớp Ông Nội đi.",
+                    "Tăng giới hạn bộ nhớ Ram."
+                ],
+                correct: 1,
+                explanation: "<b>1. Cơ chế Virtual Inheritance (Tr. 74):</b> Giải pháp thanh lịch nhất của C++ để gộp chung 2 bản sao thành 1 bản duy nhất dùng chung.<br><br><b>2. Phân tích:</b> Các lớp Cha phải được định nghĩa bằng khóa `virtual public Widget`. Chữ `virtual` mang thông điệp: 'Tôi hứa sẽ chia sẻ gốc rễ này. Nếu sau này có một thằng chắt nào kế thừa cả tôi và thằng anh em của tôi, thì tụi tôi sẽ gộp chung cái gốc rễ Widget lại làm MỘT phiên bản DUY NHẤT'.",
+                citation: "Trang 74: 'Cách xử lý: dùng lớp cơ sở ảo. class OptionList : virtual public Widget...'."
+            },
+            {
+                category: "Đa Kế Thừa & Lớp Cơ Sở Ảo (Virtual Base)",
+                q: "Khi áp dụng Lớp Cơ Sở Ảo (Virtual Base Class), đối tượng Lớp Cháu Cuối Cùng (Lớp Menu) sẽ phải thực hiện NHIỆM VỤ ĐẶC BIỆT GÌ trong Hàm Dựng của nó?",
+                options: [
+                    "Không phải làm gì cả.",
+                    "Lớp Cháu (Menu) PHẢI trực tiếp gọi hàm dựng của Lớp Ông Nội (Widget) trong Danh sách khởi tạo của mình, bên cạnh việc gọi 2 Lớp Cha.",
+                    "Lớp Cháu phải đánh dấu hàm hủy của mình là virtual.",
+                    "Lớp Cháu phải phá hủy Lớp Ông Nội trước."
+                ],
+                correct: 1,
+                explanation: "<b>1. Cơ chế Khởi tạo Ảo (Tr. 74):</b> Vì giờ đây chỉ còn tồn tại DUY NHẤT một cục Widget, Trình biên dịch không cho phép các Lớp Cha (OptionList/Window) tự ý khởi tạo Widget nữa (Tránh xung đột cấu hình khởi tạo).<br><br><b>2. Phân tích:</b> Trách nhiệm khởi tạo cái gốc rễ Widget duy nhất đó được ĐẨY THẲNG XUỐNG cho thằng cháu dưới cùng (Thằng tạo ra nút thắt Kim Cương). Lớp Menu BẮT BUỘC phải gọi:<br>`Menu::Menu(...) : Widget(bounds), OptionList(n), Window(bounds) {}`<br>Nếu không, Trình biên dịch sẽ tìm kiếm hàm Default Constructor rỗng của Widget, nếu không có sẽ LỖI.",
+                citation: "Trang 74: Mã code ở dưới cùng 'Menu::Menu (int n, Rect &bounds) : Widget(bounds), OptionList(n), Window(bounds)'."
+            },
+            {
+                category: "Đa Kế Thừa & Lớp Cơ Sở Ảo (Virtual Base)",
+                q: "Nếu bạn KHÔNG tự định nghĩa Toán tử Gán (Assignment Operator) <code>=</code> và Hàm dựng Sao chép (Copy Constructor) trong Lớp Có Kế Thừa, điều gì sẽ xảy ra?",
+                options: [
+                    "Chương trình báo lỗi biên dịch ngay lập tức.",
+                    "Ngôn ngữ C++ sẽ TỰ ĐỘNG TẠO RA (Generate) các hàm này, thực hiện Shallow Copy (Sao chép cạn) cho từng biến thành viên và Gọi đệ quy hàm Gán/Sao chép của Lớp Cha.",
+                    "Dữ liệu không bao giờ được gán.",
+                    "C++ sẽ cấp phát bộ nhớ ảo mới nhưng bỏ trống."
+                ],
+                correct: 1,
+                explanation: "<b>1. Hàm Tự Sinh (Tr. 75):</b> Rule of Three (Quy tắc số 3) trong C++. Nếu bạn lười, Compiler sẽ làm thay bạn.<br><br><b>2. Phân tích:</b> Trình biên dịch sẽ âm thầm tiêm vào class của bạn một hàm `operator=`. Nó sẽ đi qua từng biến của lớp cha, copy bit-by-bit, rồi qua từng biến của lớp con, copy bit-by-bit. Hàm này hoạt động hoàn hảo cho các kiểu dữ liệu nguyên thủy (int, float, array tĩnh).",
+                citation: "Trang 75: Các toán tử được tái định nghĩa - 'Nếu không định nghĩa, sẽ tự động có hàm xây dựng sao chép và phép gán do ngôn ngữ tạo ra'."
+            },
+            {
+                category: "Đa Kế Thừa & Lớp Cơ Sở Ảo (Virtual Base)",
+                q: "Hàm dựng Sao chép (Copy Constructor) và Toán tử Gán TỰ ĐỘNG của C++ sẽ gây ra LỖI NGHIÊM TRỌNG (SAI LỆCH / CRASH) khi Lớp của bạn chứa loại dữ liệu nào?",
+                options: [
+                    "Mảng nguyên thủy (int arr[10]).",
+                    "Các biến nguyên thủy (int, float, bool).",
+                    "Con trỏ cấp phát động (Pointers with `new`). Gây ra lỗi Shallow Copy (Sao chép chung địa chỉ).",
+                    "Chuỗi std::string."
+                ],
+                correct: 2,
+                explanation: "<b>1. Thảm họa Shallow Copy (Tr. 75):</b> Sao chép cạn (Copy bit-by-bit) biến con trỏ, tức là COPY CÁI ĐỊA CHỈ, chứ không cấp phát thêm 1 vùng nhớ mới.<br><br><b>2. Phân tích:</b> Nếu đối tượng A có `char* name = new char[10]`. Gán đối tượng B = A. Biến `B.name` sẽ cầm chung cái địa chỉ vùng nhớ của `A.name`. Khốn khổ thay, khi A bị hủy (Destructor), nó `delete[] name`. Lúc này `B.name` trở thành Con trỏ lơ lửng (Dangling). Khi B bị hủy, nó `delete[]` tiếp vùng nhớ đó -> LỖI DOUBLE FREE -> SẬP CHƯƠNG TRÌNH NGAY TỨC KHẮC.<br><b>Cách sửa:</b> Tự viết một Hàm Gán Deep Copy (Tự `new` và `strcpy`).",
+                citation: "Trang 75: '=> SAI khi có con trỏ thành viên. Cẩn thận với toán tử new và delete'."
+            },
+            {
+                category: "Đa Kế Thừa & Lớp Cơ Sở Ảo (Virtual Base)",
+                q: "Khi Nạp chồng toán tử Gán (Assignment Operator) cho Lớp Dẫn Xuất, thao tác BẮT BUỘC ĐẦU TIÊN mà lập trình viên chuyên nghiệp phải thực hiện để tái sử dụng mã là gì?",
+                options: [
+                    "Xóa hết bộ nhớ con trỏ.",
+                    "Gọi tường minh Toán tử gán của Lớp Cơ Sở (ví dụ: <code>Base::operator=(other);</code>) để sao chép phần dữ liệu lõi của cha, trước khi tự tay sao chép phần dữ liệu mở rộng của con.",
+                    "Sử dụng lệnh memcpy() cho toàn bộ class.",
+                    "Khởi tạo lại đối tượng từ đầu bằng hàm Constructor."
+                ],
+                correct: 1,
+                explanation: "<b>1. Triết lý Kế thừa (Tr. 75):</b> Kế thừa là kế thừa luôn cả trách nhiệm sao chép của Cha.<br><br><b>2. Phân tích:</b> Khi viết đè hàm `operator=()`, bạn đã chặn C++ tự sinh hàm gán tự động. Do đó phần biến của Cha sẽ không ai lo copy cả. Bạn PHẢI ép lớp Cha copy biến của Cha, bằng lệnh gọi trực tiếp `Base::operator=(other)`. Xong việc của Cha, bạn mới tiến hành Deep Copy cho con trỏ (Pointers) thuộc phần mở rộng của lớp Con. Nếu quên bước này, phần dữ liệu kế thừa sẽ bị rỗng/rác.",
+                citation: "Trang 75: Tái định nghĩa phép gán: 'Y& Y::operator=(const Y&)'. (Dẫn xuất từ việc nạp chồng toán tử trong kiến trúc)."
+            }
+        ];
+
+        let score = 0;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const container = document.getElementById('questions-list');
+            let currentCategory = "";
+            let questionCounter = 1;
+            const scoreDisplay = document.getElementById('score-display');
+
+            quizData.forEach((qObj) => {
+                if (qObj.category !== currentCategory) {
+                    currentCategory = qObj.category;
+                    const sectionDivider = document.createElement('div');
+                    sectionDivider.className = "mt-16 mb-8";
+                    sectionDivider.id = `section-${currentCategory}`;
+                    sectionDivider.innerHTML = `
+                        <div class="flex items-center gap-4">
+                            <h2 class="text-lg md:text-xl font-bold uppercase tracking-widest text-zinc-900 border-l-4 border-blue-700 pl-4 py-1">${currentCategory}</h2>
+                            <div class="h-px bg-zinc-200 flex-grow"></div>
+                        </div>
+                    `;
+                    container.appendChild(sectionDivider);
+                }
+
+                const qBlock = document.createElement('div');
+                qBlock.className = "mb-10 p-6 bg-zinc-50/50 rounded-xl border border-zinc-100 hover:border-zinc-300 transition-colors shadow-sm";
+
+                const qTitle = document.createElement('h3');
+                qTitle.className = "font-semibold text-zinc-900 mb-5 text-base md:text-lg leading-relaxed";
+                qTitle.innerHTML = `<span class="bg-blue-700 text-white px-2 py-1 rounded text-sm mr-2 shadow-sm">Q${questionCounter}</span> ` + qObj.q.replace(/<br>/g, '<br>');
+                qBlock.appendChild(qTitle);
+
+                const optionsGrid = document.createElement('div');
+                optionsGrid.className = "flex flex-col gap-3";
+                
+                const answerDiv = document.createElement('div');
+                answerDiv.className = "answer-block mt-6 clrs-proof rounded-lg";
+                answerDiv.innerHTML = `
+                    <h4 class="font-bold text-zinc-900 mb-3 flex items-center"><i class="fa-solid fa-lightbulb text-blue-700 mr-2"></i> Phân Tích Cơ Chế & Trích Dẫn:</h4>
+                    <div class="text-zinc-700 space-y-2 leading-relaxed">${qObj.explanation}</div>
+                    <p class="text-xs font-mono text-zinc-500 mt-4 pt-3 border-t border-zinc-200"><i class="fa-solid fa-book-bookmark mr-2"></i>Tham chiếu giáo trình: ${qObj.citation}</p>
+                `;
+
+                let isAnswered = false;
+
+                qObj.options.forEach((optText, optIndex) => {
+                    const btn = document.createElement('button');
+                    btn.className = "option-btn text-left px-5 py-4 rounded-lg border border-zinc-200 text-zinc-700 bg-white hover:bg-zinc-50 hover:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm md:text-base font-medium shadow-sm transition";
+                    
+                    const charLabel = String.fromCharCode(65 + optIndex);
+                    btn.innerHTML = `<span class="font-bold w-8 inline-block text-zinc-400">${charLabel}.</span> ${optText}`;
+
+                    btn.addEventListener('click', () => {
+                        if (isAnswered) return;
+                        isAnswered = true;
+
+                        const allBtns = optionsGrid.querySelectorAll('button');
+                        allBtns.forEach((b, i) => {
+                            b.classList.add('disabled');
+                            b.classList.remove('hover:bg-zinc-50', 'hover:border-blue-400');
+                            
+                            if (i === qObj.correct) {
+                                b.classList.add('show-correct');
+                                b.innerHTML += `<i class="fa-solid fa-check-circle float-right mt-1 text-emerald-600 text-lg"></i>`;
+                            } 
+                            else if (i === optIndex && i !== qObj.correct) {
+                                b.classList.add('selected-wrong');
+                                b.innerHTML += `<i class="fa-solid fa-times-circle float-right mt-1 text-red-600 text-lg"></i>`;
+                            }
+                        });
+
+                        if (optIndex === qObj.correct) {
+                            score++;
+                            scoreDisplay.innerText = `Điểm: ${score}/50`;
+                            scoreDisplay.classList.add('bg-emerald-100', 'text-emerald-800');
+                            setTimeout(() => {
+                                scoreDisplay.classList.remove('bg-emerald-100', 'text-emerald-800');
+                            }, 500);
+                        }
+
+                        answerDiv.classList.add('show');
+                    });
+
+                    optionsGrid.appendChild(btn);
+                });
+
+                qBlock.appendChild(optionsGrid);
+                qBlock.appendChild(answerDiv);
+                container.appendChild(qBlock);
+                
+                questionCounter++;
+            });
+            
+            // Trigger PrismJS highlighting for dynamically added code blocks
+            if (window.Prism) {
+                Prism.highlightAll();
+            }
+        });
+    </script>
+</body>
+</html>
