@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="vi" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ Thống Phục Thù: 50 Câu Trắc Nghiệm OOP Template</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        academic: {
+                            red: '#b91c1c', 
+                            light: '#fef2f2',
+                            border: '#fca5a5'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { background-color: #fafafa; color: #27272a; }
+        
+        .option-btn { 
+            transition: all 0.2s ease; 
+            position: relative; 
+            width: 100%;
+            text-align: left;
+        }
+        .option-btn.selected-correct { background-color: #f0fdf4 !important; border-color: #22c55e !important; color: #14532d !important; font-weight: 600; }
+        .option-btn.selected-wrong { background-color: #fef2f2 !important; border-color: #ef4444 !important; color: #7f1d1d !important; }
+        .option-btn.show-correct { background-color: #f0fdf4 !important; border-color: #22c55e !important; color: #14532d !important; }
+        .option-btn.disabled { cursor: not-allowed; opacity: 0.7; }
+
+        .answer-block {
+            display: none; margin-top: 1.5rem; padding: 1.5rem;
+            background-color: #fafafa; border-left: 4px solid #b91c1c; 
+            border-radius: 0 0.5rem 0.5rem 0;
+            color: #3f3f46; font-size: 0.95rem; line-height: 1.6;
+            border-top: 1px solid #e4e4e7; border-right: 1px solid #e4e4e7; border-bottom: 1px solid #e4e4e7;
+        }
+        .answer-block.show { display: block; animation: slideDown 0.3s ease-out; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+
+        .citation-badge {
+            font-size: 0.7rem; color: #b91c1c; background-color: #fef2f2;
+            padding: 0.1rem 0.4rem; border-radius: 4px; font-family: 'JetBrains Mono', monospace;
+            border: 1px solid #fca5a5; margin-left: 4px;
+        }
+
+        code { font-family: 'JetBrains Mono', monospace; background-color: #f4f4f5; color: #b91c1c; padding: 2px 6px; border-radius: 4px; font-size: 0.85em; border: 1px solid #e4e4e7; }
+        
+        .progress-bar { transition: width 0.3s ease; }
+    </style>
+</head>
+
+<body class="antialiased min-h-screen flex flex-col">
+    <!-- Header -->
+    <header class="bg-white border-b-2 border-academic-red sticky top-0 z-50 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 md:px-8 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-4">
+                <div class="w-10 h-10 bg-academic-light text-academic-red flex items-center justify-center font-bold font-mono rounded-lg border border-red-200 shadow-sm">
+                    <i class="fa-solid fa-fire"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold text-zinc-900">Chiến Dịch Phục Thù (Điểm 10)</h1>
+                    <p class="text-xs text-zinc-500 font-mono mt-0.5">50 Câu Trắc Nghiệm OOP Template C++11</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="bg-zinc-100 px-4 py-2 rounded-lg font-mono font-bold text-zinc-700 border border-zinc-200">
+                    Điểm: <span id="score-text" class="text-academic-red">0</span> / 50
+                </div>
+            </div>
+        </div>
+        <div class="w-full bg-zinc-200 h-1">
+            <div id="progress-bar" class="progress-bar h-1 bg-academic-red w-0"></div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-5xl w-full mx-auto px-4 py-8">
+        <div class="bg-white border border-zinc-200 p-6 md:p-10 rounded-xl shadow-sm">
+            <div id="quiz-container" class="space-y-10"></div>
+        </div>
+    </main>
+
+    <script>
+        const quizData = [
+            // ================= KHỞI ĐỘNG (1-10) =================
+            {
+                q: "Lập trình tổng quát (Generic Programming) là phương pháp lập trình độc lập với yếu tố nào sau đây?",
+                options: ["Chi tiết biểu diễn dữ liệu (Kiểu dữ liệu).", "Hệ điều hành máy tính.", "Trình biên dịch C++.", "Cấu trúc vòng lặp."],
+                correct: 0,
+                explanation: "Lập trình tổng quát cho phép ta viết code mà không cần quan tâm trước dữ liệu là int, float hay kiểu gì khác. Tư tưởng là định nghĩa logic độc lập với biểu diễn dữ liệu[cite: 139].",
+            },
+            {
+                q: "Khác biệt cơ bản giữa Đa hình (Polymorphism) thông thường và Lập trình tổng quát là gì?",
+                options: ["Lập trình tổng quát chạy chậm hơn đa hình.", "Đa hình dùng cây thừa kế (Inheritance), còn lập trình tổng quát mở rộng trừu tượng hóa ra ngoài địa hạt của cây thừa kế.", "Đa hình dùng template, lập trình tổng quát dùng class.", "Không có sự khác biệt."],
+                correct: 1,
+                explanation: "Đa hình phụ thuộc vào cấu trúc cha-con (cây thừa kế). Lập trình tổng quát vượt ra khỏi giới hạn đó, áp dụng cho bất kỳ kiểu dữ liệu nào không cần có họ hàng với nhau[cite: 143].",
+            },
+            {
+                q: "Trong ngôn ngữ C cổ điển, người ta thường dùng công cụ gì để mô phỏng lập trình tổng quát?",
+                options: ["Từ khóa virtual.", "Trình tiền xử lý (Preprocessor) với #define.", "Con trỏ hàm.", "Thư viện stdio.h."],
+                correct: 1,
+                explanation: "C không có template, nên các cụ ngày xưa dùng lệnh `#define TYPE int` để trình tiền xử lý thay thế văn bản trước khi dịch[cite: 144].",
+            },
+            {
+                q: "Hạn chế lớn nhất của việc dùng `#define TYPE int` trong C là gì?",
+                options: ["Chạy rất chậm.", "Chỉ cho phép đúng một định nghĩa (một kiểu dữ liệu) trong một chương trình, và rất dễ sinh lỗi.", "Làm cháy RAM.", "Không biên dịch được."],
+                correct: 1,
+                explanation: "Nếu đã #define TYPE là int, thì cả chương trình đó chỉ xài được int. Muốn dùng thêm float thì chịu chết. Hơn nữa nó chỉ thay văn bản mù quáng nên rất dễ lỗi[cite: 144].",
+            },
+            {
+                q: "Trong C++, từ khóa nào được dùng để báo cho trình biên dịch biết đoạn mã theo sau thao tác trên kiểu dữ liệu chưa xác định?",
+                options: ["generic", "auto", "template", "virtual"],
+                correct: 2,
+                explanation: "Từ khóa `template` mở đầu cho một khuôn mẫu, theo sau là cặp ngoặc nhọn `< >` chứa tên kiểu dữ liệu tùy ý[cite: 145].",
+            },
+            {
+                q: "Một lệnh `template <typename T>` có phạm vi hiệu lực (tác dụng) đến đâu?",
+                options: ["Toàn bộ file code.", "Chỉ đối với khai báo ngay sát phía sau nó.", "Bên trong hàm main.", "Chỉ trong vòng lặp."],
+                correct: 1,
+                explanation: "Cực kỳ lưu ý: Một lệnh template chỉ có hiệu quả đối với khối khai báo (hàm hoặc lớp) nằm ngay sát bên dưới nó[cite: 145].",
+            },
+            {
+                q: "Hệ thống C++ chia Khuôn mẫu (Template) thành 2 loại cơ bản nào?",
+                options: ["Khuôn mẫu hàm và Khuôn mẫu con trỏ.", "Khuôn mẫu lớp và Khuôn mẫu biến.", "Khuôn mẫu hàm (Function template) và Khuôn mẫu lớp (Class template).", "Khuôn mẫu tĩnh và Khuôn mẫu động."],
+                correct: 2,
+                explanation: "Hai loại cơ bản là Function template (tạo hàm tổng quát) và Class template (tạo lớp tổng quát)[cite: 146].",
+            },
+            {
+                q: "Với lệnh `template <typename T, typename U>`, điều gì là đúng?",
+                options: ["Chỉ được truyền vào số nguyên.", "Khai báo tạo tham chiếu đến hai kiểu dữ liệu T và U, hai kiểu này có thể giống hoặc khác nhau.", "T bắt buộc phải khác U.", "Lỗi cú pháp."],
+                correct: 1,
+                explanation: "Khai báo này cho phép hàm/lớp nhận vào 2 kiểu dữ liệu tùy ý (ví dụ một cái int, một cái float)[cite: 145, 153].",
+            },
+            {
+                q: "Về mặt bản chất, khi ta viết một Khuôn mẫu hàm (Function Template), ta đang tạo ra cái gì?",
+                options: ["Một hàm duy nhất chạy được mọi kiểu.", "Một tập vô hạn các hàm chồng nhau (Overloaded functions) được sinh ra tự động.", "Một biến toàn cục.", "Một macro tiền xử lý."],
+                correct: 1,
+                explanation: "Template không phải là 1 hàm thực sự. Nó là bản thiết kế để compiler tự động đẻ ra vô số các hàm chồng nhau (overload) tương ứng với từng kiểu dữ liệu truyền vào[cite: 148].",
+            },
+            {
+                q: "Thay thế kiểu `T` trong Template được thực hiện bởi ai?",
+                options: ["Hệ điều hành.", "Lập trình viên.", "Trình tiền xử lý (Preprocessor).", "Trình biên dịch (Compiler)."],
+                correct: 3,
+                explanation: "Việc thay thế T thành int hay float không phải là thay text đơn giản, mà được thực hiện cực kỳ thông minh bởi Trình biên dịch (Compiler) lúc compile code[cite: 148].",
+            },
+
+            // ================= TĂNG TỐC (11-20) CƠ CHẾ DƯỚI GẦM MÁY =================
+            {
+                q: "Khi ta gọi hàm `swap(x, y)` với x,y là kiểu int. Trình biên dịch sẽ làm gì ĐẦU TIÊN?",
+                options: ["Báo lỗi ngay lập tức.", "Tìm xem có một hàm swap() thông thường nào (không dùng template) lấy 2 tham số int hay không.", "Sinh ra mã máy ngay.", "Xóa biến x và y."],
+                correct: 1,
+                explanation: "Trình biên dịch luôn ưu tiên hàng thật (hàm viết tay thông thường) trước. Nếu không tìm thấy hàm thường, nó mới bắt đầu ngó tới bản vẽ template[cite: 149].",
+            },
+            {
+                q: "Nếu không tìm thấy hàm thường, mà thấy một Template khớp lệnh, trình biên dịch làm gì tiếp theo?",
+                options: ["Kiểm tra xem đã có một phiên bản swap() cho int được sinh ra từ template trước đó chưa.", "Báo cảnh báo.", "Bỏ qua lệnh gọi.", "Yêu cầu người dùng nhập kiểu dữ liệu."],
+                correct: 0,
+                explanation: "Để tránh tạo rác, nó sẽ tìm trong kho xem trước đó đã lỡ 'đẻ' ra cái hàm int nào từ template này chưa. Nếu có rồi thì dùng lại (liên kết/bind), chưa có thì mới sinh mới[cite: 150].",
+            },
+            {
+                q: "Việc Trình biên dịch sinh ra một cài đặt hàm thực sự từ bản vẽ Template diễn ra vào lúc nào?",
+                options: ["Lúc chương trình đang chạy (Runtime).", "Lúc biên dịch mã nguồn (Compile-time).", "Lúc cài đặt hệ điều hành.", "Lúc tải file lên mạng."],
+                correct: 1,
+                explanation: "Quá trình này gọi là Khởi tạo khuôn mẫu (Instantiation) và diễn ra hoàn toàn trong lúc biên dịch (Compile-time)[cite: 151].",
+            },
+            {
+                q: "Hệ quả về chi phí KHÔNG GIAN (Space Overhead) khi dùng Template là gì?",
+                options: ["Tiết kiệm ổ cứng tuyệt đối.", "Code bloat (Phình to file chạy) do mỗi kiểu dữ liệu gọi template sẽ sinh ra một bản sao hàm độc lập.", "RAM bị cháy.", "Giảm dung lượng file exe."],
+                correct: 1,
+                explanation: "Gọi template cho 10 kiểu khác nhau thì compiler đẻ ra 10 cái hàm khác nhau nhét vào file chạy, khiến dung lượng file phình to (Code bloat)[cite: 151].",
+            },
+            {
+                q: "Tốc độ thực thi (chạy) của một hàm được sinh ra từ Template so với hàm viết tay thủ công là như thế nào?",
+                options: ["Chạy chậm hơn rất nhiều do phải suy luận kiểu.", "Tốc độ chạy không khác biệt (bằng nhau) so với tự viết tay.", "Chạy nhanh gấp đôi.", "Chạy lúc được lúc không."],
+                correct: 1,
+                explanation: "Vì compiler đã 'đẻ' sẵn hàm tường minh ra từ lúc dịch rồi, nên lúc chạy (Runtime) máy tính cứ thế mà phi, không mất 1 mili-giây nào để suy nghĩ. Tốc độ ngang ngửa viết tay (Zero-cost)[cite: 151].",
+            },
+            {
+                q: "Cú pháp để gọi ÉP BUỘC tường minh hàm `swap` sinh ra phiên bản `float` là gì?",
+                options: ["swap(float a, float b);", "swap<float>(a, b);", "swap.float(a, b);", "<float>swap(a, b);"],
+                correct: 1,
+                explanation: "Mặc dù C++ có thể tự suy luận, nhưng ta có thể ép nó gọi đúng phiên bản bằng cặp `< >` sau tên hàm: `swap<float>(a, b)`[cite: 151].",
+            },
+            {
+                q: "Khuôn mẫu lớp (Class template) có thể được áp dụng cho các từ khóa cấu trúc nào trong C++?",
+                options: ["Chỉ class.", "class và struct.", "class, struct và union.", "Chỉ union."],
+                correct: 2,
+                explanation: "Cơ chế này hoàn toàn dùng được cho cả class, struct và union[cite: 152].",
+            },
+            {
+                q: "Khác biệt cực kỳ cốt lõi khi khởi tạo Class Template so với Function Template là gì?",
+                options: ["Class template chạy chậm hơn.", "Đối với Class Template, kiểu dữ liệu bắt buộc phải được cung cấp tường minh trong cặp < >.", "Class template không cần từ khóa template.", "Class template tự suy luận được kiểu."],
+                correct: 1,
+                explanation: "Hàm thì tự đoán kiểu (truyền số 1 nó tự biết là int). Nhưng Class thì không! Ngài BẮT BUỘC phải gõ `<int>` khi tạo object từ Class template[cite: 154].",
+            },
+            {
+                q: "Tại sao Class Template bắt buộc phải khai báo kiểu tường minh (VD: `Pair<int, float> q;`)?",
+                options: ["Để làm màu.", "Vì việc khởi tạo đối tượng cần cấp phát bộ nhớ. Nếu không biết kiểu, trình biên dịch không thể biết cần bao nhiêu RAM.", "Vì C++ quy định thế không có lý do.", "Để chống virus."],
+                correct: 1,
+                explanation: "Class là một cái thùng. Compiler phải biết ngài định nhét int (4 bytes) hay double (8 bytes) vào để nó còn đo ni đóng giày cắt bộ nhớ RAM cho chuẩn[cite: 154].",
+            },
+            {
+                q: "Câu lệnh khai báo `Pair p;` đối với một Class Template `Pair` sẽ dẫn đến kết quả gì?",
+                options: ["Tạo thành công đối tượng.", "Lỗi biên dịch (Not permitted) vì thiếu kiểu dữ liệu trong cặp < >.", "Tạo đối tượng kiểu int mặc định.", "Chạy bình thường."],
+                correct: 1,
+                explanation: "Lỗi ngay lập tức. Khởi tạo đối tượng từ Class Template không bao giờ được thiếu cặp ngoặc nhọn `< >` chỉ định kiểu[cite: 154].",
+            },
+
+            // ================= VƯỢT CHƯỚNG NGẠI VẬT (21-30) CLASS TEMPLATE =================
+            {
+                q: "Nếu ta khai báo `Pair<int, float> r;`, trong bộ nhớ máy tính có tồn tại một class tên là `Pair` không?",
+                options: ["Có, class Pair tồn tại chung.", "Không có class Pair, chỉ có các class độc lập có tên là Pair<int, float> được sinh ra.", "Có class Pair nhưng bị ẩn.", "Lỗi hệ thống."],
+                correct: 1,
+                explanation: "Template chỉ là bản thiết kế. Trong file chạy cuối cùng không hề có class nào tên là `Pair`, mà chỉ có `Pair<int, float>` được nặn ra từ bản thiết kế đó[cite: 155].",
+            },
+            {
+                q: "Đối với khuôn mẫu lớp, trình biên dịch sẽ sinh ra điều gì?",
+                options: ["Chỉ sinh ra khai báo class.", "Chỉ sinh ra biến.", "Sinh ra cả cấu trúc class và các định nghĩa phương thức cần thiết khớp với kiểu.", "Không sinh gì cả."],
+                correct: 2,
+                explanation: "Nó đẻ ra toàn bộ: từ cái vỏ class đến ruột gan phèo phổi (các hàm/phương thức) bên trong, đổi hết T thành kiểu tương ứng[cite: 155].",
+            },
+            {
+                q: "Sau khi khởi tạo `Pair<int, int> q;`, ta truy cập thành viên như thế nào?",
+                options: ["q<int>.first = 5;", "q.first = 5; (Tương tác như class thông thường)", "q->first = 5;", "Pair::first = 5;"],
+                correct: 1,
+                explanation: "Một khi cái khuôn đã đúc ra thành phẩm, ngài cứ lấy thành phẩm đó xài như một biến/object bình thường bằng dấu chấm `.`[cite: 156].",
+            },
+            {
+                q: "Quy trình chuẩn mực nhất (Best practice) khi thiết kế một Class Template là gì?",
+                options: ["Nhắm mắt gõ chữ template ngay từ đầu.", "Tạo một class thông thường (VD: cho int) chạy test ngon lành trước, sau đó mới chuyển thành template.", "Copy code trên mạng.", "Không cần test."],
+                correct: 1,
+                explanation: "Kinh nghiệm xương máu: Hãy viết class chạy cứng với int trước. Chạy được, hết lỗi logic thì mới đắp chữ `template <typename T>` vào để tổng quát hóa[cite: 157].",
+            },
+            {
+                q: "Khi đưa một phương thức (hàm) của Class Template ra ĐỊNH NGHĨA BÊN NGOÀI khối class, điều gì là BẮT BUỘC ở dòng trên cùng?",
+                options: ["Từ khóa static.", "Một lệnh `template <typename T>` đặt trước mỗi phương thức.", "Từ khóa virtual.", "Không cần gì cả."],
+                correct: 1,
+                explanation: "Mỗi một phương thức viết ngoài class đều phải được 'cộp mác' bằng lệnh `template <typename T>` ngay trên đầu nó[cite: 161].",
+            },
+            {
+                q: "Cú pháp đúng để định nghĩa phương thức `push` bên ngoài cho `Stack<T>` là gì?",
+                options: ["void Stack::push(T i)", "template <typename T> void Stack::push(T i)", "template <typename T> void Stack<T>::push(const T& i)", "void Stack<T>::push(T i)"],
+                correct: 2,
+                explanation: "Bắt buộc phải có `template` phía trước, và đặc biệt TÊN LỚP ở toán tử phạm vi phải có `<T>` (nghĩa là `Stack<T>::` chứ không phải `Stack::`)[cite: 161].",
+            },
+            {
+                q: "Tại sao phải dùng `Stack<T>::` thay vì `Stack::` khi định nghĩa hàm bên ngoài?",
+                options: ["Cho đẹp code.", "Vì ta đang định nghĩa hàm cho một lớp cụ thể tên là Stack<T>, chứ không tồn tại lớp nào tên là Stack vô danh cả.", "Vì lỗi trình biên dịch.", "Để dễ tìm kiếm."],
+                correct: 1,
+                explanation: "Vì bản thân `Stack` chưa phải là class, nó chỉ là bản vẽ. Cái class thực sự sẽ chứa kiểu T, nên phải gọi đích danh họ tên nó là `Stack<T>`[cite: 161].",
+            },
+            {
+                q: "Nếu ta khai báo `Stack<int> s;` và `Stack<char> t;`, điều kiện để `s.push(x)` và `t.push(c)` hoạt động đúng là gì?",
+                options: ["Hệ điều hành phải chạy 64-bit.", "Trình biên dịch tự động sinh ra hai phiên bản mã nguồn class Stack riêng biệt cho int và char.", "Phải tự viết lại hàm push.", "Không thể hoạt động."],
+                correct: 1,
+                explanation: "Sức mạnh của template: nó tự giác đẻ ra 2 class khác nhau trong bóng tối, một cái chuyên nhét int, một cái chuyên nhét char[cite: 163, 172].",
+            },
+            {
+                q: "Tham số truyền vào cho lệnh `template < ... >` có thể là những loại nào?",
+                options: ["Chỉ kiểu dữ liệu (typename/class).", "Kiểu dữ liệu (typename), Kiểu thực sự (Non-type), và Một template khác.", "Chỉ kiểu int.", "Chỉ con trỏ."],
+                correct: 1,
+                explanation: "Có 3 loại tham số nhét được vào < >: 1. Typename (như int, float), 2. Non-type (con số cụ thể), 3. Một cái Template khác[cite: 164].",
+            },
+            {
+                q: "Tham số Phi kiểu (Non-type parameter) thường được dùng để làm gì trong Class Template?",
+                options: ["Đặt tên biến.", "Quy định một con số hằng cứng (Ví dụ: kích thước tối đa của mảng) ngay từ lúc biên dịch.", "Làm vòng lặp.", "Xóa bộ nhớ."],
+                correct: 1,
+                explanation: "Ví dụ `template <typename T, int I>`, con số `I` này thường dùng để khai báo kích thước cứng của mảng tĩnh bên trong class[cite: 165].",
+            },
+
+            // ================= VỀ ĐÍCH (31-40) THAM SỐ PHI KIỂU =================
+            {
+                q: "Cho khai báo: `template <typename T, int I> class Stack;`. `I` đóng vai trò gì?",
+                options: ["Kiểu dữ liệu tên I.", "Một tham số phi kiểu (kiểu thực sự) nhận một giá trị số nguyên nguyên thủy do người dùng truyền vào.", "Lỗi cú pháp.", "Biến chạy runtime."],
+                correct: 1,
+                explanation: "Đây là Non-type parameter. Ngài truyền `<int, 5>` thì `I` sẽ dính chết với số 5 trong suốt bản vẽ đó[cite: 165].",
+            },
+            {
+                q: "Với template có tham số phi kiểu, khi định nghĩa hàm bên ngoài, tên lớp phải viết thế nào?",
+                options: ["Stack<T>::", "Stack<T, I>::", "Stack::", "Stack<I>::"],
+                correct: 1,
+                explanation: "Tham số template có bao nhiêu đứa thì phải lôi hết vào trong cặp ngoặc nhọn ở toán tử phạm vi, tức là `Stack<T, I>::`[cite: 167].",
+            },
+            {
+                q: "Hai đối tượng `Stack<int, 5> s;` và `Stack<int, 10> t;` có quan hệ gì với nhau trong bộ nhớ?",
+                options: ["Cùng chung một lớp.", "Là thể hiện của 2 LỚP KHÁC NHAU HOÀN TOÀN do tham số kích thước khác nhau.", "Kế thừa lẫn nhau.", "Gây lỗi xung đột."],
+                correct: 1,
+                explanation: "Chỉ cần khác con số tham số thôi là compiler đã coi chúng như người dưng nước lã, sinh ra 2 class tách biệt hoàn toàn[cite: 168].",
+            },
+            {
+                q: "Quy tắc/Ràng buộc đối với Tham số Phi kiểu (Non-type) là gì?",
+                options: ["Chỉ hỗ trợ kiểu số nguyên, con trỏ, tham chiếu. KHÔNG hỗ trợ kiểu số thực (float/double).", "Hỗ trợ mọi kiểu.", "Chỉ hỗ trợ float.", "Chỉ hỗ trợ string."],
+                correct: 0,
+                explanation: "Tham số phi kiểu cực kỳ kén chọn, nó chỉ chơi với số nguyên (int, char, size_t) hoặc địa chỉ tĩnh. Cấm tuyệt đối float hay biến chạy lung tung[cite: 169].",
+            },
+            {
+                q: "Hành động nào là BỊ CẤM đối với tham số phi kiểu `int I` bên trong mã nguồn class?",
+                options: ["Đọc giá trị của I.", "Khai báo mảng có kích thước I.", "Gán giá trị mới cho I (VD: `I = 10;`) hoặc lấy địa chỉ của I.", "Dùng I làm hằng số."],
+                correct: 2,
+                explanation: "Tham số phi kiểu là HẰNG SỐ LÚC BIÊN DỊCH (Compile-time constant). Đã là hằng số sinh ra từ bản vẽ thì cấm tuyệt đối việc gán lại giá trị hay bới móc địa chỉ của nó[cite: 169].",
+            },
+            {
+                q: "Tham số template thứ 3: 'Template sử dụng Template' nghĩa là gì?",
+                options: ["Viết 2 chữ template liền nhau.", "Một tham số của lệnh template lại chính là một template khác chưa xác định.", "Template kế thừa.", "Không tồn tại."],
+                correct: 1,
+                explanation: "Đây là tuyệt kỹ lồng template. Tham số truyền vào không phải là `int`, cũng không phải kiểu `T`, mà là một cái Khuôn mẫu khác mang theo tham số của chính nó[cite: 170].",
+            },
+            {
+                q: "Mục đích sâu xa của việc dùng Template làm tham số (ví dụ truyền Container) là gì?",
+                options: ["Làm rối code.", "Cho phép cấu trúc cha (như Map) có thể chỉ định tự do cấu trúc con (như Stack hay Queue) để lưu trữ nội bộ mà không bị trói buộc.", "Tăng tốc CPU.", "Tiết kiệm RAM."],
+                correct: 1,
+                explanation: "Ngài tạo cuốn từ điển (Map). Ngài muốn cho phép người dùng tự do chọn cái giỏ đựng từ điển là Stack hay Queue tùy ý. Đó là lúc nhét nguyên cái Template Giỏ vào làm tham số[cite: 170].",
+            },
+            {
+                q: "Khai báo nào sau đây đúng cho kỹ thuật lồng template (Map chứa Container)?",
+                options: ["template <typename K, Container>", "template <typename K, typename V, template <typename T> class Container>", "template <class Container>", "template <K, V, Container>"],
+                correct: 1,
+                explanation: "Cú pháp rườm rà nhưng cực mạnh: `template <typename T> class Container` ám chỉ tham số thứ 3 phải là một cái khuôn mẫu có 1 tham số kiểu T bên trong[cite: 171].",
+            },
+            {
+                q: "Khi ta khởi tạo `Map<string, int, Stack> wordcount;`, Trình biên dịch sẽ làm ảo thuật gì?",
+                options: ["Chỉ sinh lớp Map.", "Sử dụng khuôn mẫu Stack để TỰ ĐỘNG sinh ra hai lớp Stack<string> và Stack<int> lưu vào bên trong Map.", "Lỗi biên dịch.", "Hủy đối tượng Stack."],
+                correct: 1,
+                explanation: "Nó lấy bản vẽ Stack ngài nạp vào, dập ra 1 cái giỏ Stack đựng chữ (cho Khóa) và 1 cái giỏ Stack đựng số (cho Giá trị). Tự động 100%[cite: 171, 172].",
+            },
+            {
+                q: "Nếu Container trong Map không được khai báo là một Template, điều gì sẽ xảy ra?",
+                options: ["Vẫn chạy bình thường.", "Không thể dùng Container đó để đẻ ra các cấu trúc chứa kiểu dữ liệu khác nhau (như chứa string riêng, int riêng) được.", "Code chạy nhanh hơn.", "Tiết kiệm bộ nhớ."],
+                correct: 1,
+                explanation: "Nếu nó chỉ là class thường, ngài chỉ dùng nó đựng được đúng 1 thứ. Vì là Template, nó mới 'thiên biến vạn hóa' đẻ ra đủ thứ giỏ cho Map xài[cite: 172].",
+            },
+
+            // ================= CÂU HỎI TRỌNG TÂM - TÓM LƯỢC (41-50) =================
+            {
+                q: "Trong C++11, lỗi 'Code Bloat' khi sử dụng template là do đâu?",
+                options: ["Do viết comment quá nhiều.", "Do trình biên dịch sinh ra một bản sao mã nguồn MỚI hoàn toàn cho MỖI KIỂU dữ liệu gọi template.", "Do lỗi RAM.", "Do không xóa con trỏ."],
+                correct: 1,
+                explanation: "Sự thật mất lòng: Template đổi tốc độ lấy không gian. 10 kiểu = 10 hàm phình to file thực thi[cite: 151].",
+            },
+            {
+                q: "Khuôn mẫu hàm `swap` có thể hoán đổi hai đối tượng của một Class tự định nghĩa (VD: class HocSinh) được không?",
+                options: ["Tuyệt đối không.", "Được, với điều kiện Class HocSinh đó phải hỗ trợ toán tử gán (=).", "Chỉ được nếu Class đó có hàm main.", "Chỉ dùng cho int."],
+                correct: 1,
+                explanation: "Logic hàm swap là `temp = a; a = b;`. Trình biên dịch sẽ dập template cho Class HocSinh. Nhìn vào logic, nếu HocSinh gán `=` được cho nhau thì code chạy mượt mà[cite: 147].",
+            },
+            {
+                q: "Việc khai báo `template <class T>` và `template <typename T>` có gì khác biệt trong ngữ cảnh thông thường?",
+                options: ["class dùng cho Lớp, typename dùng cho Hàm.", "Hoàn toàn tương đương nhau.", "typename chạy nhanh hơn.", "Lỗi cú pháp."],
+                correct: 1,
+                explanation: "Về mặt lịch sử, `class` có trước, `typename` có sau cho rõ nghĩa. Trong hầu hết 99% trường hợp khai báo template căn bản, chúng là anh em sinh đôi[cite: 145].",
+            },
+            {
+                q: "Một Template có thể có bao nhiêu tham số kiểu (typename)?",
+                options: ["Chỉ 1.", "Tối đa 2.", "Tùy ý (Nhiều tham số cách nhau bởi dấu phẩy).", "Không được có tham số."],
+                correct: 2,
+                explanation: "Ngài có thể thiết kế `template <typename T, typename U, typename V...>`, thích bao nhiêu nhét bấy nhiêu[cite: 145].",
+            },
+            {
+                q: "Trình biên dịch (Compiler) báo lỗi Template ở giai đoạn nào?",
+                options: ["Runtime (Lúc chạy file exe).", "Compile-time (Lúc biên dịch mã nguồn).", "Không bao giờ báo lỗi.", "Lúc gõ code."],
+                correct: 1,
+                explanation: "Vì Compiler đứng ra làm thầu xây dựng sinh code, nên mọi lỗi bất đồng kiểu hay cú pháp đều bị nó đập chết ngay lúc compile, cực kỳ an toàn[cite: 150].",
+            },
+            {
+                q: "Từ khóa `throw (logic_error)` trong giáo trình (sau khai báo hàm push) mang ý nghĩa gì?",
+                options: ["Hàm này bắt buộc phải lỗi.", "Cảnh báo hàm này có khả năng ném ra ngoại lệ loại logic_error (VD: Lỗi Stack Full).", "Lệnh kết thúc chương trình.", "Xóa dữ liệu."],
+                correct: 1,
+                explanation: "Đây là cơ chế Exception. Báo cho thiên hạ biết: 'Dùng hàm push cẩn thận, nhét đầy quá ta quăng lỗi vào mặt đấy'[cite: 158].",
+            },
+            {
+                q: "Có thể tạo mảng động (dynamic array) bên trong Class Template không?",
+                options: ["Không, chỉ dùng được mảng tĩnh.", "Có, hoàn toàn dùng con trỏ `T* data` và cấp phát `new T[size]` bình thường.", "Chỉ tạo được bằng hàm malloc.", "Lỗi RAM."],
+                correct: 1,
+                explanation: "Template chỉ thay thế chữ T. Mọi logic cấp phát động `new/delete` của OOP vẫn tuân thủ bình thường không suy suyển[cite: 142].",
+            },
+            {
+                q: "Sự trừu tượng hóa (Abstraction) của Đa hình và Template đi theo 2 chiều hướng nào?",
+                options: ["Đa hình: Chiều dọc (Kế thừa cha-con). Template: Chiều ngang (Áp dụng ngang hàng cho mọi cấu trúc không liên quan).", "Giống hệt nhau.", "Đa hình chiều ngang, Template chiều dọc.", "Không có chiều."],
+                correct: 0,
+                explanation: "Một tổng kết triết học: Inheritance tạo phả hệ dọc. Template rải thảm ngang[cite: 140, 143].",
+            },
+            {
+                q: "Khi ta gọi hàm template mà C++ không thể tự suy luận được kiểu (Ví dụ 2 tham số khác kiểu truyền vào hàm yêu cầu cùng kiểu T), ta phải làm gì?",
+                options: ["Viết lại hàm.", "Ép kiểu thủ công tham số hoặc truyền chỉ định tường minh `<Kiểu>` vào tên hàm.", "Xóa C++ tải lại.", "Bỏ qua."],
+                correct: 1,
+                explanation: "Khi Compiler bối rối, ngài hãy ra lệnh cứng cho nó bằng dấu `< >` ví dụ `swap<int>(a, (int)b)`[cite: 151].",
+            },
+            {
+                q: "Đích đến cuối cùng của Lập trình Tổng quát là gì?",
+                options: ["Viết code khó hiểu nhất có thể.", "Đạt tới Zero-cost abstraction (Trừu tượng hóa không chi phí runtime) và Tái sử dụng mã nguồn tối đa (DRY).", "Hack RAM hệ thống.", "Cho đẹp."],
+                correct: 1,
+                explanation: "Đó là chân lý của STL (Standard Template Library) trong C++: Viết code 1 lần, dùng cho vạn vật, mà chạy vẫn nhanh như chớp[cite: 139, 151].",
+            }
+        ];
+
+        let score = 0;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const container = document.getElementById('quiz-container');
+            const scoreText = document.getElementById('score-text');
+            const progressBar = document.getElementById('progress-bar');
+            let answeredCount = 0;
+
+            quizData.forEach((qObj, index) => {
+                const qBlock = document.createElement('div');
+                qBlock.className = "pb-8 border-b border-zinc-100 last:border-0";
+
+                const qTitle = document.createElement('h3');
+                qTitle.className = "font-semibold text-zinc-900 mb-4 text-base md:text-lg leading-relaxed flex";
+                qTitle.innerHTML = `<span class="bg-academic-red text-white px-2.5 py-1 rounded-md text-sm mr-3 shadow-sm h-fit mt-0.5">Q${index + 1}</span> <span>${qObj.q}</span>`;
+                qBlock.appendChild(qTitle);
+
+                const optionsGrid = document.createElement('div');
+                optionsGrid.className = "flex flex-col gap-2.5";
+                
+                const answerDiv = document.createElement('div');
+                answerDiv.className = "answer-block mt-4";
+                answerDiv.innerHTML = `
+                    <h4 class="font-bold text-academic-red mb-2 text-sm uppercase tracking-wide flex items-center"><i class="fa-solid fa-microchip mr-2"></i> Trinh sát báo cáo (Giải thích):</h4>
+                    <p class="text-zinc-700">${qObj.explanation}</p>
+                `;
+
+                let isAnswered = false;
+
+                qObj.options.forEach((optText, optIndex) => {
+                    const btn = document.createElement('button');
+                    btn.className = "option-btn px-4 py-3 rounded-lg border border-zinc-200 text-zinc-700 bg-white hover:bg-zinc-50 hover:border-red-300 focus:outline-none text-sm md:text-base";
+                    
+                    const charLabel = String.fromCharCode(65 + optIndex);
+                    btn.innerHTML = `<span class="font-bold w-6 inline-block text-zinc-400">${charLabel}.</span> ${optText}`;
+
+                    btn.addEventListener('click', () => {
+                        if (isAnswered) return;
+                        isAnswered = true;
+                        answeredCount++;
+
+                        const allBtns = optionsGrid.querySelectorAll('button');
+                        allBtns.forEach((b, i) => {
+                            b.classList.add('disabled');
+                            b.classList.remove('hover:bg-zinc-50', 'hover:border-red-300');
+                            
+                            if (i === qObj.correct) {
+                                b.classList.add('show-correct');
+                                b.innerHTML += `<i class="fa-solid fa-check-circle float-right mt-0.5 text-emerald-600 text-lg"></i>`;
+                            } 
+                            else if (i === optIndex && i !== qObj.correct) {
+                                b.classList.add('selected-wrong');
+                                b.innerHTML += `<i class="fa-solid fa-times-circle float-right mt-0.5 text-red-600 text-lg"></i>`;
+                            }
+                        });
+
+                        if (optIndex === qObj.correct) {
+                            score++;
+                            scoreText.innerText = score;
+                            scoreText.classList.add('scale-150', 'inline-block', 'text-emerald-600');
+                            setTimeout(() => scoreText.classList.remove('scale-150', 'text-emerald-600'), 300);
+                        }
+
+                        // Cập nhật thanh tiến trình
+                        progressBar.style.width = `${(answeredCount / quizData.length) * 100}%`;
+
+                        answerDiv.classList.add('show');
+                    });
+
+                    optionsGrid.appendChild(btn);
+                });
+
+                qBlock.appendChild(optionsGrid);
+                qBlock.appendChild(answerDiv);
+                container.appendChild(qBlock);
+            });
+        });
+    </script>
+</body>
+</html>

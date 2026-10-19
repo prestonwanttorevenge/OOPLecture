@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="vi" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C++11 Masterclass: Templates</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        zinc: {
+                            50: '#fafafa', 100: '#f4f4f5', 200: '#e4e4e7',
+                            300: '#d4d4d8', 400: '#a1a1aa', 500: '#71717a',
+                            600: '#52525b', 700: '#3f3f46', 800: '#27272a',
+                            900: '#18181b',
+                        },
+                        brand: {
+                            red: '#dc2626',
+                            dark: '#991b1b',
+                            light: '#fef2f2'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { 
+            background-color: #fafafa; 
+            color: #27272a; 
+            line-height: 1.7;
+        }
+        
+        .theory-card {
+            background-color: #ffffff;
+            border: 1px solid #e4e4e7;
+            border-radius: 0.5rem;
+            padding: 2.5rem;
+            margin-bottom: 3rem;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            position: relative;
+        }
+
+        .theory-card h3 {
+            color: #18181b;
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e4e4e7;
+        }
+
+        /* Tùy chỉnh thẻ cite cho gọn gàng, đẹp mắt */
+        .citation-badge {
+            font-size: 0.65rem;
+            color: #dc2626;
+            background-color: #fef2f2;
+            padding: 0.15rem 0.4rem;
+            border-radius: 999px;
+            font-family: 'JetBrains Mono', monospace;
+            display: inline-block;
+            vertical-align: super;
+            border: 1px solid #fca5a5;
+            margin-left: 2px;
+            opacity: 0.8;
+            transition: opacity 0.2s;
+            cursor: help;
+        }
+        .citation-badge:hover { opacity: 1; }
+
+        .under-hood {
+            background-color: #fafafa;
+            border: 1px solid #e4e4e7;
+            border-left: 4px solid #dc2626;
+            padding: 1.5rem;
+            border-radius: 0 0.5rem 0.5rem 0;
+            margin: 2rem 0;
+        }
+
+        .under-hood h4 {
+            color: #991b1b;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+        }
+
+        pre[class*="language-"] {
+            border-radius: 0.5rem;
+            margin: 1.5rem 0;
+            border: 1px solid #3f3f46;
+            font-size: 0.9rem;
+        }
+
+        .list-styled {
+            list-style-type: none;
+            padding-left: 1.5rem;
+        }
+
+        .list-styled li {
+            position: relative;
+            margin-bottom: 0.75rem;
+        }
+
+        .list-styled li::before {
+            content: "■";
+            color: #dc2626;
+            position: absolute;
+            left: -1.5rem;
+            top: 0.1rem;
+            font-size: 0.8rem;
+        }
+
+        .sidebar-nav a {
+            display: block;
+            padding: 0.5rem 0;
+            color: #52525b;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+            border-left: 2px solid transparent;
+            padding-left: 1rem;
+            margin-left: -2px;
+        }
+
+        .sidebar-nav a:hover {
+            color: #dc2626;
+            border-left-color: #dc2626;
+            background-color: #fef2f2;
+        }
+    </style>
+</head>
+
+<body class="antialiased font-sans">
+
+    <!-- Header Nền Trắng, Logo Đỏ theo ý bệ hạ -->
+    <header class="bg-white border-b-2 border-brand-red sticky top-0 z-50 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 md:px-8 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-4">
+                <div class="w-10 h-10 bg-brand-light text-brand-red flex items-center justify-center font-bold font-mono rounded-lg border border-red-200">
+                    <i class="fa-solid fa-code"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight text-zinc-900 leading-none">Giáo Trình C++11 Masterclass</h1>
+                    <p class="text-xs text-zinc-500 mt-1 font-mono">Chuyên đề: Template (Khuôn Mẫu) & Lập trình tổng quát</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-3 bg-zinc-50 border border-zinc-200 text-zinc-600 px-4 py-2 rounded-lg text-sm font-medium">
+                <i class="fa-solid fa-file-pdf text-brand-red"></i> Nguồn: OOP7-Template.pdf
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 md:px-8 py-10 flex flex-col lg:flex-row gap-10">
+        
+        <!-- SIDEBAR -->
+        <aside class="w-full lg:w-72 flex-shrink-0">
+            <div class="sticky top-28 bg-white p-6 border border-zinc-200 rounded-xl shadow-sm">
+                <h2 class="text-xs uppercase tracking-widest text-zinc-500 font-bold mb-5 flex items-center">
+                    <i class="fa-solid fa-bars-staggered mr-2 text-brand-red"></i> Mục Lục Nội Dung
+                </h2>
+                <nav class="sidebar-nav border-l-2 border-zinc-100 flex flex-col gap-1">
+                    <a href="#sec-tong-quat">1. Lập trình tổng quát là gì?</a>
+                    <a href="#sec-c-macro">2. Giải pháp cũ của C (Macro)</a>
+                    <a href="#sec-cpp-template">3. C++ Template là gì?</a>
+                    <a href="#sec-func-template">4. Khuôn mẫu hàm (Function)</a>
+                    <a href="#sec-class-template">5. Khuôn mẫu lớp (Class)</a>
+                    <a href="#sec-non-type-param">6. Tham số phi kiểu (Non-type)</a>
+                    <a href="#sec-template-template">7. Template lồng Template</a>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <div class="flex-grow max-w-4xl space-y-12">
+
+            <!-- PHẦN 1 -->
+            <section id="sec-tong-quat">
+                <div class="flex items-center gap-4 mb-6">
+                    <h2 class="text-2xl font-bold uppercase tracking-wide text-zinc-900 border-l-4 border-brand-red pl-4 py-1">
+                        1. Lập trình tổng quát (Generic Programming)
+                    </h2>
+                </div>
+                
+                <div class="theory-card">
+                    <h3>Khái niệm cơ bản</h3>
+                    <p class="mb-4">Ngài cứ hiểu đơn giản, lập trình tổng quát là cách viết code mà <b>không cần quan tâm trước dữ liệu là kiểu int, float hay string</b> <span class="citation-badge" title="Source 139">[cite: 139]</span>. Tư tưởng ở đây là ta xây dựng sẵn một "công thức logic" chung nhất, lúc nào xài thì mới nhét kiểu dữ liệu cụ thể vào <span class="citation-badge" title="Source 139">[cite: 139]</span>.</p>
+                    
+                    <p class="mb-4">Lấy ví dụ hàm hoán đổi (Swap) hai biến số nguyên <span class="citation-badge" title="Source 141">[cite: 141]</span>:</p>
+<pre><code class="language-cpp">void swap(int a, int b) {
+    int temp = a; a = b; b = temp;
+}</code></pre>
+                    <p class="mb-4">Nếu ngài muốn hoán đổi hai số thập phân <code>float</code>, ngài lại phải hì hục gõ lại y chang đoạn code trên, chỉ đổi mỗi chữ <code>int</code> thành <code>float</code> <span class="citation-badge" title="Source 141">[cite: 141]</span>. Điều này cực kỳ mất thời gian và dư thừa code <span class="citation-badge" title="Source 141">[cite: 141]</span>.</p>
+
+                    <h3>Ví dụ cấu trúc Ngăn xếp (Stack)</h3>
+                    <p class="mb-4">Nếu ta tạo một cái giỏ (Stack) chuyên để đựng số nguyên <code>int</code> <span class="citation-badge" title="Source 142">[cite: 142]</span>. Nhỡ hôm sau ta cần cái giỏ đựng chữ <code>char</code> thì sao? Lẽ nào lại phải copy code ra tạo thêm cái <code>CharStack</code>, <code>FloatStack</code>? <span class="citation-badge" title="Source 142">[cite: 142]</span>. Cách viết cứng ngắc kiểu dữ liệu thế này rất bất lợi <span class="citation-badge" title="Source 143">[cite: 143]</span>. Đó là lý do ta cần lập trình tổng quát <span class="citation-badge" title="Source 143">[cite: 143]</span>.</p>
+                </div>
+            </section>
+
+            <!-- PHẦN 2 -->
+            <section id="sec-c-macro">
+                <div class="flex items-center gap-4 mb-6">
+                    <h2 class="text-2xl font-bold uppercase tracking-wide text-zinc-900 border-l-4 border-brand-red pl-4 py-1">
+                        2. Cách người xưa làm trong ngôn ngữ C
+                    </h2>
+                </div>
+
+                <div class="theory-card">
+                    <p class="mb-4">Thời chưa có C++, các cụ lập trình viên dùng mẹo <b>Trình tiền xử lý (Preprocessor)</b> để thay thế chữ <span class="citation-badge" title="Source 144">[cite: 144]</span>. Dùng <code>#define</code> để dán nhãn kiểu dữ liệu <span class="citation-badge" title="Source 144">[cite: 144]</span>:</p>
+
+<pre><code class="language-cpp">#define TYPE int
+
+void swap (TYPE & a, TYPE & b) {
+    TYPE temp = a; a = b; b = temp;
+}</code></pre>
+                    <p class="mb-4">Trước khi dịch code ra mã máy, máy tính sẽ đi dò tìm toàn bộ chữ "TYPE" và copy-paste chữ "int" đè lên đó <span class="citation-badge" title="Source 144">[cite: 144]</span>.</p>
+                    
+                    <div class="under-hood mt-4">
+                        <h4><i class="fa-solid fa-triangle-exclamation"></i> Nhược điểm chí mạng:</h4>
+                        <ul class="list-styled text-sm text-zinc-800">
+                            <li>Máy tính nó chỉ <b>thay thế văn bản một cách mù quáng</b> chứ không kiểm tra xem logic code có đúng không. Cực kỳ dễ sinh lỗi <span class="citation-badge" title="Source 144">[cite: 144]</span>.</li>
+                            <li><b>Chỉ xài được 1 kiểu duy nhất cho cả chương trình</b> <span class="citation-badge" title="Source 144">[cite: 144]</span>. Khi ngài đã <code>#define TYPE int</code>, thì cả bài code đó cái hàm <code>swap</code> chỉ xài được cho số nguyên. Muốn xài cho <code>float</code> cũng chịu chết.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PHẦN 3 -->
+            <section id="sec-cpp-template">
+                <div class="flex items-center gap-4 mb-6">
+                    <h2 class="text-2xl font-bold uppercase tracking-wide text-zinc-900 border-l-4 border-brand-red pl-4 py-1">
+                        3. Đẳng cấp của C++ Template
+                    </h2>
+                </div>
+
+                <div class="theory-card">
+                    <p class="mb-4">Để sửa sai cho C, C++ mang đến <b>Khuôn mẫu (Template)</b>. Nó là cơ chế cho phép ta viết code mà không cần chốt cứng kiểu dữ liệu ngay từ đầu <span class="citation-badge" title="Source 145">[cite: 145]</span>.</p>
+                    
+                    <p class="mb-4">Ngài dùng từ khóa <code>template</code> để báo cho máy biết: "Này, đoạn code bên dưới ta sẽ dùng một kiểu dữ liệu ẩn danh, lát nữa ta truyền vào sau nhé" <span class="citation-badge" title="Source 145">[cite: 145]</span>. Cái kiểu ẩn danh đó được đặt trong ngoặc nhọn <code>&lt; &gt;</code> <span class="citation-badge" title="Source 145">[cite: 145]</span>.</p>
+
+<pre><code class="language-cpp">template &lt;typename T&gt;
+// Dưới này ngài cứ lấy chữ "T" ra xài như một kiểu dữ liệu bình thường.</code></pre>
+                    
+                    <p class="mb-4 italic text-zinc-600">Chú ý: Ngài viết <code>template</code> ở đâu thì nó chỉ linh nghiệm cho duy nhất 1 cái hàm hoặc 1 cái class nằm ngay sát bên dưới nó thôi nhé <span class="citation-badge" title="Source 145">[cite: 145]</span>.</p>
+
+                    <p>Có hai loại khuôn mẫu chính là Khuôn mẫu cho Hàm và Khuôn mẫu cho Lớp (Class/Struct) <span class="citation-badge" title="Source 146">[cite: 146]</span>.</p>
+                </div>
+            </section>
+
+            <!-- PHẦN 4 -->
+            <section id="sec-func-template">
+                <div class="flex items-center gap-4 mb-6">
+                    <h2 class="text-2xl font-bold uppercase tracking-wide text-zinc-900 border-l-4 border-brand-red pl-4 py-1">
+                        4. Khuôn mẫu hàm (Function Template)
+                    </h2>
+                </div>
+
+                <div class="theory-card">
+                    <p class="mb-4">Giờ ta viết lại hàm Swap xài template <span class="citation-badge" title="Source 147">[cite: 147]</span>:</p>
+
+<pre><code class="language-cpp">template &lt;typename T&gt;
+void swap(T & a, T & b) {
+    T temp = a; a = b; b = temp;
+}</code></pre>
+                    <p class="mb-4">Lúc xài, ngài cứ quăng số nguyên hay số thực vào, C++ sẽ tự hiểu <span class="citation-badge" title="Source 148">[cite: 148]</span>:</p>
+<pre><code class="language-cpp">int x = 1, y = 2;
+float a = 1.1, b = 2.2;
+
+swap(x, y); // C++ tự suy ra T là int
+swap(a, b); // C++ tự suy ra T là float</code></pre>
+
+                    <!-- GIẢI THÍCH KỸ DƯỚI GẦM MÁY -->
+                    <div class="under-hood mt-8">
+                        <h4><i class="fa-solid fa-gears"></i> Máy tính xử lý vụ này như thế nào? (Under the Hood)</h4>
+                        <p class="mb-4 text-sm text-zinc-800">Bệ hạ lưu ý kỹ điểm này: Sự thay thế chữ "T" ở đây <b>KHÔNG</b> giống trò copy-paste văn bản mù quáng của ngôn ngữ C <span class="citation-badge" title="Source 148">[cite: 148]</span>. Quá trình này được làm bởi <b>Trình biên dịch (Thợ xây code)</b> <span class="citation-badge" title="Source 148">[cite: 148]</span>.</p>
+                        
+                        <ol class="list-decimal pl-6 text-sm text-zinc-800 space-y-3 mb-4">
+                            <li>Khi ngài gọi <code>swap(x, y)</code> với x, y là số nguyên. Thợ xây code sẽ chạy đi tìm xem ngài có lén viết cái hàm <code>swap</code> bình thường nào cho số nguyên không <span class="citation-badge" title="Source 149">[cite: 149]</span>.</li>
+                            <li>Nếu không có, nó thấy cái <b>Bản thiết kế Template</b>. Nó lấy ra xem thử <span class="citation-badge" title="Source 149">[cite: 149]</span>.</li>
+                            <li>Nó đối chiếu: "À, ngài truyền vào 2 cái <code>int</code>. Trong bản vẽ yêu cầu 2 biến cùng kiểu <code>T</code>. Vậy khớp lệnh, <code>T</code> chắc chắn là <code>int</code>!" <span class="citation-badge" title="Source 149">[cite: 149]</span>.</li>
+                            <li>Sau đó, Thợ xây <b>tự động viết giùm ngài một cái hàm swap hoàn chỉnh dành riêng cho int</b> và nhét ngầm vào trong file chạy <span class="citation-badge" title="Source 150">[cite: 150]</span>. Quá trình này gọi là Khởi tạo khuôn mẫu.</li>
+                        </ol>
+
+                        <p class="font-bold text-sm text-brand-red mb-2 mt-4">Vậy lợi và hại là gì?</p>
+                        <ul class="list-styled text-sm text-zinc-800">
+                            <li><b>Hại (Tốn dung lượng):</b> Nếu ngài gọi hàm này cho 10 kiểu dữ liệu khác nhau, Thợ xây sẽ âm thầm đẻ ra 10 cái hàm khác nhau giấu trong máy <span class="citation-badge" title="Source 151">[cite: 151]</span>. Tốn thời gian dịch code và làm phình to file chạy <span class="citation-badge" title="Source 151">[cite: 151]</span>.</li>
+                            <li><b>Lợi (Tốc độ bàn thờ):</b> Bù lại, vì nó tạo sẵn từng hàm riêng lẻ cho từng kiểu, nên lúc chạy chương trình, máy tính không cần phải tính toán suy luận gì nữa, tốc độ chạy nhanh y như ngài tự gõ code tay <span class="citation-badge" title="Source 151">[cite: 151]</span>.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PHẦN 5 -->
+            <section id="sec-class-template">
+                <div class="flex items-center gap-4 mb-6">
+                    <h2 class="text-2xl font-bold uppercase tracking-wide text-zinc-900 border-l-4 border-brand-red pl-4 py-1">
+                        5. Khuôn mẫu lớp (Class Template)
+                    </h2>
+                </div>
+
+                <div class="theory-card">
+                    <p class="mb-4">Cách làm cũng y chang hàm, nhưng dùng để tạo Class/Struct <span class="citation-badge" title="Source 152">[cite: 152]</span>. Ví dụ cấu trúc <code>Pair</code> (Cặp dữ liệu) nhận 2 kiểu khác nhau <span class="citation-badge" title="Source 153">[cite: 153]</span>:</p>
+
+<pre><code class="language-cpp">template &lt;typename T, typename U&gt;
+struct Pair {
+    T first;
+    U second;
+};</code></pre>
+
+                    <div class="under-hood mt-6 mb-6">
+                        <h4><i class="fa-solid fa-circle-exclamation"></i> Chỗ này rất dễ dính bẫy (Lỗi bộ nhớ)</h4>
+                        <p class="text-sm mb-4">Với hàm, C++ tự đoán được kiểu. Nhưng với Class, <b>bệ hạ bắt buộc phải khai báo rõ ràng kiểu dữ liệu trong cặp ngoặc nhọn <code>&lt; &gt;</code></b> <span class="citation-badge" title="Source 154">[cite: 154]</span>.</p>
+<pre><code class="language-cpp">Pair p;              // BÁO LỖI NGAY TỨC KHẮC!
+Pair&lt;int, float&gt; r;  // Khai báo đúng.</code></pre>
+                        <p class="text-sm font-semibold text-brand-red mt-4">Tại sao Class lại khắt khe như vậy? <span class="citation-badge" title="Source 154">[cite: 154]</span></p>
+                        <p class="text-sm">Khi ngài khai báo một Class (như tạo một cái thùng chứa), máy tính phải <b>cấp phát bộ nhớ RAM</b> ngay lập tức <span class="citation-badge" title="Source 154">[cite: 154]</span>. Nếu ngài không nói rõ đựng cái gì, máy tính không biết nên cấp cái thùng 4 bytes (đựng int) hay 8 bytes (đựng double) <span class="citation-badge" title="Source 154">[cite: 154]</span>. Khai báo <code>&lt;int, float&gt;</code> chính là chỉ thị kích thước cho cái thùng RAM đó.</p>
+                    </div>
+
+                    <h3 class="mt-8 border-t border-zinc-200 pt-6">Cách viết code an toàn cho Class</h3>
+                    <p class="mb-4">Kinh nghiệm xương máu: Ngài hãy <b>tạo một Class bình thường trước (ví dụ cho int)</b>, chạy thử ngon lành hết lỗi đi đã, <b>rồi mới gắn chữ template vào</b> để tổng quát hóa <span class="citation-badge" title="Source 157">[cite: 157]</span>.</p>
+                    
+                    <p class="text-sm mb-2">Thêm lệnh <code>template</code> lên đầu class <span class="citation-badge" title="Source 160">[cite: 160]</span>:</p>
+<pre><code class="language-cpp">template &lt;typename T&gt;
+class Stack {
+public:
+    void push(const T& i);
+private:
+    T contents[10];
+    int current;
+};</code></pre>
+                    <p class="text-sm mt-4 mb-2">Đặc biệt: Khi ngài đem mấy cái hàm ra ngoài Class để viết (dùng dấu <code>::</code>), ngài phải kèm theo cái đuôi <code>&lt;T&gt;</code> cho tên Class, và phía trên mỗi hàm đều phải có chữ <code>template</code> <span class="citation-badge" title="Source 161">[cite: 161]</span>.</p>
+<pre><code class="language-cpp">template &lt;typename T&gt;
+void Stack&lt;T&gt;::push(const T& i) {
+    // Viết code trong này...
+}</code></pre>
+                </div>
+            </section>
+
+            <!-- PHẦN 6 -->
+            <section id="sec-non-type-param">
+                <div class="flex items-center gap-4 mb-6">
+                    <h2 class="text-2xl font-bold uppercase tracking-wide text-zinc-900 border-l-4 border-brand-red pl-4 py-1">
+                        6. Tham số phi kiểu (Non-type Parameters)
+                    </h2>
+                </div>
+
+                <div class="theory-card">
+                    <p class="mb-4">Dấu <code>&lt; &gt;</code> không chỉ dùng để nhét "Kiểu dữ liệu". Ngài có thể nhét thẳng một <b>Con số thực sự</b> vào đó (thường là số nguyên) <span class="citation-badge" title="Source 164">[cite: 164]</span>.</p>
+                    
+                    <p class="mb-4">Ví dụ cái giỏ Stack ở trên kích thước cứng là 10 <span class="citation-badge" title="Source 165">[cite: 165]</span>. Nhỡ ta muốn mỗi cái giỏ có kích thước khác nhau thì sao? <span class="citation-badge" title="Source 165">[cite: 165]</span></p>
+
+<pre><code class="language-cpp">template &lt;typename T, int I&gt; // I chính là con số quy định kích thước
+class Stack {
+private:
+    static const int max = I; 
+    T contents[max];
+};</code></pre>
+                    <p class="mb-4 mt-6">Cách sử dụng cực kỳ mượt mà <span class="citation-badge" title="Source 168">[cite: 168]</span>:</p>
+<pre><code class="language-cpp">Stack&lt;int, 5&gt; s;   // Tạo giỏ đựng 5 số nguyên
+Stack&lt;int, 10&gt; t;  // Tạo giỏ đựng 10 số nguyên</code></pre>
+
+                    <div class="under-hood mt-6">
+                        <h4><i class="fa-solid fa-lock"></i> Ràng Buộc Của Con Số Này:</h4>
+                        <ul class="list-styled text-sm text-zinc-800">
+                            <li>Chỉ nhận số nguyên (int, char) hoặc con trỏ, tham chiếu <span class="citation-badge" title="Source 169">[cite: 169]</span>. Cấm bỏ số thực (float, double) vào.</li>
+                            <li>Vì máy tính phải tạo ra cái giỏ RAM ngay từ lúc dịch code, nên <b>con số này phải biết trước, không được thay đổi (Hằng số)</b>. Ngài không thể làm trò gán <code>I = 20</code> ở giữa chừng được đâu nhé <span class="citation-badge" title="Source 169">[cite: 169]</span>.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PHẦN 7 -->
+            <section id="sec-template-template">
+                <div class="flex items-center gap-4 mb-6">
+                    <h2 class="text-2xl font-bold uppercase tracking-wide text-zinc-900 border-l-4 border-brand-red pl-4 py-1">
+                        7. Kỹ thuật Lồng Template (Nâng cao)
+                    </h2>
+                </div>
+
+                <div class="theory-card">
+                    <p class="mb-4">Đây là chiêu thức cao cấp: Một tham số của Template lại chính là <b>một Template khác chưa xác định</b> <span class="citation-badge" title="Source 170">[cite: 170]</span>.</p>
+                    
+                    <p class="mb-4">Giả sử ta làm cuốn từ điển (Map) ánh xạ Từ khóa (Key) tới Giá trị (Value). Ta muốn người dùng tự do chọn cái túi đựng (Container) cho mớ dữ liệu này (có thể chọn túi Stack, hoặc túi Queue) <span class="citation-badge" title="Source 170">[cite: 170]</span>.</p>
+
+<pre><code class="language-cpp">template &lt;typename K, typename V, template &lt;typename T&gt; class Container&gt;
+class Map {
+private:
+    Container&lt;K&gt; keys;    // Cái túi đựng Khóa (Key)
+    Container&lt;V&gt; values;  // Cái túi đựng Giá trị (Value)
+};</code></pre>
+                    
+                    <p class="mb-4 mt-6">Lúc dùng, ngài quăng cái túi Stack vào <span class="citation-badge" title="Source 171">[cite: 171]</span>:</p>
+<pre><code class="language-cpp">Map&lt;string, int, Stack&gt; wordcount;</code></pre>
+                    
+                    <p class="mb-4 text-sm text-zinc-800 border-l-4 border-brand-red pl-4 bg-red-50 py-2">Khi máy tính đọc dòng này, nó sẽ lấy ngay bản thiết kế Stack của ngài, tự động rập khuôn đẻ ra 2 cái túi là <code>Stack&lt;string&gt;</code> và <code>Stack&lt;int&gt;</code> để xài cho cuốn từ điển <span class="citation-badge" title="Source 172">[cite: 172]</span>. Quá vi diệu!</p>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <footer class="bg-zinc-900 text-zinc-400 py-8 text-center text-sm font-mono mt-10 border-t-4 border-brand-red">
+        <p>Bản quyền tài liệu: Bộ môn CNPM - Khoa CNTT - ĐH Bách khoa Đà Nẵng</p>
+    </footer>
+
+</body>
+</html>

@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="vi" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Chuyên khảo Học thuật: Lập trình Tổng quát và C++11 Template">
+    <title>C++11 Template Academic Masterclass</title>
+    
+    <!-- Tích hợp Hệ thống Font chữ Hiện đại (Inter & JetBrains Mono) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Hệ thống Icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- PrismJS: Thư viện Highlighting mã nguồn chuẩn xác (Dark Theme) -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+
+    <!-- Tailwind CSS cho kiến trúc Giao diện -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        zinc: {
+                            50: '#fafafa', 100: '#f4f4f5', 200: '#e4e4e7',
+                            300: '#d4d4d8', 400: '#a1a1aa', 500: '#71717a',
+                            600: '#52525b', 700: '#3f3f46', 800: '#27272a',
+                            900: '#18181b',
+                        },
+                        academic: {
+                            red: '#b91c1c', /* Đỏ Tor-sur-ton cho Logo & Nhấn */
+                            darkred: '#991b1b',
+                            lightred: '#fef2f2'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* CSS Tùy chỉnh cho môi trường Học thuật Hiện đại */
+        body { 
+            background-color: #ffffff;
+            color: #27272a; 
+            line-height: 1.8;
+            font-family: 'Inter', sans-serif; /* Chuyển sang Inter theo ý bệ hạ */
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        /* Cấu trúc Bố cục Tổng thể */
+        .academic-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .main-content-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 3rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+            width: 100%;
+        }
+
+        @media (min-width: 1024px) {
+            .main-content-wrapper {
+                flex-direction: row;
+                gap: 4rem;
+            }
+        }
+
+        /* Khối Nội dung Lý thuyết */
+        .theory-section {
+            background-color: #ffffff;
+            margin-bottom: 4rem;
+            position: relative;
+        }
+
+        .theory-section h2 {
+            color: #18181b;
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid #e4e4e7;
+            display: flex;
+            align-items: center;
+            letter-spacing: -0.025em;
+        }
+
+        .theory-section h2::before {
+            content: "§";
+            color: #b91c1c;
+            margin-right: 0.75rem;
+            font-size: 1.5rem;
+            font-weight: 500;
+        }
+
+        .theory-section h3 {
+            color: #27272a;
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            letter-spacing: -0.015em;
+        }
+
+        .theory-section p {
+            margin-bottom: 1.25rem;
+            text-align: justify;
+            font-size: 1.05rem;
+        }
+
+        /* Hệ thống Trích dẫn (Citations) */
+        .citation-badge {
+            font-size: 0.75rem;
+            color: #b91c1c;
+            font-weight: 600;
+            vertical-align: super;
+            margin-left: 2px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: color 0.2s ease;
+            background: #fef2f2;
+            padding: 0.1em 0.4em;
+            border-radius: 4px;
+            border: 1px solid #fca5a5;
+            opacity: 0.85;
+        }
+
+        .citation-badge:hover {
+            opacity: 1;
+            background: #fee2e2;
+        }
+
+        /* Khối Phân tích Chuyên sâu (Thay thế cho "Dưới gầm máy") */
+        .analysis-block {
+            background-color: #fafafa;
+            border: 1px solid #e4e4e7;
+            border-left: 4px solid #b91c1c;
+            padding: 2rem;
+            margin: 2.5rem 0;
+            border-radius: 0 0.5rem 0.5rem 0;
+        }
+
+        .analysis-block h4 {
+            color: #991b1b;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.95rem;
+            letter-spacing: 0.05em;
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .analysis-block h4 i {
+            margin-right: 0.75rem;
+            font-size: 1.1rem;
+        }
+
+        .analysis-block p {
+            font-size: 0.95rem;
+            text-align: left;
+            margin-bottom: 1rem;
+        }
+
+        .analysis-list {
+            list-style-type: none;
+            padding-left: 0;
+            margin-top: 1rem;
+        }
+
+        .analysis-list li {
+            position: relative;
+            padding-left: 1.5rem;
+            margin-bottom: 0.75rem;
+            font-size: 0.95rem;
+        }
+
+        .analysis-list li::before {
+            content: "▸";
+            color: #b91c1c;
+            position: absolute;
+            left: 0;
+            top: 0;
+            font-weight: bold;
+        }
+
+        /* Tùy chỉnh Mã nguồn (Code Blocks) - Đã FIX LỖI HIỂN THỊ MÀU */
+        pre[class*="language-"] {
+            border-radius: 0.5rem;
+            margin: 2rem 0;
+            border: 1px solid #3f3f46;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        code[class*="language-"] {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Chỉ áp dụng style nền sáng cho Inline code (nằm trong thẻ p, li, h2, h3, h4) để không phá vỡ khối PrismJS */
+        p code, li code, h2 code, h3 code, h4 code {
+            font-family: 'JetBrains Mono', monospace;
+            background-color: #f4f4f5;
+            color: #b91c1c;
+            padding: 0.2em 0.4em;
+            border-radius: 0.25rem;
+            font-size: 0.85em;
+            border: 1px solid #e4e4e7;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar-container {
+            width: 100%;
+            flex-shrink: 0;
+        }
+
+        @media (min-width: 1024px) {
+            .sidebar-container {
+                width: 300px;
+            }
+        }
+
+        .toc-box {
+            position: sticky;
+            top: 6rem;
+            background-color: #fafafa;
+            border: 1px solid #e4e4e7;
+            border-radius: 0.75rem;
+            padding: 1.75rem;
+        }
+
+        .toc-title {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #52525b;
+            font-weight: 700;
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .toc-title i {
+            color: #b91c1c;
+            margin-right: 0.5rem;
+        }
+
+        .toc-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            border-left: 2px solid #e4e4e7;
+        }
+
+        .toc-nav a {
+            padding: 0.5rem 1rem;
+            color: #52525b;
+            font-size: 0.9rem;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            border-left: 2px solid transparent;
+            margin-left: -2px;
+            line-height: 1.4;
+        }
+
+        .toc-nav a:hover, .toc-nav a.active {
+            color: #b91c1c;
+            border-left-color: #b91c1c;
+            background-color: #fef2f2;
+            font-weight: 500;
+        }
+
+        /* Lời tựa gửi Bệ hạ */
+        .preface-box {
+            background-color: #ffffff;
+            border: 1px solid #e4e4e7;
+            border-top: 4px solid #b91c1c;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            margin-bottom: 3rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .preface-box p {
+            color: #3f3f46;
+            margin: 0;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        /* Footer */
+        .academic-footer {
+            background-color: #fafafa;
+            border-top: 1px solid #e4e4e7;
+            padding: 3rem 2rem;
+            text-align: center;
+            color: #52525b;
+            font-size: 0.9rem;
+            margin-top: auto;
+        }
+    </style>
+</head>
+
+<body class="academic-container">
+
+    <!-- HEADER: Nền trắng, Logo đỏ Tor-sur-ton -->
+    <header class="bg-white border-b-2 border-academic-red shadow-sm sticky top-0 z-50">
+        <div class="max-w-[1200px] mx-auto px-8 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-5">
+                <!-- LOGO: Nền đỏ nhạt, icon đỏ đậm -->
+                <div class="w-12 h-12 bg-red-50 text-academic-red flex items-center justify-center font-bold text-xl rounded-lg shadow-sm border border-red-100">
+                    <i class="fa-solid fa-code"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl md:text-2xl font-bold tracking-tight text-zinc-900 leading-tight">Chuyên Khảo C++11 Masterclass</h1>
+                    <p class="text-sm text-zinc-500 mt-1 font-mono tracking-wide">Học phần: Template & Lập trình Tổng quát</p>
+                </div>
+            </div>
+            <div class="hidden md:flex items-center gap-3 bg-zinc-50 border border-zinc-200 px-4 py-2 rounded-lg text-sm font-medium text-zinc-600 shadow-sm">
+                <i class="fa-solid fa-file-pdf text-academic-red"></i> Nguồn tham chiếu: OOP7-Template.pdf
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content-wrapper">
+        
+        <!-- SIDEBAR: Mục lục điều hướng -->
+        <aside class="sidebar-container">
+            <div class="toc-box">
+                <h2 class="toc-title">
+                    <i class="fa-solid fa-bookmark"></i> Cấu trúc Nội dung
+                </h2>
+                <nav class="toc-nav">
+                    <a href="#sec-tong-quat">I. Triết lý Lập trình Tổng quát</a>
+                    <a href="#sec-c-macro">II. Giới hạn của Trình tiền xử lý C</a>
+                    <a href="#sec-cpp-template">III. Định nghĩa C++ Template</a>
+                    <a href="#sec-func-template">IV. Khuôn mẫu Hàm (Function)</a>
+                    <a href="#sec-class-template">V. Khuôn mẫu Lớp (Class)</a>
+                    <a href="#sec-non-type-param">VI. Tham số Phi kiểu (Non-type)</a>
+                    <a href="#sec-template-template">VII. Đa hình Khuôn mẫu Lồng</a>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- NỘI DUNG CHÍNH (MAIN CONTENT) -->
+        <div class="flex-1 max-w-4xl">
+
+            <!-- Lời tựa dành riêng cho Bệ hạ -->
+            <div class="preface-box">
+                <p>
+                    <strong>Kính thưa chủ công,</strong><br><br>
+                    Lỗi hiển thị màu thẻ code trong môi trường Dark Theme đã được thần giải quyết triệt để. Toàn bộ font chữ đã được chuyển sang <code>Inter</code> sắc nét. Dưới đây là bản báo cáo học thuật chuyên sâu về cấu trúc <em>Khuôn mẫu (Template)</em> trong C++11. Mọi luận điểm, đoạn mã và nguyên lý hoạt động của hệ thống biên dịch đều được giải trình cặn kẽ, bám sát giáo trình cơ sở. Kính mời ngài ngự lãm!
+                </p>
+            </div>
+
+            <!-- PHẦN I: Triết lý Lập trình Tổng quát -->
+            <section id="sec-tong-quat" class="theory-section">
+                <h2>I. Triết lý Lập trình Tổng quát (Generic Programming)</h2>
+                
+                <p>
+                    Trong khoa học máy tính, lập trình tổng quát là phương pháp lập trình độc lập với chi tiết biểu diễn dữ liệu <a href="#ref" class="citation-badge">[cite: 139]</a>. Tư tưởng cốt lõi của phương pháp này là ta định nghĩa một khái niệm học thuật hoặc một thuật toán mà không phụ thuộc vào một biểu diễn cụ thể nào, và sau đó mới chỉ ra kiểu dữ liệu thích hợp làm tham số trong quá trình thực thi <a href="#ref" class="citation-badge">[cite: 139]</a>.
+                </p>
+
+                <h3>1. Sự Kế thừa từ Khái niệm Đa hình (Polymorphism)</h3>
+                <p>
+                    Về bản chất, lập trình tổng quát chia sẻ một phần triết lý với tính đa hình trong Hướng đối tượng. Ta đã quen với ý tưởng có một phương thức được định nghĩa sao cho khi sử dụng với các lớp khác nhau, nó sẽ đáp ứng một cách thích hợp <a href="#ref" class="citation-badge">[cite: 140]</a>. 
+                </p>
+                <p>
+                    Khi nói về đa hình, nếu phương thức <code>draw()</code> được gọi cho một đối tượng bất kỳ trong cây thừa kế <code>Shape</code>, định nghĩa tương ứng sẽ được gọi để đối tượng được vẽ đúng <a href="#ref" class="citation-badge">[cite: 140]</a>. Trong trường hợp này, mỗi hình đòi hỏi một định nghĩa phương thức hơi khác nhau để đảm bảo sẽ vẽ ra hình đúng bản chất vật lý của nó <a href="#ref" class="citation-badge">[cite: 140]</a>.
+                </p>
+                <p>
+                    Tuy nhiên, câu hỏi đặt ra là: <em>Nếu ta định nghĩa một hàm cho các kiểu dữ liệu khác nhau nhưng logic hàm không cần phải khác nhau thì sao?</em> <a href="#ref" class="citation-badge">[cite: 140]</a>.
+                </p>
+
+                <h3>2. Bài toán Hoán vị (Swap Algorithm)</h3>
+                <p>
+                    Xét trường hợp thuật toán hoán vị cơ bản. Hàm dưới đây chỉ cần hoán đổi giá trị chứa trong hai biến <code>int</code> <a href="#ref" class="citation-badge">[cite: 141]</a>:
+                </p>
+<pre><code class="language-cpp">void swap(int a, int b) {
+    int temp;
+    temp = a; 
+    a = b; 
+    b = temp;
+}</code></pre>
+                <p>
+                    Nếu ta muốn thực hiện việc tương tự cho một kiểu dữ liệu khác, chẳng hạn <code>float</code>, ta lại phải thiết lập một phiên bản hoàn toàn mới với logic y hệt <a href="#ref" class="citation-badge">[cite: 141]</a>:
+                </p>
+<pre><code class="language-cpp">void swap(float& a, float& b) {
+    float temp;
+    temp = a; 
+    a = b; 
+    b = temp;
+}</code></pre>
+                <p>
+                    Câu hỏi về sự tối ưu kiến trúc phần mềm được đặt ra: Có thực sự cần đến cả hai phiên bản mã nguồn dư thừa này không? <a href="#ref" class="citation-badge">[cite: 141]</a>.
+                </p>
+
+                <h3>3. Bài toán Cấu trúc Dữ liệu: Lớp Ngăn xếp (Stack)</h3>
+                <p>
+                    Một ví dụ phức tạp hơn: Ta định nghĩa một lớp biểu diễn cấu trúc ngăn xếp cho kiểu <code>int</code>. Khai báo và định nghĩa của <code>Stack</code> phụ thuộc tại một mức độ nào đó vào kiểu dữ liệu <code>int</code> (vì một số phương thức lấy tham số và trả về kiểu <code>int</code>) <a href="#ref" class="citation-badge">[cite: 142]</a>.
+                </p>
+                <p>
+                    Nếu ta muốn tạo ngăn xếp cho một kiểu dữ liệu khác thì sao? Ta có nên định nghĩa lại hoàn toàn lớp <code>Stack</code> (kết quả sẽ tạo ra nhiều lớp chẳng hạn <code>IntStack</code>, <code>FloatStack</code>, ...) hay không? Việc triển khai lặp lại này làm vi phạm nguyên tắc DRY (Don't Repeat Yourself) nghiêm trọng <a href="#ref" class="citation-badge">[cite: 142]</a>.
+                </p>
+                
+                <div class="analysis-block">
+                    <h4><i class="fa-solid fa-microscope"></i> Tóm lược Tư tưởng Trừu tượng hóa</h4>
+                    <p>
+                        Ta thấy, trong một số trường hợp, đưa chi tiết về kiểu dữ liệu vào trong định nghĩa hàm hoặc lớp là điều không có lợi <a href="#ref" class="citation-badge">[cite: 143]</a>. 
+                    </p>
+                    <p>
+                        Thực ra, khái niệm lập trình tổng quát học theo sự sử dụng một phương pháp của lớp cơ sở cho các thể hiện của các lớp dẫn xuất <a href="#ref" class="citation-badge">[cite: 143]</a>. Với lập trình tổng quát, ta tìm cách <strong>mở rộng sự trừu tượng hóa ra ngoài địa hạt của các cây thừa kế</strong> <a href="#ref" class="citation-badge">[cite: 143]</a>.
+                    </p>
+                </div>
+            </section>
+
+            <!-- PHẦN II: Giới hạn của C -->
+            <section id="sec-c-macro" class="theory-section">
+                <h2>II. Lập trình Tổng quát trong C (Tiền xử lý)</h2>
+                
+                <p>
+                    Trước khi kiến trúc C++ Template ra đời, ngôn ngữ C giải quyết tính đa hình dữ liệu bằng cách sử dụng trình tiền xử lý (Preprocessor) <a href="#ref" class="citation-badge">[cite: 144]</a>. 
+                </p>
+                <p>
+                    Trình tiền xử lý thực hiện thao tác thay thế text (văn bản) trước khi dịch <a href="#ref" class="citation-badge">[cite: 144]</a>. Do đó, ta có thể dùng chỉ thị <code>#define</code> để chỉ ra kiểu dữ liệu và thay đổi tại chỗ khi cần <a href="#ref" class="citation-badge">[cite: 144]</a>:
+                </p>
+
+<pre><code class="language-cpp">#define TYPE int
+
+void swap (TYPE & a, TYPE & b) {
+    TYPE temp;
+    temp = a; 
+    a = b; 
+    b = temp;
+}</code></pre>
+                
+                <p>
+                    Trình tiền xử lý sẽ quét mã nguồn và thay mọi chuỗi ký tự <code>"TYPE"</code> bằng <code>"int"</code> trước khi thực hiện biên dịch sang mã máy <a href="#ref" class="citation-badge">[cite: 144]</a>.
+                </p>
+
+                <div class="analysis-block">
+                    <h4><i class="fa-solid fa-triangle-exclamation"></i> Hai Hạn chế Trọng yếu của Macro C</h4>
+                    <p>Mặc dù giải quyết được bài toán tạm thời, giải pháp này mang hai nhược điểm chí mạng:</p>
+                    <ul class="analysis-list">
+                        <li>Phương pháp này <strong>nhàm chán và dễ lỗi</strong>, bởi quá trình thay thế văn bản không kiểm tra tính an toàn kiểu (Type Safety) <a href="#ref" class="citation-badge">[cite: 144]</a>.</li>
+                        <li>Nó <strong>chỉ cho phép đúng một định nghĩa trong một chương trình</strong> <a href="#ref" class="citation-badge">[cite: 144]</a>. Nghĩa là bệ hạ không thể đồng thời tồn tại hàm <code>swap</code> cho <code>int</code> và <code>float</code> trong cùng một tệp mã nguồn vì <code>TYPE</code> chỉ được gán một giá trị duy nhất.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- PHẦN III: Khái niệm Template -->
+            <section id="sec-cpp-template" class="theory-section">
+                <h2>III. Kiến trúc Khuôn mẫu (C++ Template)</h2>
+                
+                <p>
+                    Template (khuôn mẫu) là một cơ chế thay thế mã cho phép tạo các cấu trúc mà không phải chỉ rõ kiểu dữ liệu <a href="#ref" class="citation-badge">[cite: 145]</a>.
+                </p>
+                <p>
+                    Từ khóa <code>template</code> được dùng trong C++ để báo cho trình biên dịch rằng đoạn mã theo sau sẽ thao tác trên một hoặc nhiều kiểu dữ liệu chưa xác định <a href="#ref" class="citation-badge">[cite: 145]</a>. Từ khóa template được theo sau bởi một cặp ngoặc nhọn chứa tên của các kiểu dữ liệu tùy ý được cung cấp <a href="#ref" class="citation-badge">[cite: 145]</a>.
+                </p>
+
+<pre><code class="language-cpp">template &lt;typename T&gt;
+// Khai báo tạo tham chiếu đến một kiểu dữ liệu "T"
+
+template &lt;typename T, typename U&gt;
+// Khai báo tạo tham chiếu đến kiểu dữ liệu "T" và kiểu dữ liệu "U"</code></pre>
+
+                <p>
+                    <em>Lưu ý học thuật:</em> Một lệnh template chỉ có hiệu quả đối với khai báo ngay sát phía sau nó <a href="#ref" class="citation-badge">[cite: 145]</a>.
+                </p>
+
+                <h3>Phân loại Khuôn mẫu Căn bản</h3>
+                <p>Hệ thống C++ chia Khuôn mẫu thành hai loại cơ bản <a href="#ref" class="citation-badge">[cite: 146]</a>:</p>
+                <ul>
+                    <li><strong>Function template (Khuôn mẫu hàm):</strong> Cho phép định nghĩa các hàm tổng quát dùng đến các kiểu dữ liệu tùy ý <a href="#ref" class="citation-badge">[cite: 146]</a>.</li>
+                    <li><strong>Class template (Khuôn mẫu lớp):</strong> Cho phép định nghĩa các lớp tổng quát dùng đến các kiểu dữ liệu tùy ý <a href="#ref" class="citation-badge">[cite: 146]</a>.</li>
+                </ul>
+            </section>
+
+            <!-- PHẦN IV: Function Template -->
+            <section id="sec-func-template" class="theory-section">
+                <h2>IV. Khuôn mẫu Hàm (Function Template)</h2>
+                
+                <p>
+                    Khuôn mẫu hàm là dạng khuôn mẫu đơn giản nhất cho phép ta định nghĩa các hàm dùng đến các kiểu dữ liệu tùy ý <a href="#ref" class="citation-badge">[cite: 147]</a>. Ta sẽ tiến hành định nghĩa hàm <code>swap()</code> bằng cơ chế khuôn mẫu <a href="#ref" class="citation-badge">[cite: 147]</a>:
+                </p>
+
+<pre><code class="language-cpp">template &lt;typename T&gt;
+void swap(T & a, T & b) {
+    T temp;
+    temp = a; 
+    a = b; 
+    b = temp;
+}</code></pre>
+
+                <p>
+                    Phiên bản trên trông khá giống với phiên bản <code>swap()</code> bằng C sử dụng <code>#define</code>, nhưng nó mạnh hơn nhiều <a href="#ref" class="citation-badge">[cite: 147]</a>. Về mặt kiến trúc, thực chất khi sử dụng template, ta đã định nghĩa <strong>một tập vô hạn các hàm chồng nhau</strong> với tên <code>swap()</code> <a href="#ref" class="citation-badge">[cite: 148]</a>.
+                </p>
+                <p>
+                    Để gọi một trong các phiên bản này, ta chỉ cần gọi nó với kiểu dữ liệu tương ứng <a href="#ref" class="citation-badge">[cite: 148]</a>:
+                </p>
+
+<pre><code class="language-cpp">int x = 1, y = 2;
+float a = 1.1, b = 2.2;
+
+swap(x, y); // Gọi phiên bản int của hàm swap()
+swap(a, b); // Gọi phiên bản float của hàm swap()</code></pre>
+
+                <div class="analysis-block">
+                    <h4><i class="fa-solid fa-gears"></i> Phân Tích Chuyên Sâu: Cơ Chế Biên Dịch (Compile-time)</h4>
+                    <p>
+                        Sự thay thế "T" trong khai báo/định nghĩa hàm <code>swap()</code> không phải thay thế text đơn giản và cũng không được thực hiện bởi trình tiền xử lý <a href="#ref" class="citation-badge">[cite: 148]</a>. Quá trình chuyển phiên bản mẫu của <code>swap()</code> thành các cài đặt cụ thể cho <code>int</code> và <code>float</code> được thực hiện bởi <strong>trình biên dịch (Compiler)</strong> <a href="#ref" class="citation-badge">[cite: 148]</a>.
+                    </p>
+                    <p><strong>Hoạt động của Trình biên dịch khi gặp lời gọi <code>swap(x, y)</code>:</strong></p>
+                    <ul class="analysis-list">
+                        <li>Trước hết, trình biên dịch tìm xem có một hàm <code>swap()</code> thông thường được khai báo với 2 tham số kiểu <code>int</code> hay không <a href="#ref" class="citation-badge">[cite: 149]</a>.</li>
+                        <li>Nó không tìm thấy một hàm thích hợp, nhưng tìm thấy một template có thể dùng được <a href="#ref" class="citation-badge">[cite: 149]</a>. Tiếp theo, nó xem xét khai báo của template <code>swap()</code> để xem có thể khớp được với lời gọi hàm hay không <a href="#ref" class="citation-badge">[cite: 149]</a>.</li>
+                        <li>Lời gọi hàm cung cấp hai tham số thuộc cùng một kiểu (<code>int</code>). Trình biên dịch thấy template chỉ ra hai tham số thuộc cùng kiểu <code>T</code>, nên nó kết luận rằng <code>T</code> phải là kiểu <code>int</code> <a href="#ref" class="citation-badge">[cite: 149]</a>.</li>
+                        <li>Khi đã xác định được template khớp, trình biên dịch kiểm tra xem đã có một phiên bản của <code>swap()</code> với hai tham số kiểu <code>int</code> được sinh ra từ template hay chưa <a href="#ref" class="citation-badge">[cite: 150]</a>.</li>
+                        <li>Nếu đã có, lời gọi được <strong>liên kết (bind)</strong> với phiên bản đã được sinh (tương tự như đa hình tĩnh) <a href="#ref" class="citation-badge">[cite: 150]</a>.</li>
+                        <li>Nếu không, trình biên dịch sẽ <strong>sinh một cài đặt</strong> của <code>swap()</code> lấy hai tham số kiểu <code>int</code> (viết đoạn mã như ta tự mình viết) – và liên kết lời gọi hàm với phiên bản vừa sinh <a href="#ref" class="citation-badge">[cite: 150]</a>.</li>
+                    </ul>
+                </div>
+
+                <h3>Hệ quả Đánh đổi (Trade-offs)</h3>
+                <p>
+                    Cuối quy trình biên dịch đoạn mã trong ví dụ, sẽ có hai phiên bản của <code>swap()</code> được tạo (một cho hai tham số kiểu <code>int</code>, một cho hai tham số kiểu <code>float</code>) với các lời gọi hàm của ta được liên kết với phiên bản thích hợp <a href="#ref" class="citation-badge">[cite: 151]</a>.
+                </p>
+                <ul>
+                    <li>Có chi phí phụ về <strong>thời gian biên dịch (Compile-time)</strong> đối với việc sử dụng template <a href="#ref" class="citation-badge">[cite: 151]</a>.</li>
+                    <li>Có chi phí phụ về <strong>không gian (Code Bloat)</strong> liên quan đến mỗi cài đặt của <code>swap()</code> được tạo trong khi biên dịch <a href="#ref" class="citation-badge">[cite: 151]</a>.</li>
+                    <li>Tuy nhiên, <strong>tính hiệu quả của các cài đặt đó cũng không khác với khi ta tự cài đặt chúng</strong> (Không tồn tại độ trễ Runtime) <a href="#ref" class="citation-badge">[cite: 151]</a>.</li>
+                </ul>
+            </section>
+
+            <!-- PHẦN V: Class Template -->
+            <section id="sec-class-template" class="theory-section">
+                <h2>V. Khuôn mẫu Lớp (Class Template)</h2>
+                
+                <p>
+                    Tương tự với khuôn mẫu hàm, ta cũng có thể định nghĩa khuôn mẫu lớp (class template) sử dụng các thể hiện của một hoặc nhiều kiểu dữ liệu tùy ý <a href="#ref" class="citation-badge">[cite: 152]</span>. Bệ hạ lưu ý, ta cũng có thể định nghĩa template cho đối tượng <code>struct</code> và <code>union</code> <a href="#ref" class="citation-badge">[cite: 152]</span>.
+                </p>
+
+                <h3>1. Sự Tiến hóa của Cấu trúc Pair</h3>
+                <p>
+                    Ví dụ, xét cấu trúc <code>Pair</code> gồm một cặp giá trị thuộc kiểu tùy ý. Trước hết, xét khai báo <code>Pair</code> cho một cặp giá trị cứng kiểu <code>int</code> <a href="#ref" class="citation-badge">[cite: 153]</span>:
+                </p>
+<pre><code class="language-cpp">struct Pair {
+    int first;
+    int second;
+};</code></pre>
+
+                <p>
+                    Ta có thể sửa khai báo trên thành một khuôn mẫu lấy kiểu tùy ý. Tuy nhiên, nếu dùng một tham số, hai thành viên <code>first</code> và <code>second</code> phải thuộc cùng kiểu <a href="#ref" class="citation-badge">[cite: 153]</span>:
+                </p>
+<pre><code class="language-cpp">template &lt;typename T&gt;
+struct Pair {
+    T first;
+    T second;
+};</code></pre>
+
+                <p>
+                    Hoặc ta có thể cho phép hai thành viên nhận các kiểu dữ liệu khác biệt hoàn toàn <a href="#ref" class="citation-badge">[cite: 153]</span>:
+                </p>
+<pre><code class="language-cpp">template &lt;typename T, typename U&gt;
+struct Pair {
+    T first;
+    U second;
+};</code></pre>
+
+                <div class="analysis-block">
+                    <h4><i class="fa-solid fa-memory"></i> Nguyên Tắc Khởi Tạo Bắt Buộc (Mandatory Explicit Type)</h4>
+                    <p>
+                        Để tạo các thể hiện của template <code>Pair</code>, ta phải dùng ký hiệu cặp dấu <code>&lt; &gt;</code> <a href="#ref" class="citation-badge">[cite: 154]</span>. Khác với khuôn mẫu hàm, <strong>đối với khuôn mẫu class/struct/union, chúng phải được cung cấp tường minh</strong> <a href="#ref" class="citation-badge">[cite: 154]</span>.
+                    </p>
+<pre><code class="language-cpp">Pair p;              // Lỗi: Không được phép (Not permitted)
+Pair&lt;int, int&gt; q;    // Tạo một pair gồm 2 số int
+Pair&lt;int, float&gt; r;  // Tạo một pair gồm 1 int và 1 float</code></pre>
+                    <p><strong>Tại sao đòi hỏi kiểu tường minh?</strong> <a href="#ref" class="citation-badge">[cite: 154]</span></p>
+                    <p>
+                        Các lệnh trên thực hiện cấp phát bộ nhớ cho đối tượng <a href="#ref" class="citation-badge">[cite: 154]</span>. Nếu không biết các kiểu dữ liệu được sử dụng, trình biên dịch làm thế nào để biết cần đến bao nhiêu lượng không gian bộ nhớ? <a href="#ref" class="citation-badge">[cite: 154]</span>. 
+                    </p>
+                    <p>
+                        Cũng như khuôn mẫu hàm, không có một bản thể vật lý nào là <code>struct Pair</code>, mà chỉ có các struct độc lập mang tên <code>Pair&lt;int, int&gt;</code>, <code>Pair&lt;int, float&gt;</code>,... được trình biên dịch sinh ra <a href="#ref" class="citation-badge">[cite: 155]</span>. 
+                    </p>
+                </div>
+
+                <h3>2. Quy trình Xây dựng Khuôn mẫu Lớp (Lớp Stack)</h3>
+                <p>
+                    Về phương pháp luận, khi thiết kế khuôn mẫu, thông thường, ta nên tạo một phiên bản cụ thể trước, sau đó mới chuyển nó thành một template <a href="#ref" class="citation-badge">[cite: 157]</span>. Điều đó cho phép phát hiện các vấn đề về logic trước khi tổng quát hóa <a href="#ref" class="citation-badge">[cite: 157]</span>.
+                </p>
+
+                <p><strong>Bước A: Khai báo Lớp Stack nguyên thủy cho kiểu <code>int</code></strong> <a href="#ref" class="citation-badge">[cite: 158]</span>:</p>
+<pre><code class="language-cpp">class Stack {
+public:
+    Stack();
+    void push(const int i) throw (logic_error);
+    // ...
+private:
+    static const int max = 10;
+    int contents[max];
+    int current;
+};</code></pre>
+                
+                <p>Phần định nghĩa (Implementation) bên ngoài khối khai báo <a href="#ref" class="citation-badge">[cite: 159]</span>:</p>
+<pre><code class="language-cpp">Stack::Stack() { this-&gt;current = 0; }
+
+void Stack::push(const int i) throw (logic_error) {
+    if (this-&gt;current &lt; this-&gt;max)
+        this-&gt;contents[this-&gt;current++] = i;
+    else
+        throw logic_error("Stack is full.");
+}</code></pre>
+
+                <p><strong>Bước B: Chuyển đổi thành phiên bản Tổng quát</strong> <a href="#ref" class="citation-badge">[cite: 160]</span>:</p>
+                <p>
+                    Thêm lệnh <code>template</code> để nói rằng một phần của kiểu sẽ được chỉ rõ sau. Thay thế kiểu <code>int</code> bằng kiểu tùy ý <code>T</code> <a href="#ref" class="citation-badge">[cite: 160]</span>.
+                </p>
+<pre><code class="language-cpp">template &lt;typename T&gt;
+class Stack {
+public:
+    Stack();
+    void push(const T& i) throw (logic_error);
+private:
+    static const int max = 10;
+    T contents[max];
+    int current;
+};</code></pre>
+
+                <p><strong>Bước C: Chuyển đổi Phần định nghĩa</strong> <a href="#ref" class="citation-badge">[cite: 161]</span>:</p>
+                <ul>
+                    <li>Mỗi phương thức cần một lệnh <code>template</code> đặt trước <a href="#ref" class="citation-badge">[cite: 161]</span>.</li>
+                    <li>Mỗi khi dùng toán tử phạm vi (<code>::</code>), cần một ký hiệu ngoặc nhọn kèm theo tên kiểu <a href="#ref" class="citation-badge">[cite: 161]</span>. Bởi vì ta đang định nghĩa cho lớp <code>Stack&lt;T&gt;</code> <a href="#ref" class="citation-badge">[cite: 161]</span>.</li>
+                </ul>
+
+<pre><code class="language-cpp">template &lt;typename T&gt;
+Stack&lt;T&gt;::Stack() {
+    this-&gt;current = 0;
+}
+
+template &lt;typename T&gt;
+void Stack&lt;T&gt;::push(const T& i) throw (logic_error) {
+    if (this-&gt;current &lt; this-&gt;max) {
+        this-&gt;contents[this-&gt;current++] = i;
+    } else {
+        throw logic_error("Stack is full.");
+    }
+}</code></pre>
+
+                <p>
+                    Sau đó, ta có thể tạo và sử dụng các thể hiện của các lớp một cách trơn tru <a href="#ref" class="citation-badge">[cite: 163]</span>:
+                </p>
+<pre><code class="language-cpp">int x = 5;
+char c = 'a';
+
+Stack&lt;int&gt; s;
+Stack&lt;char&gt; t;
+
+s.push(x);
+t.push(c);</code></pre>
+            </section>
+
+            <!-- PHẦN VI: Non-type Template Parameters -->
+            <section id="sec-non-type-param" class="theory-section">
+                <h2>VI. Tham Số Phi Kiểu (Non-Type Parameters)</h2>
+                
+                <p>
+                    Ngoài tham số thuộc "kiểu" <code>typename</code>, còn có tham số là Kiểu thực sự (ví dụ: <code>int</code>) <a href="#ref" class="citation-badge">[cite: 164]</span>.
+                </p>
+                <p>
+                    Nhớ lại rằng trong cài đặt <code>Stack</code>, ta có một hằng <code>max</code> quy định số lượng tối đa. Như vậy, mỗi thể hiện sẽ có cùng kích thước <a href="#ref" class="citation-badge">[cite: 165]</span>. Nếu ta không muốn đòi hỏi mọi <code>Stack</code> đều có kích thước tối đa như nhau? Ta có thể thêm một tham số vào lệnh template chỉ ra một số <code>int</code> (dùng để xác định giá trị cho <code>max</code>) <a href="#ref" class="citation-badge">[cite: 165]</span>.
+                </p>
+
+<pre><code class="language-cpp">template &lt;typename T, int I&gt;
+class Stack {
+public:
+    Stack();
+private:
+    static const int max = I; // Sử dụng tham số I để xác định max
+    T contents[max];
+    int current;
+};</code></pre>
+
+                <p>
+                    Khi định nghĩa logic bên ngoài lớp, bệ hạ cần sửa các lệnh template và tên lớp cho đồng nhất <a href="#ref" class="citation-badge">[cite: 167]</span>:
+                </p>
+
+<pre><code class="language-cpp">template &lt;typename T, int I&gt;
+Stack&lt;T, I&gt;::Stack() {
+    this-&gt;current = 0;
+}</code></pre>
+
+                <p>
+                    Giờ ta có thể tạo các thể hiện của các lớp <code>Stack</code> với các kích thước đa dạng <a href="#ref" class="citation-badge">[cite: 168]</span>:
+                </p>
+<pre><code class="language-cpp">Stack&lt;int, 5&gt; s;   // Thể hiện Stack số nguyên max = 5
+Stack&lt;int, 10&gt; t;  // Thể hiện Stack số nguyên max = 10
+Stack&lt;char, 5&gt; u;  // Thể hiện Stack ký tự max = 5</code></pre>
+                <p>
+                    <strong>Nguyên lý:</strong> Các lệnh trên tạo ra thể hiện của 3 lớp độc lập khác nhau hoàn toàn trong bộ nhớ chương trình <a href="#ref" class="citation-badge">[cite: 168]</span>.
+                </p>
+
+                <div class="analysis-block">
+                    <h4><i class="fa-solid fa-shield-halved"></i> Ràng buộc Tham số Kiểu Thực Sự</h4>
+                    <p>Các ràng buộc khắt khe khi sử dụng các kiểu thực sự làm tham số <a href="#ref" class="citation-badge">[cite: 169]</span>:</p>
+                    <ul class="analysis-list">
+                        <li>Chỉ có thể dùng các <strong>kiểu số nguyên, con trỏ, hoặc tham chiếu</strong> <a href="#ref" class="citation-badge">[cite: 169]</span>.</li>
+                        <li><strong>Không được gán trị cho tham số hoặc lấy địa chỉ của tham số</strong> <a href="#ref" class="citation-badge">[cite: 169]</span>. Lý do là giá trị này phải được Trình biên dịch phân giải hoàn toàn tại Compile-time, mang tính hằng số tĩnh chứ không khả biến tại Runtime.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- PHẦN VII: Template Template Parameters -->
+            <section id="sec-template-template" class="theory-section">
+                <h2>VII. Template Sử Dụng Template Lồng Nhau</h2>
+                
+                <p>
+                    Một loại tham số thứ ba cho lệnh template chính là <strong>một template khác</strong> <a href="#ref" class="citation-badge">[cite: 170]</span>. Đây là cấp độ trừu tượng hóa kiến trúc phần mềm rất cao.
+                </p>
+                <p>
+                    Ví dụ, xét thiết kế một lớp <code>Map</code> (ánh xạ) ánh xạ các khóa tới các giá trị <a href="#ref" class="citation-badge">[cite: 170]</span>. Lớp này cần lưu các ánh xạ, nhưng ta không muốn chỉ ra kiểu của đối tượng được lưu trữ ngay từ đầu <a href="#ref" class="citation-badge">[cite: 170]</span>. Ta sẽ tạo <code>Map</code> là một khuôn mẫu <a href="#ref" class="citation-badge">[cite: 170]</span>. 
+                </p>
+                <p>
+                    Tuy nhiên, ta cần chỉ ra lớp chứa (container) <strong>cũng là một template</strong>, để nó có thể lưu trữ các khóa và giá trị là các kiểu tùy ý <a href="#ref" class="citation-badge">[cite: 170]</span>. Bệ hạ có thể khai báo lớp <code>Map</code> như sau <a href="#ref" class="citation-badge">[cite: 171]</span>:
+                </p>
+
+<pre><code class="language-cpp">template &lt;typename K, typename V, template &lt;typename T&gt; class Container&gt;
+class Map {
+private:
+    Container&lt;K&gt; keys;
+    Container&lt;V&gt; value;
+};</code></pre>
+
+                <p>
+                    Sau đó có thể tạo các thể hiện của <code>Map</code> như sau <a href="#ref" class="citation-badge">[cite: 171]</span>:
+                </p>
+
+<pre><code class="language-cpp">Map&lt;string, int, Stack&gt; wordcount;</code></pre>
+
+                <p>
+                    Lệnh trên tạo một thể hiện của lớp <code>Map</code> chứa thành viên là một tập các <code>string</code> và một tập các <code>int</code> <a href="#ref" class="citation-badge">[cite: 171]</span>. Ta đã dùng template <code>Stack</code> để làm <code>Container</code> lưu trữ thông tin <a href="#ref" class="citation-badge">[cite: 171]</span>.
+                </p>
+
+                <div class="analysis-block">
+                    <h4><i class="fa-solid fa-code-merge"></i> Cơ chế Sinh Mã (Code Generation Mechanism)</h4>
+                    <p>
+                        Khi trình biên dịch sinh các khai báo và định nghĩa thực sự cho các lớp <code>Map</code>, nó sẽ đọc các tham số mô tả các thành viên dữ liệu <a href="#ref" class="citation-badge">[cite: 172]</span>. 
+                    </p>
+                    <p>
+                        Nó sẽ tự động sử dụng khuôn mẫu <code>Stack</code> để sinh mã cho hai lớp <code>Stack&lt;string&gt;</code> và <code>Stack&lt;int&gt;</code> <a href="#ref" class="citation-badge">[cite: 172]</span>. Đến đây, ta phải hiểu rõ tại sao container phải là một khuôn mẫu, nếu không, làm thế nào để có thể dùng nó để tạo các loại stack khác nhau? <a href="#ref" class="citation-badge">[cite: 172]</span>.
+                    </p>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <footer class="academic-footer">
+        <div class="max-w-4xl mx-auto">
+            <p><strong>Bản quyền Tài liệu &copy;</strong> Bộ môn Công nghệ Phần mềm - Khoa Công Nghệ Thông Tin<br>Đại học Bách khoa – Đại học Đà Nẵng</p>
+            <p class="mt-4 text-xs text-zinc-500">Hệ thống bài giảng được tự động tổng hợp, đối chiếu và tối ưu hóa giao diện dựa trên định dạng học thuật hiện đại phục vụ việc tra cứu mã nguồn chuyên sâu.</p>
+        </div>
+    </footer>
+
+</body>
+</html>
