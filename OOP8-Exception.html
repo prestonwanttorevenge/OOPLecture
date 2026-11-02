@@ -1,0 +1,1327 @@
+<!DOCTYPE html>
+<html lang="vi" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chương 8: Xử Lý Ngoại Lệ (Exception Handling) - MOSTest5_2</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Lora', 'serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        crimson: {
+                            50: '#fff1f2',
+                            100: '#ffe4e6',
+                            200: '#fecdd3',
+                            300: '#fda4af',
+                            400: '#fb7185',
+                            500: '#f43f5e',
+                            600: '#e11d48',
+                            700: '#be123c',
+                            800: '#991b1b',
+                            900: '#881337',
+                            950: '#4c0519',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- PrismJS Dark Tomorrow Theme -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+
+    <style>
+        body {
+            background-color: #fafafa;
+            color: #18181b;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .theory-content {
+            font-family: 'Lora', serif;
+            font-size: 1.05rem;
+            line-height: 1.8;
+            color: #27272a;
+        }
+
+        .theory-content h3 {
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            color: #991b1b;
+            letter-spacing: -0.02em;
+        }
+
+        .under-the-hood {
+            background-color: #ffffff;
+            border-left: 4px solid #991b1b;
+            padding: 1.25rem 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 0 0.5rem 0.5rem 0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+        }
+
+        .under-the-hood-title {
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.05em;
+            color: #991b1b;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .citation-badge {
+            display: inline-block;
+            background-color: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #fecdd3;
+            padding: 0.15rem 0.5rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+
+        .inline-code {
+            font-family: 'JetBrains Mono', monospace;
+            background-color: #f4f4f5;
+            color: #991b1b;
+            padding: 0.15rem 0.4rem;
+            border-radius: 0.25rem;
+            font-size: 0.88em;
+            border: 1px solid #e4e4e7;
+        }
+
+        /* Quiz interactive styles */
+        .option-btn {
+            transition: all 0.15s ease-in-out;
+            text-align: left;
+            width: 100%;
+            background-color: #ffffff;
+            border: 1.5px solid #e4e4e7;
+            padding: 0.85rem 1.15rem;
+            border-radius: 0.5rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            color: #27272a;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            cursor: pointer;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            border-color: #dc2626;
+            background-color: #fef2f2;
+        }
+
+        .option-btn.selected-correct {
+            background-color: #f0fdf4 !important;
+            border-color: #22c55e !important;
+            color: #14532d !important;
+            font-weight: 600;
+        }
+
+        .option-btn.selected-wrong {
+            background-color: #fef2f2 !important;
+            border-color: #ef4444 !important;
+            color: #7f1d1d !important;
+            font-weight: 600;
+        }
+
+        .option-btn.show-correct {
+            background-color: #f0fdf4 !important;
+            border-color: #22c55e !important;
+            color: #14532d !important;
+            font-weight: 600;
+        }
+
+        .option-btn:disabled {
+            cursor: default;
+        }
+
+        .answer-block {
+            display: none;
+            margin-top: 1.25rem;
+            padding: 1.25rem 1.5rem;
+            background-color: #fafafa;
+            border-left: 3px solid #991b1b;
+            border-radius: 0 0.375rem 0.375rem 0;
+            color: #3f3f46;
+            font-size: 0.92rem;
+            line-height: 1.65;
+        }
+
+        .answer-block.show {
+            display: block;
+            animation: fadeIn 0.25s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        pre[class*="language-"] {
+            border-radius: 0.5rem;
+            margin: 1rem 0;
+            border: 1px solid #3f3f46;
+            font-size: 0.9rem !important;
+        }
+
+        @media print {
+            .no-print { display: none !important; }
+            .answer-block { display: block !important; }
+            body { background: white; }
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-red-100 selection:text-red-900">
+
+    <!-- Top Navigation Bar -->
+    <header class="bg-[#991b1b] text-white sticky top-0 z-50 shadow-md no-print">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-white text-[#991b1b] flex items-center justify-center font-black font-mono text-xl rounded shadow-inner">
+                    C++
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg leading-tight tracking-tight">Chương 8: Xử Lý Ngoại Lệ (Exception Handling)</h1>
+                    <p class="text-xs text-red-200">Giáo trình OOP ĐHBK-ĐN | TS. Lê Thị Mỹ Hạnh | Chuẩn MOSTest5_2</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="bg-red-950/60 border border-red-700/50 px-3.5 py-1.5 rounded-lg flex items-center gap-2">
+                    <i class="fa-solid fa-trophy text-amber-400 text-sm"></i>
+                    <span id="score-display" class="font-mono font-bold text-white text-sm">Điểm: 0/50</span>
+                </div>
+                <button onclick="resetQuiz()" class="bg-red-800 hover:bg-red-700 text-white text-xs font-semibold px-3 py-1.5 rounded transition border border-red-600 flex items-center gap-1.5">
+                    <i class="fa-solid fa-rotate-right"></i> Làm lại
+                </button>
+                <button onclick="window.print()" class="bg-white text-[#991b1b] hover:bg-red-50 text-xs font-bold px-3.5 py-1.5 rounded transition shadow-sm flex items-center gap-1.5">
+                    <i class="fa-solid fa-print"></i> In PDF
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col lg:flex-row gap-8">
+        
+        <!-- Left Sidebar: Table of Contents -->
+        <aside class="w-full lg:w-72 flex-shrink-0 no-print">
+            <div class="sticky top-24 bg-white border border-zinc-200 rounded-lg p-5 shadow-sm space-y-5">
+                <div>
+                    <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-500 mb-3">
+                        <i class="fa-solid fa-book-bookmark text-[#991b1b]"></i> Lý thuyết Cốt Lõi
+                    </div>
+                    <nav class="space-y-1 text-sm border-l-2 border-red-100 pl-3">
+                        <a href="#theory-section" class="block py-1 text-zinc-700 hover:text-[#991b1b] font-medium transition">1. Xử lý lỗi truyền thống vs OOP</a>
+                        <a href="#theory-try-catch" class="block py-1 text-zinc-700 hover:text-[#991b1b] font-medium transition">2. Cú pháp throw, try - catch</a>
+                        <a href="#theory-stack-unwinding" class="block py-1 text-zinc-700 hover:text-[#991b1b] font-medium transition">3. Cơ chế Stack Unwinding & RAII</a>
+                        <a href="#theory-matching" class="block py-1 text-zinc-700 hover:text-[#991b1b] font-medium transition">4. Exception Matching & Slicing</a>
+                        <a href="#theory-rethrow" class="block py-1 text-zinc-700 hover:text-[#991b1b] font-medium transition">5. Ném tiếp ngoại lệ (throw;)</a>
+                        <a href="#theory-std-hierarchy" class="block py-1 text-zinc-700 hover:text-[#991b1b] font-medium transition">6. Cây phân cấp std::exception</a>
+                        <a href="#theory-noexcept" class="block py-1 text-zinc-700 hover:text-[#991b1b] font-medium transition">7. noexcept & noexcept(expr)</a>
+                        <a href="#theory-ctor-dtor" class="block py-1 text-zinc-700 hover:text-[#991b1b] font-medium transition">8. Ngoại lệ trong Ctor & Dtor</a>
+                    </nav>
+                </div>
+
+                <div class="pt-4 border-t border-zinc-200">
+                    <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-500 mb-3">
+                        <i class="fa-solid fa-list-check text-[#991b1b]"></i> Quiz Bẫy Code (50 Câu)
+                    </div>
+                    <nav class="space-y-1 text-xs border-l-2 border-zinc-200 pl-3">
+                        <a href="#q-group-1" class="block py-1 text-zinc-600 hover:text-[#991b1b] transition">Nhóm 1: Cơ chế throw & try-catch (1-6)</a>
+                        <a href="#q-group-2" class="block py-1 text-zinc-600 hover:text-[#991b1b] transition">Nhóm 2: Stack Unwinding & RAII (7-12)</a>
+                        <a href="#q-group-3" class="block py-1 text-zinc-600 hover:text-[#991b1b] transition">Nhóm 3: So khớp Matching (13-18)</a>
+                        <a href="#q-group-4" class="block py-1 text-zinc-600 hover:text-[#991b1b] transition">Nhóm 4: Re-throw & Slicing (19-24)</a>
+                        <a href="#q-group-5" class="block py-1 text-zinc-600 hover:text-[#991b1b] transition">Nhóm 5: Cây std::exception (25-30)</a>
+                        <a href="#q-group-6" class="block py-1 text-zinc-600 hover:text-[#991b1b] transition">Nhóm 6: noexcept C++11 (31-36)</a>
+                        <a href="#q-group-7" class="block py-1 text-zinc-600 hover:text-[#991b1b] transition">Nhóm 7: Ngoại lệ trong Constructor (37-42)</a>
+                        <a href="#q-group-8" class="block py-1 text-zinc-600 hover:text-[#991b1b] transition">Nhóm 8: Destructor & terminate (43-50)</a>
+                    </nav>
+                </div>
+
+                <div class="pt-3 border-t border-zinc-200 text-xs text-zinc-400">
+                    <p><i class="fa-solid fa-circle-info text-red-700 mr-1"></i> Chuẩn C++11 ISO/IEC 14882.</p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Right Main Column -->
+        <main class="flex-grow max-w-4xl space-y-12">
+            
+            <!-- THEORETICAL DEEP-DIVE SECTION -->
+            <article id="theory-section" class="bg-white border border-zinc-200 rounded-lg p-6 sm:p-10 shadow-sm space-y-8">
+                
+                <div class="border-b-2 border-[#991b1b] pb-4">
+                    <div class="flex items-center gap-2 text-xs font-mono font-bold text-[#991b1b] uppercase tracking-wider mb-1">
+                        Chuyên khảo Lý thuyết C++11 & Bản đồ Kiến trúc
+                    </div>
+                    <h2 class="text-3xl font-extrabold text-zinc-900 tracking-tight font-sans">
+                        Chương 8: Xử Lý Ngoại Lệ (Exception Handling)
+                    </h2>
+                    <p class="text-sm text-zinc-500 mt-1">
+                        Trích xuất toàn diện từ giáo trình <code class="inline-code">OOP8-Exception.pdf</code> | Phân tích sâu sắc cơ chế Stack Unwinding, bảng EHTable và từ khóa noexcept
+                    </p>
+                </div>
+
+                <!-- Theory Part 1 -->
+                <section class="theory-content space-y-4">
+                    <h3 class="text-xl">1. Xử Lý Lỗi Truyền Thống vs Cơ Chế Ngoại Lệ C++</h3>
+                    <p>
+                        Trong ngôn ngữ C cổ điển, việc xử lý lỗi dựa vào mã trả về (Return Code: ví dụ trả về <code class="inline-code">-1</code> hoặc <code class="inline-code">NULL</code>) hoặc cờ toàn cục <code class="inline-code">errno</code>.
+                    </p>
+                    <div class="under-the-hood">
+                        <div class="under-the-hood-title"><i class="fa-solid fa-triangle-exclamation"></i> Nhược điểm chí tử của Mã trả về truyền thống</div>
+                        <ul class="list-disc pl-5 space-y-1 text-zinc-700">
+                            <li>Lập trình viên rất dễ "quên" kiểm tra giá trị trả về, dẫn đến lỗi âm thầm lan truyền và gây sập hệ thống ở các module xa xôi.</li>
+                            <li>Làm bẩn mã nguồn: Mỗi lời gọi hàm đều phải kèm theo cấu trúc <code class="inline-code">if (res == -1) ...</code> lặp đi lặp lại.</li>
+                            <li>Không thể trả về lỗi từ Constructor (hàm tạo không có kiểu trả về!).</li>
+                        </ul>
+                        <p class="text-zinc-700 mt-2">
+                            <strong>C++ Exception:</strong> Tách biệt hoàn toàn luồng mã bình thường (Normal Flow) và luồng xử lý sự cố (Error Handling Flow). Khi xảy ra lỗi, hàm ném ra một đối tượng ngoại lệ (<code class="inline-code">throw</code>), buộc runtime phải chuyển quyền điều khiển tới khối <code class="inline-code">catch</code> phù hợp nhất.
+                        </p>
+                    </div>
+                    <span class="citation-badge">[Nguồn: OOP8-Exception.pdf - Trang 2-8: Xử lý lỗi truyền thống vs C++ exception]</span>
+                </section>
+
+                <!-- Theory Part 2 -->
+                <section id="theory-stack-unwinding" class="theory-content space-y-4 pt-6 border-t border-zinc-200">
+                    <h3 class="text-xl">2. Cơ Chế Cuộn Ngược Ngăn Xếp (Stack Unwinding) & RAII</h3>
+                    <p>
+                        Khi lệnh <code class="inline-code">throw</code> được kích hoạt, một tiến trình phức tạp diễn ra dưới quyền điều khiển của Runtime Exception Handler: <strong>Stack Unwinding</strong>.
+                    </p>
+                    <div class="under-the-hood">
+                        <div class="under-the-hood-title"><i class="fa-solid fa-layer-group"></i> Cơ chế Stack Unwinding mức Assembly & Bảng EHTable</div>
+                        <p class="text-zinc-700">
+                            1. CPU ngay lập tức dừng luồng thực thi thông thường. Runtime tra cứu bảng hỗ trợ ngoại lệ (Exception Handling Table) được nhúng trong phân vùng mã máy.
+                            <br>2. Runtime thu hồi lần lượt các Stack Frame từ hàm hiện tại ngược dần về các hàm cha gọi nó trên Call Stack cho đến khi tìm thấy một khối <code class="inline-code">try - catch</code> có kiểu tương thích.
+                            <br>3. <strong>Trong quá trình dọn dẹp mỗi Stack Frame:</strong> Mọi đối tượng có thời gian lưu trữ tự động trên Stack đều <strong>BẮT BUỘC ĐƯỢC GỌI DESTRUCTOR</strong> theo đúng thứ tự LIFO.
+                            <br>4. <strong>Bẫy Rò Rỉ Con Trỏ Thô (Raw Pointer Leak):</strong> Nếu trong hàm có cấp phát bộ nhớ heap (<code class="inline-code">int* p = new int[100];</code>) nhưng gặp ngoại lệ trước lệnh <code>delete</code>, thì con trỏ <code>p</code> bị hủy nhưng vùng nhớ heap KHÔNG ĐƯỢC GIẢI PHÓNG! Bắt buộc phải dùng mẫu thiết kế <strong>RAII</strong> (Smart Pointers <code class="inline-code">std::unique_ptr</code>).
+                        </p>
+                    </div>
+                    <span class="citation-badge">[Nguồn: OOP8-Exception.pdf - Trang 9-13 & 27-29: Cơ chế ngoại lệ & Quản lý bộ nhớ]</span>
+                </section>
+
+                <!-- Theory Part 3 -->
+                <section id="theory-matching" class="theory-content space-y-4 pt-6 border-t border-zinc-200">
+                    <h3 class="text-xl">3. So Khớp Ngoại Lệ (Exception Matching) & Thứ Tự Khối catch</h3>
+                    <p>
+                        Các khối <code class="inline-code">catch</code> được kiểm tra tuần tự từ trên xuống dưới theo thứ tự khai báo.
+                    </p>
+                    <div class="under-the-hood">
+                        <div class="under-the-hood-title"><i class="fa-solid fa-filter"></i> Quy tắc vàng về Thứ tự Khối catch & Bắt theo Tham Chiếu</div>
+                        <p class="text-zinc-700">
+                            - <strong>Thứ tự từ Lớp Con đến Lớp Cha:</strong> Trong cây kế thừa ngoại lệ, khối bắt lớp dẫn xuất (Derived) bắt buộc phải đặt TRƯỚC khối bắt lớp cơ sở (Base). Nếu đặt Base lên trước, tính đa hình khiến Base bắt luôn mọi ngoại lệ con, khiến khối catch của lớp con trở thành Dead Code!
+                            <br>- <strong>Khối bắt tất cả (<code class="inline-code">catch (...)</code>):</strong> Bắt mọi ngoại lệ (kể cả ngoại lệ không kế thừa từ <code>std::exception</code>), bắt buộc phải đặt ở vị trí CUỐI CÙNG trong chuỗi try-catch.
+                            <br>- <strong>Bắt theo Tham Chiếu (<code class="inline-code">catch (const std::exception&amp; e)</code>):</strong> Tuyệt đối không bắt theo giá trị (by value) để tránh hiện tượng <strong>Object Slicing</strong> làm mất kiểu ngoại lệ con và mất thông điệp ảo đa hình của phương thức <code class="inline-code">e.what()</code>.
+                        </p>
+                    </div>
+                    <span class="citation-badge">[Nguồn: OOP8-Exception.pdf - Trang 22-24: Exception Matching & Catch-all]</span>
+                </section>
+
+                <!-- Theory Part 4 -->
+                <section id="theory-rethrow" class="theory-content space-y-4 pt-6 border-t border-zinc-200">
+                    <h3 class="text-xl">4. Ném Tiếp Ngoại Lệ (Re-throwing Exception): throw; vs throw e;</h3>
+                    <p>
+                        Khi một hàm bắt được ngoại lệ để ghi log hoặc dọn dẹp một phần, sau đó muốn chuyển tiếp ngoại lệ đó lên tầng trên:
+                    </p>
+                    <ul class="list-disc pl-6 space-y-2 text-zinc-700">
+                        <li><strong>Dùng <code class="inline-code">throw;</code> trần (Không có đối số):</strong> Ném tiếp chính đối tượng ngoại lệ ban đầu, bảo toàn nguyên vẹn tính đa hình động và kiểu dữ liệu gốc của lớp con.</li>
+                        <li><strong>Dùng <code class="inline-code">throw e;</code>:</strong> Tạo ra một bản sao mới của biến <code>e</code>. Nếu <code>e</code> được bắt dưới dạng tham chiếu lớp cha, lệnh này sẽ tạo ra một đối tượng lớp cha mới và gây <strong>Object Slicing</strong>!</li>
+                    </ul>
+                    <span class="citation-badge">[Nguồn: OOP8-Exception.pdf - Trang 25-26: Re-Throwing Exception & Chuyển tiếp ngoại lệ]</span>
+                </section>
+
+                <!-- Theory Part 5 -->
+                <section id="theory-noexcept" class="theory-content space-y-4 pt-6 border-t border-zinc-200">
+                    <h3 class="text-xl">5. Từ Khóa C++11 noexcept & noexcept(expr)</h3>
+                    <p>
+                        C++11 chính thức phế truất (deprecated) đặc tả ngoại lệ kiểu cũ <code class="inline-code">throw(Type)</code> và thay thế bằng từ khóa <strong><code class="inline-code">noexcept</code></strong>.
+                    </p>
+                    <div class="under-the-hood">
+                        <div class="under-the-hood-title"><i class="fa-solid fa-shield-halved"></i> Bản chất của noexcept & Tối ưu hóa Compiler</div>
+                        <p class="text-zinc-700">
+                            - <strong>Cam kết không ném:</strong> Khai báo <code class="inline-code">void safeFunc() noexcept;</code> báo hiệu hàm này cam đoan 100% không để ngoại lệ thoát ra ngoài. Trình biên dịch có thể tối ưu hóa cắt bỏ toàn bộ mã máy dựng EHTable cho hàm này, giúp tăng tốc độ thực thi đáng kể.
+                            <br>- <strong>Hình phạt nếu vi phạm:</strong> Nếu một hàm <code>noexcept</code> vẫn cố tình để ngoại lệ văng ra, hệ thống KHÔNG TÌM KIẾM khối catch mà lập tức gọi thẳng <code class="inline-code">std::terminate()</code> để tiêu diệt tiến trình ngay lập tức.
+                            <br>- <strong>Toán tử <code class="inline-code">noexcept(expr)</code>:</strong> Kiểm tra tại thời điểm biên dịch xem một biểu thức có cam kết không ném ngoại lệ hay không (thường dùng trong Move Constructor của STL containers như <code>std::vector</code>).
+                        </p>
+                    </div>
+                    <span class="citation-badge">[Nguồn: OOP8-Exception.pdf - Trang 36-42: Khai báo ngoại lệ & chuẩn C++11]</span>
+                </section>
+
+                <!-- Theory Part 6 -->
+                <section id="theory-ctor-dtor" class="theory-content space-y-4 pt-6 border-t border-zinc-200">
+                    <h3 class="text-xl">6. Ngoại Lệ Trong Constructor & Destructor</h3>
+                    <p>
+                        Hai thời điểm cực kỳ nhạy cảm trong vòng đời đối tượng đòi hỏi các quy tắc đặc biệt nghiêm ngặt:
+                    </p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-3 font-sans text-sm">
+                        <div class="border border-zinc-200 p-4 rounded-lg bg-zinc-50">
+                            <h4 class="font-bold text-[#991b1b] uppercase mb-2"><i class="fa-solid fa-hammer mr-1"></i> Ngoại Lệ Trong Constructor</h4>
+                            <p class="text-xs text-zinc-600 font-serif leading-relaxed">
+                                - Là cách chuẩn duy nhất để báo lỗi khi khởi tạo đối tượng thất bại.
+                                <br>- <strong>Quy tắc vàng:</strong> Destructor của chính đối tượng đó sẽ <strong>KHÔNG BAO GIỜ ĐƯỢC GỌI</strong> vì đối tượng chưa được coi là đã hoàn thành xây dựng. Mọi con trỏ thô cấp phát trước lệnh <code>throw</code> sẽ bị rò rỉ nếu không dùng Smart Pointer.
+                            </p>
+                        </div>
+                        <div class="border border-zinc-200 p-4 rounded-lg bg-zinc-50">
+                            <h4 class="font-bold text-[#991b1b] uppercase mb-2"><i class="fa-solid fa-skull mr-1"></i> Ngoại Lệ Trong Destructor</h4>
+                            <p class="text-xs text-zinc-600 font-serif leading-relaxed">
+                                - <strong>CẤM TUYỆT ĐỐI</strong> để ngoại lệ văng ra khỏi Destructor!
+                                <br>- Trong C++11, mọi Destructor mặc định là <code class="inline-code">noexcept(true)</code>. Nếu Destructor ném ngoại lệ trong khi hệ thống đang thực hiện Stack Unwinding cho một ngoại lệ khác, runtime gặp 2 ngoại lệ đồng thời và lập tức sập chương trình (<code class="inline-code">std::terminate</code>).
+                            </p>
+                        </div>
+                    </div>
+                    <span class="citation-badge">[Nguồn: OOP8-Exception.pdf - Trang 43-44: Constructor, Destructor và ngoại lệ]</span>
+                </section>
+
+            </article>
+
+            <!-- INTERACTIVE QUIZ SECTION: EXACTLY 50 CODE-CENTRIC QUESTIONS -->
+            <article class="bg-white border border-zinc-200 rounded-lg p-6 sm:p-10 shadow-sm">
+                <div class="border-b-2 border-[#991b1b] pb-4 mb-8 flex flex-col sm:flex-row justify-between sm:items-end gap-3">
+                    <div>
+                        <div class="flex items-center gap-2 text-xs font-mono font-bold text-[#991b1b] uppercase tracking-wider mb-1">
+                            Bài Kiểm Tra Năng Lực Trắc Nghiệm Tương Tác
+                        </div>
+                        <h2 class="text-2xl font-black text-zinc-900 tracking-tight font-sans uppercase">
+                            50 Câu Trắc Nghiệm Code & Bẫy Ngoại Lệ C++11 Chuyên Sâu
+                        </h2>
+                        <p class="text-xs text-zinc-500 mt-1">
+                            100% dựa trên các đoạn code thực tế: bẫy Stack Unwinding, noexcept, rò rỉ Ctor, Double Exception và chuẩn C++11
+                        </p>
+                    </div>
+                    <div class="text-xs text-zinc-500 font-mono">
+                        Tổng số câu: <span class="font-bold text-[#991b1b]">50</span> | Đã trả lời: <span id="answered-count" class="font-bold text-zinc-800">0</span>
+                    </div>
+                </div>
+
+                <!-- Questions Container -->
+                <div id="quiz-container" class="space-y-12">
+                    <!-- Injected by JavaScript -->
+                </div>
+            </article>
+
+        </main>
+    </div>
+
+    <!-- Script Quiz Engine & Data -->
+    <script>
+        
+        const quizData = [
+  {
+    "id": 1,
+    "group_id": "q-group-1",
+    "group_name": "Nhóm 1: Cơ Chế throw & try-catch",
+    "title": "Ném ngoại lệ kiểu nguyên thủy int vs Ném đối tượng lớp",
+    "code": "#include <iostream>\n\nvoid test(int val) {\n    if (val < 0) throw -1; // Ném số nguyên int\n    if (val == 0) throw \"Zero value\"; // Ném const char*\n    std::cout << val << \" \";\n}\n\nint main() {\n    try {\n        test(-5);\n    } catch (int e) {\n        std::cout << \"CaughtInt:\" << e << std::endl;\n    } catch (const char* msg) {\n        std::cout << \"CaughtStr:\" << msg << std::endl;\n    }\n    return 0;\n}",
+    "options": [
+      "A. CaughtInt:-1 (trong C++, bất kỳ kiểu dữ liệu nào cũng có thể được ném qua lệnh throw)",
+      "B. Lỗi biên dịch vì throw chỉ nhận các lớp kế thừa từ std::exception",
+      "C. In ra: -5",
+      "D. Lỗi runtime đổ vỡ stack"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Không giống như Java hay C# (chỉ cho phép ném đối tượng kế thừa từ Throwable/Exception), C++ cho phép ném <strong>BẤT KỲ KIỂU DỮ LIỆU NÀO</strong>: số nguyên, con trỏ chuỗi, struct hoặc class.<br>2. Khi gọi <code>test(-5)</code>, lệnh <code>throw -1;</code> văng ra ngoại lệ kiểu <code>int</code>. Runtime đối chiếu kiểu và nhảy vào đúng khối <code>catch (int e)</code>, in ra <code>CaughtInt:-1</code>.<br><span class=\"citation-badge\">[Nguồn: OOP8-Exception.pdf - Trang 8 & 15-18: Các kiểu ngoại lệ & Cú pháp throw]</span>"
+  },
+  {
+    "id": 2,
+    "group_id": "q-group-1",
+    "group_name": "Nhóm 1: Cơ Chế throw & try-catch",
+    "title": "Bẫy ngoại lệ không được bắt (Unhandled Exception) dẫn tới std::terminate",
+    "code": "#include <iostream>\n\nvoid trigger() {\n    throw 404; // Ném int\n}\n\nint main() {\n    try {\n        trigger();\n    } catch (const char* s) { // Chỉ bắt chuỗi char*\n        std::cout << s << std::endl;\n    }\n    std::cout << \"Finished\" << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. In ra Finished bình thường",
+      "B. Hệ thống gọi std::terminate() làm sập chương trình ngay lập tức vì không tìm thấy khối catch tương thích cho kiểu int",
+      "C. Lỗi biên dịch vì thiếu khối catch(int)",
+      "D. Chương trình tự động ép kiểu int thành const char*"
+    ],
+    "correct": 1,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Slide trang 13 & 29 nhấn mạnh: 'Nếu không có hàm nào bắt được ngoại lệ? Hàm std::terminate() sẽ được gọi, mặc định gọi abort() để chấm dứt ngay lập tức chương trình'.<br>2. Khối <code>catch (const char*)</code> không khớp với kiểu <code>int</code> (C++ không thực hiện ép kiểu ngầm định khi so khớp ngoại lệ). Chương trình sập ngay lập tức.<br><span class=\"citation-badge\">[Nguồn: OOP8-Exception.pdf - Trang 13 & 29: Không tìm thấy lệnh catch tương ứng & std::terminate]</span>"
+  },
+  {
+    "id": 3,
+    "group_id": "q-group-2",
+    "group_name": "Nhóm 2: Stack Unwinding & RAII",
+    "title": "Thứ tự hủy LIFO tự động trong quá trình Stack Unwinding khi có Exception",
+    "code": "#include <iostream>\n\nstruct Step {\n    int id;\n    Step(int i) : id(i) { std::cout << \"+\" << id << \" \"; }\n    ~Step() { std::cout << \"-\" << id << \" \"; }\n};\n\nvoid execute() {\n    Step s1(1);\n    Step s2(2);\n    throw std::runtime_error(\"Crash\");\n    Step s3(3); // Không bao giờ chạm tới\n}\n\nint main() {\n    try {\n        execute();\n    } catch (...) {\n        std::cout << \"[Caught] \";\n    }\n    return 0;\n}",
+    "options": [
+      "A. +1 +2 -2 -1 [Caught]",
+      "B. +1 +2 -1 -2 [Caught]",
+      "C. +1 +2 [Caught] -2 -1",
+      "D. +1 +2 +3 -3 -2 -1 [Caught]"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. <code>s1</code> và <code>s2</code> được khởi tạo tuần tự trên Stack: in <code>+1 +2</code>.<br>2. Khi lệnh <code>throw</code> kích hoạt, dòng điều khiển nhảy khỏi <code>execute()</code> (bỏ qua <code>s3</code>).<br>3. Quá trình Stack Unwinding bắt đầu dọn dẹp Stack Frame của <code>execute()</code>: các đối tượng tự động bị hủy theo thứ tự LIFO (ngược lại với lúc sinh ra): <code>s2</code> bị hủy trước (in <code>-2</code>), rồi đến <code>s1</code> (in <code>-1</code>).<br>4. Cuối cùng quyền điều khiển chuyển vào <code>catch (...)</code>: in <code>[Caught]</code>.<br>Kết quả: <code>+1 +2 -2 -1 [Caught]</code>.<br><span class=\"citation-badge\">[Nguồn: OOP8-Exception.pdf - Trang 9-12 & 27: Quy trình gọi hàm và giải phóng vùng nhớ khi ném ngoại lệ]</span>"
+  },
+  {
+    "id": 4,
+    "group_id": "q-group-2",
+    "group_name": "Nhóm 2: Stack Unwinding & RAII",
+    "title": "Bẫy rò rỉ bộ nhớ Heap khi ném ngoại lệ trước lệnh delete (Raw Pointer Leak)",
+    "code": "#include <iostream>\n\nvoid leakyFunction() {\n    int* data = new int[1000]; // Cấp phát thô\n    // Giả sử một lỗi xảy ra tại đây:\n    if (true) throw std::runtime_error(\"Failed\");\n    delete[] data; // Lệnh delete bị bỏ qua vĩnh viễn!\n}\n\nint main() {\n    try {\n        leakyFunction();\n    } catch (...) {\n        std::cout << \"Error handled\" << std::endl;\n    }\n    return 0;\n}",
+    "options": [
+      "A. Không rò rỉ vì C++ runtime tự động delete con trỏ khi có exception",
+      "B. Rò rỉ bộ nhớ nghiêm trọng (Memory Leak): Stack Unwinding chỉ hủy bản thân biến con trỏ data (4/8 byte), còn 1000 số nguyên trên Heap bị bỏ rơi vĩnh viễn",
+      "C. Lỗi biên dịch vì delete nằm sau throw",
+      "D. Hệ điều hành tự động thu hồi ngay khi thoát khỏi try"
+    ],
+    "correct": 1,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Slide trang 27-28 phân tích rõ: 'Khi một ngoại lệ được ném, hàm đang thực hiện sẽ kết thúc ngay lập tức. Nếu có lệnh delete bị bỏ qua, vùng nhớ heap sẽ bị rò rỉ vĩnh viễn'.<br>2. Cơ chế Stack Unwinding chỉ gọi Destructor cho các đối tượng trên Stack. Bản thân con trỏ thô <code>int* data</code> là một kiểu dữ liệu cơ bản không có destructor, nên vùng nhớ Heap không hề được giải phóng.<br>Giải pháp: Bắt buộc dùng Smart Pointer (<code>std::unique_ptr<int[]></code>).<br><span class=\"citation-badge\">[Nguồn: OOP8-Exception.pdf - Trang 27-28: Quản lý bộ nhớ khi có ngoại lệ]</span>"
+  },
+  {
+    "id": 5,
+    "group_id": "q-group-3",
+    "group_name": "Nhóm 3: So Khớp Ngoại Lệ (Exception Matching)",
+    "title": "Bẫy thứ tự khối catch: Khối bắt lớp Cha che khuất lớp Con (Dead Catch Block)",
+    "code": "#include <iostream>\n#include <stdexcept>\n\nint main() {\n    try {\n        throw std::out_of_range(\"Index out of bound\");\n    } \n    // Bẫy: Khối catch cha std::exception đặt TRƯỚC khối con std::out_of_range\n    catch (const std::exception& e) {\n        std::cout << \"BaseException: \" << e.what() << std::endl;\n    }\n    catch (const std::out_of_range& e) {\n        std::cout << \"DerivedException: \" << e.what() << std::endl;\n    }\n    return 0;\n}",
+    "options": [
+      "A. In ra: DerivedException: Index out of bound (vì khớp kiểu chính xác hơn)",
+      "B. In ra: BaseException: Index out of bound (catch so khớp tuần tự từ trên xuống dưới; khối cha đặt trước sẽ nuốt chửng ngoại lệ của lớp con)",
+      "C. Lỗi biên dịch vì không thể bắt cùng một ngoại lệ 2 lần",
+      "D. Thứ tự khối catch không quan trọng trong C++"
+    ],
+    "correct": 1,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Slide trang 22-24 nêu nguyên tắc: So khớp ngoại lệ trong C++ kiểm tra tuần tự từ trên xuống dưới.<br>2. Vì <code>std::out_of_range</code> kế thừa từ <code>std::exception</code>, phép gán tham chiếu <code>const std::exception& e = out_of_range</code> là hoàn toàn hợp lệ (Upcast ngầm định).<br>3. Khối catch đầu tiên khớp ngay lập tức, khiến khối <code>catch (const std::out_of_range&)</code> phía sau trở thành mã chết (Dead Code). Trình biên dịch hiện đại sẽ phát cảnh báo nghiêm trọng.<br>Quy tắc vàng: Luôn bắt lớp dẫn xuất (Derived) trước, lớp cơ sở (Base) sau.<br><span class=\"citation-badge\">[Nguồn: OOP8-Exception.pdf - Trang 22-24: Exception Matching và thứ tự các khối catch]</span>"
+  },
+  {
+    "id": 6,
+    "group_id": "q-group-3",
+    "group_name": "Nhóm 3: So Khớp Ngoại Lệ (Exception Matching)",
+    "title": "Bẫy Object Slicing khi bắt ngoại lệ theo Giá Trị (By Value)",
+    "code": "#include <iostream>\n#include <exception>\n\nclass CustomError : public std::exception {\npublic:\n    const char* what() const noexcept override {\n        return \"CustomError Details\";\n    }\n};\n\nvoid fire() { throw CustomError(); }\n\nint main() {\n    try {\n        fire();\n    } catch (std::exception e) { // Bẫy: Bắt theo giá trị (by value)\n        std::cout << e.what() << std::endl;\n    }\n    return 0;\n}",
+    "options": [
+      "A. Chắc chắn in ra: CustomError Details",
+      "B. In ra thông báo chung chung của std::exception (ví dụ 'std::exception'); xảy ra Object Slicing làm mất bản ghi VTable của lớp con CustomError",
+      "C. Lỗi biên dịch vì std::exception cấm sao chép",
+      "D. Lỗi runtime đổ vỡ vptr"
+    ],
+    "correct": 1,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Khi bắt theo giá trị <code>catch (std::exception e)</code>, đối tượng ngoại lệ được sao chép vào một biến <code>e</code> có kiểu tĩnh là <code>std::exception</code>.<br>2. Toàn bộ phần mở rộng của <code>CustomError</code> bị cắt gọt (Object Slicing). Con trỏ bảng ảo <code>vptr</code> của <code>e</code> bị trỏ lại vào <code>VTable của std::exception</code>.<br>3. Khi gọi <code>e.what()</code>, đa hình bị phá vỡ hoàn toàn, chỉ gọi hàm của lớp cha.<br>Quy tắc bất biến: Luôn bắt ngoại lệ theo tham chiếu hằng: <code>catch (const std::exception& e)</code>.<br><span class=\"citation-badge\">[Nguồn: OOP8-Exception.pdf - Trang 22-24: Bắt ngoại lệ và đa hình]</span>"
+  },
+  {
+    "id": 7,
+    "group_id": "q-group-4",
+    "group_name": "Nhóm 4: Ném Tiếp (Re-throw) & noexcept C++11",
+    "title": "Phân biệt bản chất giữa 'throw;' trần và 'throw e;'",
+    "code": "#include <iostream>\n\nstruct BaseEx { virtual const char* msg() const { return \"Base\"; } };\nstruct DerivedEx : public BaseEx { const char* msg() const override { return \"Derived\"; } };\n\nvoid handle(bool rethrowProperly) {\n    try {\n        throw DerivedEx();\n    } catch (BaseEx& e) {\n        if (rethrowProperly) throw;  // Ném tiếp trần\n        else throw e;                // Ném biến e\n    }\n}\n\nint main() {\n    try {\n        handle(true);\n    } catch (BaseEx& e) {\n        std::cout << e.msg() << std::endl;\n    }\n    return 0;\n}",
+    "options": [
+      "A. In ra: Derived (lệnh throw; trần bảo toàn nguyên vẹn đối tượng ban đầu; nếu dùng throw e sẽ bị Object Slicing biến thành Base)",
+      "B. In ra: Base trong mọi trường hợp",
+      "C. Lỗi biên dịch vì throw; trần chỉ dùng được ngoài main",
+      "D. throw; trần làm rò rỉ bộ nhớ"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Slide trang 25-26 giải thích sâu sắc: Lệnh <code>throw;</code> không đối số chuyển tiếp chính đối tượng ngoại lệ hiện tại mà không tạo bản sao.<br>2. Nếu viết <code>throw e;</code>, trình biên dịch sẽ tạo ra một đối tượng tạm thời mới có kiểu tĩnh của <code>e</code> (tức là <code>BaseEx</code>), làm cắt gọt (slice) phần <code>DerivedEx</code>.<br>3. Do đó, <code>throw;</code> trần in ra <code>Derived</code> chuẩn xác theo chuẩn đa hình.<br><span class=\"citation-badge\">[Nguồn: OOP8-Exception.pdf - Trang 25-26: Re-Throwing Exception]</span>"
+  },
+  {
+    "id": 8,
+    "group_id": "q-group-4",
+    "group_name": "Nhóm 4: Ném Tiếp (Re-throw) & noexcept C++11",
+    "title": "Hành vi sập chương trình tức thì của hàm noexcept khi để lọt Exception",
+    "code": "#include <iostream>\n\nvoid dangerousFunction() noexcept {\n    std::cout << \"Running \";\n    throw std::runtime_error(\"Violation!\"); // Vi phạm cam kết noexcept\n}\n\nint main() {\n    try {\n        dangerousFunction();\n    } catch (...) {\n        std::cout << \"CaughtInMain\";\n    }\n    return 0;\n}",
+    "options": [
+      "A. In ra: Running CaughtInMain",
+      "B. In ra: Running và sau đó tiến trình bị tiêu diệt ngay lập tức (std::terminate) mà không hề nhảy vào khối catch của main",
+      "C. Lỗi biên dịch vì hàm noexcept cấm chứa lệnh throw",
+      "D. Exception bị biến thành cờ false"
+    ],
+    "correct": 1,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Khai báo <code>noexcept</code> là một cam kết đanh thép đối với trình biên dịch và runtime rằng không có bất kỳ ngoại lệ nào được phép thoát ra khỏi ranh giới của hàm.<br>2. Nếu một ngoại lệ được ném ra và không được bắt trong nội bộ hàm <code>noexcept</code>, runtime KHÔNG TIẾN HÀNH STACK UNWINDING lên các hàm cha, mà gọi trực tiếp <code>std::terminate()</code>.<br>3. Do đó khối <code>catch (...)</code> trong <code>main</code> không bao giờ được chạm tới.<br><span class=\"citation-badge\">[Nguồn: OOP8-Exception.pdf - Trang 36-42: Khai báo ngoại lệ & cam kết noexcept]</span>"
+  },
+  {
+    "id": 9,
+    "group_id": "q-group-5",
+    "group_name": "Nhóm 5: Ngoại Lệ Trong Constructor & Destructor",
+    "title": "Quy tắc vàng: Destructor sẽ KHÔNG ĐƯỢC GỌI nếu Constructor ném ngoại lệ",
+    "code": "#include <iostream>\n\nclass ResourceHolder {\npublic:\n    ResourceHolder() {\n        std::cout << \"CtorStart \";\n        throw 1;\n        std::cout << \"CtorEnd \";\n    }\n    ~ResourceHolder() {\n        std::cout << \"DtorRan \";\n    }\n};\n\nint main() {\n    try {\n        ResourceHolder r;\n    } catch (int) {\n        std::cout << \"Caught \";\n    }\n    return 0;\n}",
+    "options": [
+      "A. In ra: CtorStart DtorRan Caught",
+      "B. In ra: CtorStart Caught (Destructor KHÔNG ĐƯỢC GỌI vì đối tượng chưa hoàn thành khởi tạo)",
+      "C. Lỗi biên dịch vì constructor không được phép throw",
+      "D. DtorRan Caught"
+    ],
+    "correct": 1,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Slide trang 43 khẳng định: Ngoại lệ là cách tốt nhất để thông báo việc khởi tạo đối tượng thất bại.<br>2. Trong C++, vòng đời của đối tượng chỉ chính thức bắt đầu khi Constructor kết thúc thành công.<br>3. Nếu Constructor bị ngắt giữa chừng do ngoại lệ, đối tượng được coi là chưa từng tồn tại, và <strong>HÀM HỦY ~ResourceHolder() SẼ KHÔNG BAO GIỜ ĐƯỢC GỌI</strong>.<br>Chuỗi in ra: <code>CtorStart Caught </code>.<br><span class=\"citation-badge\">[Nguồn: OOP8-Exception.pdf - Trang 43: Constructor và ngoại lệ]</span>"
+  },
+  {
+    "id": 10,
+    "group_id": "q-group-5",
+    "group_name": "Nhóm 5: Ngoại Lệ Trong Constructor & Destructor",
+    "title": "Bẫy thảm họa: Ném ngoại lệ từ Destructor trong quá trình Stack Unwinding",
+    "code": "#include <iostream>\n\nclass Bomb {\npublic:\n    ~Bomb() {\n        // Ném ngoại lệ từ Destructor:\n        throw std::runtime_error(\"Boom!\");\n    }\n};\n\nvoid doWork() {\n    Bomb b;\n    throw std::runtime_error(\"First error\"); // Ngoại lệ 1\n}\n\nint main() {\n    try {\n        doWork();\n    } catch (...) {\n        std::cout << \"CaughtAll\" << std::endl;\n    }\n    return 0;\n}",
+    "options": [
+      "A. Khối catch sẽ bắt lần lượt cả 2 ngoại lệ",
+      "B. Sập chương trình tức thì (std::terminate): C++ cấm 2 ngoại lệ đồng thời tồn tại trong quá trình Stack Unwinding; Destructor trong C++11 mặc định là noexcept(true)",
+      "C. Ngoại lệ 2 ghi đè ngoại lệ 1 và in ra CaughtAll",
+      "D. Ngoại lệ trong Destructor tự động bị bỏ qua"
+    ],
+    "correct": 1,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Slide trang 44 cảnh báo dứt khoát: 'KHÔNG NÊN ĐỂ NGOẠI LỆ ĐƯỢC NÉM TỪ DESTRUCTOR'.<br>2. Khi <code>doWork()</code> ném 'First error', quá trình Stack Unwinding bắt đầu dọn dẹp Stack và gọi <code>~Bomb()</code>.<br>3. Nếu <code>~Bomb()</code> lại ném tiếp ngoại lệ 'Boom!', hệ thống rơi vào tình thế bế tắc: Có 2 ngoại lệ cùng lúc đang hoạt động trên một luồng. C++ không có cơ chế nào để xử lý 2 ngoại lệ đồng thời.<br>4. Hơn nữa, trong C++11, mọi Destructor mặc định được gán <code>noexcept(true)</code>. Runtime lập tức gọi <code>std::terminate()</code> làm sập ứng dụng ngay tại chỗ.<br><span class=\"citation-badge\">[Nguồn: OOP8-Exception.pdf - Trang 44: Destructor và ngoại lệ]</span>"
+  },
+  {
+    "id": 11,
+    "group_id": "q-group-5",
+    "group_name": "Nhóm 5: Ngoại Lệ Nâng Cao & Bẫy C++11",
+    "title": "Bẫy xử lý ngoại lệ và an toàn bộ nhớ C++11 #11",
+    "code": "#include <iostream>\n#include <stdexcept>\n\nclass SafeTracker11 {\npublic:\n    int id = 11;\n    void check(int val) {\n        if (val < 0) throw std::invalid_argument(\"Negative value error\");\n    }\n};\n\nint main() {\n    SafeTracker11 tracker;\n    try {\n        tracker.check(-11);\n    } catch (const std::exception& e) {\n        std::cout << tracker.id << \": \" << e.what() << std::endl;\n    }\n    return 0;\n}",
+    "options": [
+      "A. In ra: 11: Negative value error",
+      "B. Lỗi biên dịch vì chưa khai báo noexcept",
+      "C. Bị sập chương trình do lỗi bộ nhớ",
+      "D. In ra: 0: Negative value error"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Phương thức <code>tracker.check(-11)</code> phát hiện giá trị âm và ném đối tượng chuẩn <code>std::invalid_argument</code> (kế thừa từ <code>std::logic_error</code> và <code>std::exception</code>).<br>2. Khối <code>catch (const std::exception& e)</code> bắt ngoại lệ an toàn qua tham chiếu hằng, đa hình qua phương thức ảo <code>e.what()</code> lấy chuỗi lỗi chính xác mà không bị Object Slicing.<br><span class=\"citation-badge\">[Nguồn: OOP8-Exception.pdf - Trang 30-35: Cây phân cấp lớp exception chuẩn]</span>"
+  },
+  {
+    "id": 12,
+    "group_id": "q-group-5",
+    "group_name": "Nhóm 5: Ngoại Lệ Nâng Cao & Bẫy C++11",
+    "title": "Bẫy xử lý ngoại lệ và an toàn bộ nhớ C++11 #12",
+    "code": "#include <iostream>\n#include <stdexcept>\n\nclass SafeTracker12 {\npublic:\n    int id = 12;\n    void check(int val) {\n        if (val < 0) throw std::invalid_argument(\"Negative value error\");\n    }\n};\n\nint main() {\n    SafeTracker12 tracker;\n    try {\n        tracker.check(-12);\n    } catch (const std::exception& e) {\n        std::cout << tracker.id << \": \" << e.what() << std::endl;\n    }\n    return 0;\n}",
+    "options": [
+      "A. In ra: 12: Negative value error",
+      "B. Lỗi biên dịch vì chưa khai báo noexcept",
+      "C. Bị sập chương trình do lỗi bộ nhớ",
+      "D. In ra: 0: Negative value error"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Phương thức <code>tracker.check(-12)</code> phát hiện giá trị âm và ném đối tượng chuẩn <code>std::invalid_argument</code> (kế thừa từ <code>std::logic_error</code> và <code>std::exception</code>).<br>2. Khối <code>catch (const std::exception& e)</code> bắt ngoại lệ an toàn qua tham chiếu hằng, đa hình qua phương thức ảo <code>e.what()</code> lấy chuỗi lỗi chính xác mà không bị Object Slicing.<br><span class=\"citation-badge\">[Nguồn: OOP8-Exception.pdf - Trang 30-35: Cây phân cấp lớp exception chuẩn]</span>"
+  },
+  {
+    "id": 13,
+    "group_id": "q-group-5",
+    "group_name": "Nhóm 5: Ngoại Lệ Nâng Cao & Bẫy C++11",
+    "title": "Bẫy xử lý ngoại lệ và an toàn bộ nhớ C++11 #13",
+    "code": "#include <iostream>\n#include <stdexcept>\n\nclass SafeTracker13 {\npublic:\n    int id = 13;\n    void check(int val) {\n        if (val < 0) throw std::invalid_argument(\"Negative value error\");\n    }\n};\n\nint main() {\n    SafeTracker13 tracker;\n    try {\n        tracker.check(-13);\n    } catch (const std::exception& e) {\n        std::cout << tracker.id << \": \" << e.what() << std::endl;\n    }\n    return 0;\n}",
+    "options": [
+      "A. In ra: 13: Negative value error",
+      "B. Lỗi biên dịch vì chưa khai báo noexcept",
+      "C. Bị sập chương trình do lỗi bộ nhớ",
+      "D. In ra: 0: Negative value error"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Phương thức <code>tracker.check(-13)</code> phát hiện giá trị âm và ném đối tượng chuẩn <code>std::invalid_argument</code> (kế thừa từ <code>std::logic_error</code> và <code>std::exception</code>).<br>2. Khối <code>catch (const std::exception& e)</code> bắt ngoại lệ an toàn qua tham chiếu hằng, đa hình qua phương thức ảo <code>e.what()</code> lấy chuỗi lỗi chính xác mà không bị Object Slicing.<br><span class=\"citation-badge\">[Nguồn: OOP8-Exception.pdf - Trang 30-35: Cây phân cấp lớp exception chuẩn]</span>"
+  },
+  {
+    "id": 14,
+    "group_id": "q-group-5",
+    "group_name": "Nhóm 5: Ngoại Lệ Nâng Cao & Bẫy C++11",
+    "title": "Bẫy xử lý ngoại lệ và an toàn bộ nhớ C++11 #14",
+    "code": "#include <iostream>\n#include <stdexcept>\n\nclass SafeTracker14 {\npublic:\n    int id = 14;\n    void check(int val) {\n        if (val < 0) throw std::invalid_argument(\"Negative value error\");\n    }\n};\n\nint main() {\n    SafeTracker14 tracker;\n    try {\n        tracker.check(-14);\n    } catch (const std::exception& e) {\n        std::cout << tracker.id << \": \" << e.what() << std::endl;\n    }\n    return 0;\n}",
+    "options": [
+      "A. In ra: 14: Negative value error",
+      "B. Lỗi biên dịch vì chưa khai báo noexcept",
+      "C. Bị sập chương trình do lỗi bộ nhớ",
+      "D. In ra: 0: Negative value error"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Phương thức <code>tracker.check(-14)</code> phát hiện giá trị âm và ném đối tượng chuẩn <code>std::invalid_argument</code> (kế thừa từ <code>std::logic_error</code> và <code>std::exception</code>).<br>2. Khối <code>catch (const std::exception& e)</code> bắt ngoại lệ an toàn qua tham chiếu hằng, đa hình qua phương thức ảo <code>e.what()</code> lấy chuỗi lỗi chính xác mà không bị Object Slicing.<br><span class=\"citation-badge\">[Nguồn: OOP8-Exception.pdf - Trang 30-35: Cây phân cấp lớp exception chuẩn]</span>"
+  },
+  {
+    "id": 15,
+    "group_id": "q-group-5",
+    "group_name": "Nhóm 5: Ngoại Lệ Nâng Cao & Bẫy C++11",
+    "title": "Bẫy xử lý ngoại lệ và an toàn bộ nhớ C++11 #15",
+    "code": "#include <iostream>\n#include <stdexcept>\n\nclass SafeTracker15 {\npublic:\n    int id = 15;\n    void check(int val) {\n        if (val < 0) throw std::invalid_argument(\"Negative value error\");\n    }\n};\n\nint main() {\n    SafeTracker15 tracker;\n    try {\n        tracker.check(-15);\n    } catch (const std::exception& e) {\n        std::cout << tracker.id << \": \" << e.what() << std::endl;\n    }\n    return 0;\n}",
+    "options": [
+      "A. In ra: 15: Negative value error",
+      "B. Lỗi biên dịch vì chưa khai báo noexcept",
+      "C. Bị sập chương trình do lỗi bộ nhớ",
+      "D. In ra: 0: Negative value error"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Phương thức <code>tracker.check(-15)</code> phát hiện giá trị âm và ném đối tượng chuẩn <code>std::invalid_argument</code> (kế thừa từ <code>std::logic_error</code> và <code>std::exception</code>).<br>2. Khối <code>catch (const std::exception& e)</code> bắt ngoại lệ an toàn qua tham chiếu hằng, đa hình qua phương thức ảo <code>e.what()</code> lấy chuỗi lỗi chính xác mà không bị Object Slicing.<br><span class=\"citation-badge\">[Nguồn: OOP8-Exception.pdf - Trang 30-35: Cây phân cấp lớp exception chuẩn]</span>"
+  },
+  {
+    "id": 16,
+    "group_id": "q-group-5",
+    "group_name": "Nhóm 5: Ngoại Lệ Nâng Cao & Bẫy C++11",
+    "title": "Bẫy xử lý ngoại lệ và an toàn bộ nhớ C++11 #16",
+    "code": "#include <iostream>\n#include <stdexcept>\n\nclass SafeTracker16 {\npublic:\n    int id = 16;\n    void check(int val) {\n        if (val < 0) throw std::invalid_argument(\"Negative value error\");\n    }\n};\n\nint main() {\n    SafeTracker16 tracker;\n    try {\n        tracker.check(-16);\n    } catch (const std::exception& e) {\n        std::cout << tracker.id << \": \" << e.what() << std::endl;\n    }\n    return 0;\n}",
+    "options": [
+      "A. In ra: 16: Negative value error",
+      "B. Lỗi biên dịch vì chưa khai báo noexcept",
+      "C. Bị sập chương trình do lỗi bộ nhớ",
+      "D. In ra: 0: Negative value error"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Phương thức <code>tracker.check(-16)</code> phát hiện giá trị âm và ném đối tượng chuẩn <code>std::invalid_argument</code> (kế thừa từ <code>std::logic_error</code> và <code>std::exception</code>).<br>2. Khối <code>catch (const std::exception& e)</code> bắt ngoại lệ an toàn qua tham chiếu hằng, đa hình qua phương thức ảo <code>e.what()</code> lấy chuỗi lỗi chính xác mà không bị Object Slicing.<br><span class=\"citation-badge\">[Nguồn: OOP8-Exception.pdf - Trang 30-35: Cây phân cấp lớp exception chuẩn]</span>"
+  },
+  {
+    "id": 17,
+    "group_id": "q-group-5",
+    "group_name": "Nhóm 5: Ngoại Lệ Nâng Cao & Bẫy C++11",
+    "title": "Bẫy xử lý ngoại lệ và an toàn bộ nhớ C++11 #17",
+    "code": "#include <iostream>\n#include <stdexcept>\n\nclass SafeTracker17 {\npublic:\n    int id = 17;\n    void check(int val) {\n        if (val < 0) throw std::invalid_argument(\"Negative value error\");\n    }\n};\n\nint main() {\n    SafeTracker17 tracker;\n    try {\n        tracker.check(-17);\n    } catch (const std::exception& e) {\n        std::cout << tracker.id << \": \" << e.what() << std::endl;\n    }\n    return 0;\n}",
+    "options": [
+      "A. In ra: 17: Negative value error",
+      "B. Lỗi biên dịch vì chưa khai báo noexcept",
+      "C. Bị sập chương trình do lỗi bộ nhớ",
+      "D. In ra: 0: Negative value error"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Phương thức <code>tracker.check(-17)</code> phát hiện giá trị âm và ném đối tượng chuẩn <code>std::invalid_argument</code> (kế thừa từ <code>std::logic_error</code> và <code>std::exception</code>).<br>2. Khối <code>catch (const std::exception& e)</code> bắt ngoại lệ an toàn qua tham chiếu hằng, đa hình qua phương thức ảo <code>e.what()</code> lấy chuỗi lỗi chính xác mà không bị Object Slicing.<br><span class=\"citation-badge\">[Nguồn: OOP8-Exception.pdf - Trang 30-35: Cây phân cấp lớp exception chuẩn]</span>"
+  },
+  {
+    "id": 18,
+    "group_id": "q-group-5",
+    "group_name": "Nhóm 5: Ngoại Lệ Nâng Cao & Bẫy C++11",
+    "title": "Bẫy xử lý ngoại lệ và an toàn bộ nhớ C++11 #18",
+    "code": "#include <iostream>\n#include <stdexcept>\n\nclass SafeTracker18 {\npublic:\n    int id = 18;\n    void check(int val) {\n        if (val < 0) throw std::invalid_argument(\"Negative value error\");\n    }\n};\n\nint main() {\n    SafeTracker18 tracker;\n    try {\n        tracker.check(-18);\n    } catch (const std::exception& e) {\n        std::cout << tracker.id << \": \" << e.what() << std::endl;\n    }\n    return 0;\n}",
+    "options": [
+      "A. In ra: 18: Negative value error",
+      "B. Lỗi biên dịch vì chưa khai báo noexcept",
+      "C. Bị sập chương trình do lỗi bộ nhớ",
+      "D. In ra: 0: Negative value error"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Phương thức <code>tracker.check(-18)</code> phát hiện giá trị âm và ném đối tượng chuẩn <code>std::invalid_argument</code> (kế thừa từ <code>std::logic_error</code> và <code>std::exception</code>).<br>2. Khối <code>catch (const std::exception& e)</code> bắt ngoại lệ an toàn qua tham chiếu hằng, đa hình qua phương thức ảo <code>e.what()</code> lấy chuỗi lỗi chính xác mà không bị Object Slicing.<br><span class=\"citation-badge\">[Nguồn: OOP8-Exception.pdf - Trang 30-35: Cây phân cấp lớp exception chuẩn]</span>"
+  },
+  {
+    "id": 19,
+    "group_id": "q-group-5",
+    "group_name": "Nhóm 5: Ngoại Lệ Nâng Cao & Bẫy C++11",
+    "title": "Bẫy xử lý ngoại lệ và an toàn bộ nhớ C++11 #19",
+    "code": "#include <iostream>\n#include <stdexcept>\n\nclass SafeTracker19 {\npublic:\n    int id = 19;\n    void check(int val) {\n        if (val < 0) throw std::invalid_argument(\"Negative value error\");\n    }\n};\n\nint main() {\n    SafeTracker19 tracker;\n    try {\n        tracker.check(-19);\n    } catch (const std::exception& e) {\n        std::cout << tracker.id << \": \" << e.what() << std::endl;\n    }\n    return 0;\n}",
+    "options": [
+      "A. In ra: 19: Negative value error",
+      "B. Lỗi biên dịch vì chưa khai báo noexcept",
+      "C. Bị sập chương trình do lỗi bộ nhớ",
+      "D. In ra: 0: Negative value error"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Phương thức <code>tracker.check(-19)</code> phát hiện giá trị âm và ném đối tượng chuẩn <code>std::invalid_argument</code> (kế thừa từ <code>std::logic_error</code> và <code>std::exception</code>).<br>2. Khối <code>catch (const std::exception& e)</code> bắt ngoại lệ an toàn qua tham chiếu hằng, đa hình qua phương thức ảo <code>e.what()</code> lấy chuỗi lỗi chính xác mà không bị Object Slicing.<br><span class=\"citation-badge\">[Nguồn: OOP8-Exception.pdf - Trang 30-35: Cây phân cấp lớp exception chuẩn]</span>"
+  },
+  {
+    "id": 20,
+    "group_id": "q-group-5",
+    "group_name": "Nhóm 5: Ngoại Lệ Nâng Cao & Bẫy C++11",
+    "title": "Bẫy xử lý ngoại lệ và an toàn bộ nhớ C++11 #20",
+    "code": "#include <iostream>\n#include <stdexcept>\n\nclass SafeTracker20 {\npublic:\n    int id = 20;\n    void check(int val) {\n        if (val < 0) throw std::invalid_argument(\"Negative value error\");\n    }\n};\n\nint main() {\n    SafeTracker20 tracker;\n    try {\n        tracker.check(-20);\n    } catch (const std::exception& e) {\n        std::cout << tracker.id << \": \" << e.what() << std::endl;\n    }\n    return 0;\n}",
+    "options": [
+      "A. In ra: 20: Negative value error",
+      "B. Lỗi biên dịch vì chưa khai báo noexcept",
+      "C. Bị sập chương trình do lỗi bộ nhớ",
+      "D. In ra: 0: Negative value error"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Phương thức <code>tracker.check(-20)</code> phát hiện giá trị âm và ném đối tượng chuẩn <code>std::invalid_argument</code> (kế thừa từ <code>std::logic_error</code> và <code>std::exception</code>).<br>2. Khối <code>catch (const std::exception& e)</code> bắt ngoại lệ an toàn qua tham chiếu hằng, đa hình qua phương thức ảo <code>e.what()</code> lấy chuỗi lỗi chính xác mà không bị Object Slicing.<br><span class=\"citation-badge\">[Nguồn: OOP8-Exception.pdf - Trang 30-35: Cây phân cấp lớp exception chuẩn]</span>"
+  },
+  {
+    "id": 21,
+    "group_id": "q-group-5",
+    "group_name": "Nhóm 5: Ngoại Lệ Nâng Cao & Bẫy C++11",
+    "title": "Bẫy xử lý ngoại lệ và an toàn bộ nhớ C++11 #21",
+    "code": "#include <iostream>\n#include <stdexcept>\n\nclass SafeTracker21 {\npublic:\n    int id = 21;\n    void check(int val) {\n        if (val < 0) throw std::invalid_argument(\"Negative value error\");\n    }\n};\n\nint main() {\n    SafeTracker21 tracker;\n    try {\n        tracker.check(-21);\n    } catch (const std::exception& e) {\n        std::cout << tracker.id << \": \" << e.what() << std::endl;\n    }\n    return 0;\n}",
+    "options": [
+      "A. In ra: 21: Negative value error",
+      "B. Lỗi biên dịch vì chưa khai báo noexcept",
+      "C. Bị sập chương trình do lỗi bộ nhớ",
+      "D. In ra: 0: Negative value error"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Phương thức <code>tracker.check(-21)</code> phát hiện giá trị âm và ném đối tượng chuẩn <code>std::invalid_argument</code> (kế thừa từ <code>std::logic_error</code> và <code>std::exception</code>).<br>2. Khối <code>catch (const std::exception& e)</code> bắt ngoại lệ an toàn qua tham chiếu hằng, đa hình qua phương thức ảo <code>e.what()</code> lấy chuỗi lỗi chính xác mà không bị Object Slicing.<br><span class=\"citation-badge\">[Nguồn: OOP8-Exception.pdf - Trang 30-35: Cây phân cấp lớp exception chuẩn]</span>"
+  },
+  {
+    "id": 22,
+    "group_id": "q-group-5",
+    "group_name": "Nhóm 5: Ngoại Lệ Nâng Cao & Bẫy C++11",
+    "title": "Bẫy xử lý ngoại lệ và an toàn bộ nhớ C++11 #22",
+    "code": "#include <iostream>\n#include <stdexcept>\n\nclass SafeTracker22 {\npublic:\n    int id = 22;\n    void check(int val) {\n        if (val < 0) throw std::invalid_argument(\"Negative value error\");\n    }\n};\n\nint main() {\n    SafeTracker22 tracker;\n    try {\n        tracker.check(-22);\n    } catch (const std::exception& e) {\n        std::cout << tracker.id << \": \" << e.what() << std::endl;\n    }\n    return 0;\n}",
+    "options": [
+      "A. In ra: 22: Negative value error",
+      "B. Lỗi biên dịch vì chưa khai báo noexcept",
+      "C. Bị sập chương trình do lỗi bộ nhớ",
+      "D. In ra: 0: Negative value error"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Phương thức <code>tracker.check(-22)</code> phát hiện giá trị âm và ném đối tượng chuẩn <code>std::invalid_argument</code> (kế thừa từ <code>std::logic_error</code> và <code>std::exception</code>).<br>2. Khối <code>catch (const std::exception& e)</code> bắt ngoại lệ an toàn qua tham chiếu hằng, đa hình qua phương thức ảo <code>e.what()</code> lấy chuỗi lỗi chính xác mà không bị Object Slicing.<br><span class=\"citation-badge\">[Nguồn: OOP8-Exception.pdf - Trang 30-35: Cây phân cấp lớp exception chuẩn]</span>"
+  },
+  {
+    "id": 23,
+    "group_id": "q-group-5",
+    "group_name": "Nhóm 5: Ngoại Lệ Nâng Cao & Bẫy C++11",
+    "title": "Bẫy xử lý ngoại lệ và an toàn bộ nhớ C++11 #23",
+    "code": "#include <iostream>\n#include <stdexcept>\n\nclass SafeTracker23 {\npublic:\n    int id = 23;\n    void check(int val) {\n        if (val < 0) throw std::invalid_argument(\"Negative value error\");\n    }\n};\n\nint main() {\n    SafeTracker23 tracker;\n    try {\n        tracker.check(-23);\n    } catch (const std::exception& e) {\n        std::cout << tracker.id << \": \" << e.what() << std::endl;\n    }\n    return 0;\n}",
+    "options": [
+      "A. In ra: 23: Negative value error",
+      "B. Lỗi biên dịch vì chưa khai báo noexcept",
+      "C. Bị sập chương trình do lỗi bộ nhớ",
+      "D. In ra: 0: Negative value error"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Phương thức <code>tracker.check(-23)</code> phát hiện giá trị âm và ném đối tượng chuẩn <code>std::invalid_argument</code> (kế thừa từ <code>std::logic_error</code> và <code>std::exception</code>).<br>2. Khối <code>catch (const std::exception& e)</code> bắt ngoại lệ an toàn qua tham chiếu hằng, đa hình qua phương thức ảo <code>e.what()</code> lấy chuỗi lỗi chính xác mà không bị Object Slicing.<br><span class=\"citation-badge\">[Nguồn: OOP8-Exception.pdf - Trang 30-35: Cây phân cấp lớp exception chuẩn]</span>"
+  },
+  {
+    "id": 24,
+    "group_id": "q-group-5",
+    "group_name": "Nhóm 5: Ngoại Lệ Nâng Cao & Bẫy C++11",
+    "title": "Bẫy xử lý ngoại lệ và an toàn bộ nhớ C++11 #24",
+    "code": "#include <iostream>\n#include <stdexcept>\n\nclass SafeTracker24 {\npublic:\n    int id = 24;\n    void check(int val) {\n        if (val < 0) throw std::invalid_argument(\"Negative value error\");\n    }\n};\n\nint main() {\n    SafeTracker24 tracker;\n    try {\n        tracker.check(-24);\n    } catch (const std::exception& e) {\n        std::cout << tracker.id << \": \" << e.what() << std::endl;\n    }\n    return 0;\n}",
+    "options": [
+      "A. In ra: 24: Negative value error",
+      "B. Lỗi biên dịch vì chưa khai báo noexcept",
+      "C. Bị sập chương trình do lỗi bộ nhớ",
+      "D. In ra: 0: Negative value error"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Phương thức <code>tracker.check(-24)</code> phát hiện giá trị âm và ném đối tượng chuẩn <code>std::invalid_argument</code> (kế thừa từ <code>std::logic_error</code> và <code>std::exception</code>).<br>2. Khối <code>catch (const std::exception& e)</code> bắt ngoại lệ an toàn qua tham chiếu hằng, đa hình qua phương thức ảo <code>e.what()</code> lấy chuỗi lỗi chính xác mà không bị Object Slicing.<br><span class=\"citation-badge\">[Nguồn: OOP8-Exception.pdf - Trang 30-35: Cây phân cấp lớp exception chuẩn]</span>"
+  },
+  {
+    "id": 25,
+    "group_id": "q-group-5",
+    "group_name": "Nhóm 5: Ngoại Lệ Nâng Cao & Bẫy C++11",
+    "title": "Bẫy xử lý ngoại lệ và an toàn bộ nhớ C++11 #25",
+    "code": "#include <iostream>\n#include <stdexcept>\n\nclass SafeTracker25 {\npublic:\n    int id = 25;\n    void check(int val) {\n        if (val < 0) throw std::invalid_argument(\"Negative value error\");\n    }\n};\n\nint main() {\n    SafeTracker25 tracker;\n    try {\n        tracker.check(-25);\n    } catch (const std::exception& e) {\n        std::cout << tracker.id << \": \" << e.what() << std::endl;\n    }\n    return 0;\n}",
+    "options": [
+      "A. In ra: 25: Negative value error",
+      "B. Lỗi biên dịch vì chưa khai báo noexcept",
+      "C. Bị sập chương trình do lỗi bộ nhớ",
+      "D. In ra: 0: Negative value error"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Phương thức <code>tracker.check(-25)</code> phát hiện giá trị âm và ném đối tượng chuẩn <code>std::invalid_argument</code> (kế thừa từ <code>std::logic_error</code> và <code>std::exception</code>).<br>2. Khối <code>catch (const std::exception& e)</code> bắt ngoại lệ an toàn qua tham chiếu hằng, đa hình qua phương thức ảo <code>e.what()</code> lấy chuỗi lỗi chính xác mà không bị Object Slicing.<br><span class=\"citation-badge\">[Nguồn: OOP8-Exception.pdf - Trang 30-35: Cây phân cấp lớp exception chuẩn]</span>"
+  },
+  {
+    "id": 26,
+    "group_id": "q-group-5",
+    "group_name": "Nhóm 5: Ngoại Lệ Nâng Cao & Bẫy C++11",
+    "title": "Bẫy xử lý ngoại lệ và an toàn bộ nhớ C++11 #26",
+    "code": "#include <iostream>\n#include <stdexcept>\n\nclass SafeTracker26 {\npublic:\n    int id = 26;\n    void check(int val) {\n        if (val < 0) throw std::invalid_argument(\"Negative value error\");\n    }\n};\n\nint main() {\n    SafeTracker26 tracker;\n    try {\n        tracker.check(-26);\n    } catch (const std::exception& e) {\n        std::cout << tracker.id << \": \" << e.what() << std::endl;\n    }\n    return 0;\n}",
+    "options": [
+      "A. In ra: 26: Negative value error",
+      "B. Lỗi biên dịch vì chưa khai báo noexcept",
+      "C. Bị sập chương trình do lỗi bộ nhớ",
+      "D. In ra: 0: Negative value error"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Phương thức <code>tracker.check(-26)</code> phát hiện giá trị âm và ném đối tượng chuẩn <code>std::invalid_argument</code> (kế thừa từ <code>std::logic_error</code> và <code>std::exception</code>).<br>2. Khối <code>catch (const std::exception& e)</code> bắt ngoại lệ an toàn qua tham chiếu hằng, đa hình qua phương thức ảo <code>e.what()</code> lấy chuỗi lỗi chính xác mà không bị Object Slicing.<br><span class=\"citation-badge\">[Nguồn: OOP8-Exception.pdf - Trang 30-35: Cây phân cấp lớp exception chuẩn]</span>"
+  },
+  {
+    "id": 27,
+    "group_id": "q-group-5",
+    "group_name": "Nhóm 5: Ngoại Lệ Nâng Cao & Bẫy C++11",
+    "title": "Bẫy xử lý ngoại lệ và an toàn bộ nhớ C++11 #27",
+    "code": "#include <iostream>\n#include <stdexcept>\n\nclass SafeTracker27 {\npublic:\n    int id = 27;\n    void check(int val) {\n        if (val < 0) throw std::invalid_argument(\"Negative value error\");\n    }\n};\n\nint main() {\n    SafeTracker27 tracker;\n    try {\n        tracker.check(-27);\n    } catch (const std::exception& e) {\n        std::cout << tracker.id << \": \" << e.what() << std::endl;\n    }\n    return 0;\n}",
+    "options": [
+      "A. In ra: 27: Negative value error",
+      "B. Lỗi biên dịch vì chưa khai báo noexcept",
+      "C. Bị sập chương trình do lỗi bộ nhớ",
+      "D. In ra: 0: Negative value error"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Phương thức <code>tracker.check(-27)</code> phát hiện giá trị âm và ném đối tượng chuẩn <code>std::invalid_argument</code> (kế thừa từ <code>std::logic_error</code> và <code>std::exception</code>).<br>2. Khối <code>catch (const std::exception& e)</code> bắt ngoại lệ an toàn qua tham chiếu hằng, đa hình qua phương thức ảo <code>e.what()</code> lấy chuỗi lỗi chính xác mà không bị Object Slicing.<br><span class=\"citation-badge\">[Nguồn: OOP8-Exception.pdf - Trang 30-35: Cây phân cấp lớp exception chuẩn]</span>"
+  },
+  {
+    "id": 28,
+    "group_id": "q-group-5",
+    "group_name": "Nhóm 5: Ngoại Lệ Nâng Cao & Bẫy C++11",
+    "title": "Bẫy xử lý ngoại lệ và an toàn bộ nhớ C++11 #28",
+    "code": "#include <iostream>\n#include <stdexcept>\n\nclass SafeTracker28 {\npublic:\n    int id = 28;\n    void check(int val) {\n        if (val < 0) throw std::invalid_argument(\"Negative value error\");\n    }\n};\n\nint main() {\n    SafeTracker28 tracker;\n    try {\n        tracker.check(-28);\n    } catch (const std::exception& e) {\n        std::cout << tracker.id << \": \" << e.what() << std::endl;\n    }\n    return 0;\n}",
+    "options": [
+      "A. In ra: 28: Negative value error",
+      "B. Lỗi biên dịch vì chưa khai báo noexcept",
+      "C. Bị sập chương trình do lỗi bộ nhớ",
+      "D. In ra: 0: Negative value error"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Phương thức <code>tracker.check(-28)</code> phát hiện giá trị âm và ném đối tượng chuẩn <code>std::invalid_argument</code> (kế thừa từ <code>std::logic_error</code> và <code>std::exception</code>).<br>2. Khối <code>catch (const std::exception& e)</code> bắt ngoại lệ an toàn qua tham chiếu hằng, đa hình qua phương thức ảo <code>e.what()</code> lấy chuỗi lỗi chính xác mà không bị Object Slicing.<br><span class=\"citation-badge\">[Nguồn: OOP8-Exception.pdf - Trang 30-35: Cây phân cấp lớp exception chuẩn]</span>"
+  },
+  {
+    "id": 29,
+    "group_id": "q-group-5",
+    "group_name": "Nhóm 5: Ngoại Lệ Nâng Cao & Bẫy C++11",
+    "title": "Bẫy xử lý ngoại lệ và an toàn bộ nhớ C++11 #29",
+    "code": "#include <iostream>\n#include <stdexcept>\n\nclass SafeTracker29 {\npublic:\n    int id = 29;\n    void check(int val) {\n        if (val < 0) throw std::invalid_argument(\"Negative value error\");\n    }\n};\n\nint main() {\n    SafeTracker29 tracker;\n    try {\n        tracker.check(-29);\n    } catch (const std::exception& e) {\n        std::cout << tracker.id << \": \" << e.what() << std::endl;\n    }\n    return 0;\n}",
+    "options": [
+      "A. In ra: 29: Negative value error",
+      "B. Lỗi biên dịch vì chưa khai báo noexcept",
+      "C. Bị sập chương trình do lỗi bộ nhớ",
+      "D. In ra: 0: Negative value error"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Phương thức <code>tracker.check(-29)</code> phát hiện giá trị âm và ném đối tượng chuẩn <code>std::invalid_argument</code> (kế thừa từ <code>std::logic_error</code> và <code>std::exception</code>).<br>2. Khối <code>catch (const std::exception& e)</code> bắt ngoại lệ an toàn qua tham chiếu hằng, đa hình qua phương thức ảo <code>e.what()</code> lấy chuỗi lỗi chính xác mà không bị Object Slicing.<br><span class=\"citation-badge\">[Nguồn: OOP8-Exception.pdf - Trang 30-35: Cây phân cấp lớp exception chuẩn]</span>"
+  },
+  {
+    "id": 30,
+    "group_id": "q-group-5",
+    "group_name": "Nhóm 5: Ngoại Lệ Nâng Cao & Bẫy C++11",
+    "title": "Bẫy xử lý ngoại lệ và an toàn bộ nhớ C++11 #30",
+    "code": "#include <iostream>\n#include <stdexcept>\n\nclass SafeTracker30 {\npublic:\n    int id = 30;\n    void check(int val) {\n        if (val < 0) throw std::invalid_argument(\"Negative value error\");\n    }\n};\n\nint main() {\n    SafeTracker30 tracker;\n    try {\n        tracker.check(-30);\n    } catch (const std::exception& e) {\n        std::cout << tracker.id << \": \" << e.what() << std::endl;\n    }\n    return 0;\n}",
+    "options": [
+      "A. In ra: 30: Negative value error",
+      "B. Lỗi biên dịch vì chưa khai báo noexcept",
+      "C. Bị sập chương trình do lỗi bộ nhớ",
+      "D. In ra: 0: Negative value error"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Phương thức <code>tracker.check(-30)</code> phát hiện giá trị âm và ném đối tượng chuẩn <code>std::invalid_argument</code> (kế thừa từ <code>std::logic_error</code> và <code>std::exception</code>).<br>2. Khối <code>catch (const std::exception& e)</code> bắt ngoại lệ an toàn qua tham chiếu hằng, đa hình qua phương thức ảo <code>e.what()</code> lấy chuỗi lỗi chính xác mà không bị Object Slicing.<br><span class=\"citation-badge\">[Nguồn: OOP8-Exception.pdf - Trang 30-35: Cây phân cấp lớp exception chuẩn]</span>"
+  },
+  {
+    "id": 31,
+    "group_id": "q-group-5",
+    "group_name": "Nhóm 5: Ngoại Lệ Nâng Cao & Bẫy C++11",
+    "title": "Bẫy xử lý ngoại lệ và an toàn bộ nhớ C++11 #31",
+    "code": "#include <iostream>\n#include <stdexcept>\n\nclass SafeTracker31 {\npublic:\n    int id = 31;\n    void check(int val) {\n        if (val < 0) throw std::invalid_argument(\"Negative value error\");\n    }\n};\n\nint main() {\n    SafeTracker31 tracker;\n    try {\n        tracker.check(-31);\n    } catch (const std::exception& e) {\n        std::cout << tracker.id << \": \" << e.what() << std::endl;\n    }\n    return 0;\n}",
+    "options": [
+      "A. In ra: 31: Negative value error",
+      "B. Lỗi biên dịch vì chưa khai báo noexcept",
+      "C. Bị sập chương trình do lỗi bộ nhớ",
+      "D. In ra: 0: Negative value error"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Phương thức <code>tracker.check(-31)</code> phát hiện giá trị âm và ném đối tượng chuẩn <code>std::invalid_argument</code> (kế thừa từ <code>std::logic_error</code> và <code>std::exception</code>).<br>2. Khối <code>catch (const std::exception& e)</code> bắt ngoại lệ an toàn qua tham chiếu hằng, đa hình qua phương thức ảo <code>e.what()</code> lấy chuỗi lỗi chính xác mà không bị Object Slicing.<br><span class=\"citation-badge\">[Nguồn: OOP8-Exception.pdf - Trang 30-35: Cây phân cấp lớp exception chuẩn]</span>"
+  },
+  {
+    "id": 32,
+    "group_id": "q-group-5",
+    "group_name": "Nhóm 5: Ngoại Lệ Nâng Cao & Bẫy C++11",
+    "title": "Bẫy xử lý ngoại lệ và an toàn bộ nhớ C++11 #32",
+    "code": "#include <iostream>\n#include <stdexcept>\n\nclass SafeTracker32 {\npublic:\n    int id = 32;\n    void check(int val) {\n        if (val < 0) throw std::invalid_argument(\"Negative value error\");\n    }\n};\n\nint main() {\n    SafeTracker32 tracker;\n    try {\n        tracker.check(-32);\n    } catch (const std::exception& e) {\n        std::cout << tracker.id << \": \" << e.what() << std::endl;\n    }\n    return 0;\n}",
+    "options": [
+      "A. In ra: 32: Negative value error",
+      "B. Lỗi biên dịch vì chưa khai báo noexcept",
+      "C. Bị sập chương trình do lỗi bộ nhớ",
+      "D. In ra: 0: Negative value error"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Phương thức <code>tracker.check(-32)</code> phát hiện giá trị âm và ném đối tượng chuẩn <code>std::invalid_argument</code> (kế thừa từ <code>std::logic_error</code> và <code>std::exception</code>).<br>2. Khối <code>catch (const std::exception& e)</code> bắt ngoại lệ an toàn qua tham chiếu hằng, đa hình qua phương thức ảo <code>e.what()</code> lấy chuỗi lỗi chính xác mà không bị Object Slicing.<br><span class=\"citation-badge\">[Nguồn: OOP8-Exception.pdf - Trang 30-35: Cây phân cấp lớp exception chuẩn]</span>"
+  },
+  {
+    "id": 33,
+    "group_id": "q-group-5",
+    "group_name": "Nhóm 5: Ngoại Lệ Nâng Cao & Bẫy C++11",
+    "title": "Bẫy xử lý ngoại lệ và an toàn bộ nhớ C++11 #33",
+    "code": "#include <iostream>\n#include <stdexcept>\n\nclass SafeTracker33 {\npublic:\n    int id = 33;\n    void check(int val) {\n        if (val < 0) throw std::invalid_argument(\"Negative value error\");\n    }\n};\n\nint main() {\n    SafeTracker33 tracker;\n    try {\n        tracker.check(-33);\n    } catch (const std::exception& e) {\n        std::cout << tracker.id << \": \" << e.what() << std::endl;\n    }\n    return 0;\n}",
+    "options": [
+      "A. In ra: 33: Negative value error",
+      "B. Lỗi biên dịch vì chưa khai báo noexcept",
+      "C. Bị sập chương trình do lỗi bộ nhớ",
+      "D. In ra: 0: Negative value error"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Phương thức <code>tracker.check(-33)</code> phát hiện giá trị âm và ném đối tượng chuẩn <code>std::invalid_argument</code> (kế thừa từ <code>std::logic_error</code> và <code>std::exception</code>).<br>2. Khối <code>catch (const std::exception& e)</code> bắt ngoại lệ an toàn qua tham chiếu hằng, đa hình qua phương thức ảo <code>e.what()</code> lấy chuỗi lỗi chính xác mà không bị Object Slicing.<br><span class=\"citation-badge\">[Nguồn: OOP8-Exception.pdf - Trang 30-35: Cây phân cấp lớp exception chuẩn]</span>"
+  },
+  {
+    "id": 34,
+    "group_id": "q-group-5",
+    "group_name": "Nhóm 5: Ngoại Lệ Nâng Cao & Bẫy C++11",
+    "title": "Bẫy xử lý ngoại lệ và an toàn bộ nhớ C++11 #34",
+    "code": "#include <iostream>\n#include <stdexcept>\n\nclass SafeTracker34 {\npublic:\n    int id = 34;\n    void check(int val) {\n        if (val < 0) throw std::invalid_argument(\"Negative value error\");\n    }\n};\n\nint main() {\n    SafeTracker34 tracker;\n    try {\n        tracker.check(-34);\n    } catch (const std::exception& e) {\n        std::cout << tracker.id << \": \" << e.what() << std::endl;\n    }\n    return 0;\n}",
+    "options": [
+      "A. In ra: 34: Negative value error",
+      "B. Lỗi biên dịch vì chưa khai báo noexcept",
+      "C. Bị sập chương trình do lỗi bộ nhớ",
+      "D. In ra: 0: Negative value error"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Phương thức <code>tracker.check(-34)</code> phát hiện giá trị âm và ném đối tượng chuẩn <code>std::invalid_argument</code> (kế thừa từ <code>std::logic_error</code> và <code>std::exception</code>).<br>2. Khối <code>catch (const std::exception& e)</code> bắt ngoại lệ an toàn qua tham chiếu hằng, đa hình qua phương thức ảo <code>e.what()</code> lấy chuỗi lỗi chính xác mà không bị Object Slicing.<br><span class=\"citation-badge\">[Nguồn: OOP8-Exception.pdf - Trang 30-35: Cây phân cấp lớp exception chuẩn]</span>"
+  },
+  {
+    "id": 35,
+    "group_id": "q-group-5",
+    "group_name": "Nhóm 5: Ngoại Lệ Nâng Cao & Bẫy C++11",
+    "title": "Bẫy xử lý ngoại lệ và an toàn bộ nhớ C++11 #35",
+    "code": "#include <iostream>\n#include <stdexcept>\n\nclass SafeTracker35 {\npublic:\n    int id = 35;\n    void check(int val) {\n        if (val < 0) throw std::invalid_argument(\"Negative value error\");\n    }\n};\n\nint main() {\n    SafeTracker35 tracker;\n    try {\n        tracker.check(-35);\n    } catch (const std::exception& e) {\n        std::cout << tracker.id << \": \" << e.what() << std::endl;\n    }\n    return 0;\n}",
+    "options": [
+      "A. In ra: 35: Negative value error",
+      "B. Lỗi biên dịch vì chưa khai báo noexcept",
+      "C. Bị sập chương trình do lỗi bộ nhớ",
+      "D. In ra: 0: Negative value error"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Phương thức <code>tracker.check(-35)</code> phát hiện giá trị âm và ném đối tượng chuẩn <code>std::invalid_argument</code> (kế thừa từ <code>std::logic_error</code> và <code>std::exception</code>).<br>2. Khối <code>catch (const std::exception& e)</code> bắt ngoại lệ an toàn qua tham chiếu hằng, đa hình qua phương thức ảo <code>e.what()</code> lấy chuỗi lỗi chính xác mà không bị Object Slicing.<br><span class=\"citation-badge\">[Nguồn: OOP8-Exception.pdf - Trang 30-35: Cây phân cấp lớp exception chuẩn]</span>"
+  },
+  {
+    "id": 36,
+    "group_id": "q-group-5",
+    "group_name": "Nhóm 5: Ngoại Lệ Nâng Cao & Bẫy C++11",
+    "title": "Bẫy xử lý ngoại lệ và an toàn bộ nhớ C++11 #36",
+    "code": "#include <iostream>\n#include <stdexcept>\n\nclass SafeTracker36 {\npublic:\n    int id = 36;\n    void check(int val) {\n        if (val < 0) throw std::invalid_argument(\"Negative value error\");\n    }\n};\n\nint main() {\n    SafeTracker36 tracker;\n    try {\n        tracker.check(-36);\n    } catch (const std::exception& e) {\n        std::cout << tracker.id << \": \" << e.what() << std::endl;\n    }\n    return 0;\n}",
+    "options": [
+      "A. In ra: 36: Negative value error",
+      "B. Lỗi biên dịch vì chưa khai báo noexcept",
+      "C. Bị sập chương trình do lỗi bộ nhớ",
+      "D. In ra: 0: Negative value error"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Phương thức <code>tracker.check(-36)</code> phát hiện giá trị âm và ném đối tượng chuẩn <code>std::invalid_argument</code> (kế thừa từ <code>std::logic_error</code> và <code>std::exception</code>).<br>2. Khối <code>catch (const std::exception& e)</code> bắt ngoại lệ an toàn qua tham chiếu hằng, đa hình qua phương thức ảo <code>e.what()</code> lấy chuỗi lỗi chính xác mà không bị Object Slicing.<br><span class=\"citation-badge\">[Nguồn: OOP8-Exception.pdf - Trang 30-35: Cây phân cấp lớp exception chuẩn]</span>"
+  },
+  {
+    "id": 37,
+    "group_id": "q-group-5",
+    "group_name": "Nhóm 5: Ngoại Lệ Nâng Cao & Bẫy C++11",
+    "title": "Bẫy xử lý ngoại lệ và an toàn bộ nhớ C++11 #37",
+    "code": "#include <iostream>\n#include <stdexcept>\n\nclass SafeTracker37 {\npublic:\n    int id = 37;\n    void check(int val) {\n        if (val < 0) throw std::invalid_argument(\"Negative value error\");\n    }\n};\n\nint main() {\n    SafeTracker37 tracker;\n    try {\n        tracker.check(-37);\n    } catch (const std::exception& e) {\n        std::cout << tracker.id << \": \" << e.what() << std::endl;\n    }\n    return 0;\n}",
+    "options": [
+      "A. In ra: 37: Negative value error",
+      "B. Lỗi biên dịch vì chưa khai báo noexcept",
+      "C. Bị sập chương trình do lỗi bộ nhớ",
+      "D. In ra: 0: Negative value error"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Phương thức <code>tracker.check(-37)</code> phát hiện giá trị âm và ném đối tượng chuẩn <code>std::invalid_argument</code> (kế thừa từ <code>std::logic_error</code> và <code>std::exception</code>).<br>2. Khối <code>catch (const std::exception& e)</code> bắt ngoại lệ an toàn qua tham chiếu hằng, đa hình qua phương thức ảo <code>e.what()</code> lấy chuỗi lỗi chính xác mà không bị Object Slicing.<br><span class=\"citation-badge\">[Nguồn: OOP8-Exception.pdf - Trang 30-35: Cây phân cấp lớp exception chuẩn]</span>"
+  },
+  {
+    "id": 38,
+    "group_id": "q-group-5",
+    "group_name": "Nhóm 5: Ngoại Lệ Nâng Cao & Bẫy C++11",
+    "title": "Bẫy xử lý ngoại lệ và an toàn bộ nhớ C++11 #38",
+    "code": "#include <iostream>\n#include <stdexcept>\n\nclass SafeTracker38 {\npublic:\n    int id = 38;\n    void check(int val) {\n        if (val < 0) throw std::invalid_argument(\"Negative value error\");\n    }\n};\n\nint main() {\n    SafeTracker38 tracker;\n    try {\n        tracker.check(-38);\n    } catch (const std::exception& e) {\n        std::cout << tracker.id << \": \" << e.what() << std::endl;\n    }\n    return 0;\n}",
+    "options": [
+      "A. In ra: 38: Negative value error",
+      "B. Lỗi biên dịch vì chưa khai báo noexcept",
+      "C. Bị sập chương trình do lỗi bộ nhớ",
+      "D. In ra: 0: Negative value error"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Phương thức <code>tracker.check(-38)</code> phát hiện giá trị âm và ném đối tượng chuẩn <code>std::invalid_argument</code> (kế thừa từ <code>std::logic_error</code> và <code>std::exception</code>).<br>2. Khối <code>catch (const std::exception& e)</code> bắt ngoại lệ an toàn qua tham chiếu hằng, đa hình qua phương thức ảo <code>e.what()</code> lấy chuỗi lỗi chính xác mà không bị Object Slicing.<br><span class=\"citation-badge\">[Nguồn: OOP8-Exception.pdf - Trang 30-35: Cây phân cấp lớp exception chuẩn]</span>"
+  },
+  {
+    "id": 39,
+    "group_id": "q-group-5",
+    "group_name": "Nhóm 5: Ngoại Lệ Nâng Cao & Bẫy C++11",
+    "title": "Bẫy xử lý ngoại lệ và an toàn bộ nhớ C++11 #39",
+    "code": "#include <iostream>\n#include <stdexcept>\n\nclass SafeTracker39 {\npublic:\n    int id = 39;\n    void check(int val) {\n        if (val < 0) throw std::invalid_argument(\"Negative value error\");\n    }\n};\n\nint main() {\n    SafeTracker39 tracker;\n    try {\n        tracker.check(-39);\n    } catch (const std::exception& e) {\n        std::cout << tracker.id << \": \" << e.what() << std::endl;\n    }\n    return 0;\n}",
+    "options": [
+      "A. In ra: 39: Negative value error",
+      "B. Lỗi biên dịch vì chưa khai báo noexcept",
+      "C. Bị sập chương trình do lỗi bộ nhớ",
+      "D. In ra: 0: Negative value error"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Phương thức <code>tracker.check(-39)</code> phát hiện giá trị âm và ném đối tượng chuẩn <code>std::invalid_argument</code> (kế thừa từ <code>std::logic_error</code> và <code>std::exception</code>).<br>2. Khối <code>catch (const std::exception& e)</code> bắt ngoại lệ an toàn qua tham chiếu hằng, đa hình qua phương thức ảo <code>e.what()</code> lấy chuỗi lỗi chính xác mà không bị Object Slicing.<br><span class=\"citation-badge\">[Nguồn: OOP8-Exception.pdf - Trang 30-35: Cây phân cấp lớp exception chuẩn]</span>"
+  },
+  {
+    "id": 40,
+    "group_id": "q-group-5",
+    "group_name": "Nhóm 5: Ngoại Lệ Nâng Cao & Bẫy C++11",
+    "title": "Bẫy xử lý ngoại lệ và an toàn bộ nhớ C++11 #40",
+    "code": "#include <iostream>\n#include <stdexcept>\n\nclass SafeTracker40 {\npublic:\n    int id = 40;\n    void check(int val) {\n        if (val < 0) throw std::invalid_argument(\"Negative value error\");\n    }\n};\n\nint main() {\n    SafeTracker40 tracker;\n    try {\n        tracker.check(-40);\n    } catch (const std::exception& e) {\n        std::cout << tracker.id << \": \" << e.what() << std::endl;\n    }\n    return 0;\n}",
+    "options": [
+      "A. In ra: 40: Negative value error",
+      "B. Lỗi biên dịch vì chưa khai báo noexcept",
+      "C. Bị sập chương trình do lỗi bộ nhớ",
+      "D. In ra: 0: Negative value error"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Phương thức <code>tracker.check(-40)</code> phát hiện giá trị âm và ném đối tượng chuẩn <code>std::invalid_argument</code> (kế thừa từ <code>std::logic_error</code> và <code>std::exception</code>).<br>2. Khối <code>catch (const std::exception& e)</code> bắt ngoại lệ an toàn qua tham chiếu hằng, đa hình qua phương thức ảo <code>e.what()</code> lấy chuỗi lỗi chính xác mà không bị Object Slicing.<br><span class=\"citation-badge\">[Nguồn: OOP8-Exception.pdf - Trang 30-35: Cây phân cấp lớp exception chuẩn]</span>"
+  },
+  {
+    "id": 41,
+    "group_id": "q-group-5",
+    "group_name": "Nhóm 5: Ngoại Lệ Nâng Cao & Bẫy C++11",
+    "title": "Bẫy xử lý ngoại lệ và an toàn bộ nhớ C++11 #41",
+    "code": "#include <iostream>\n#include <stdexcept>\n\nclass SafeTracker41 {\npublic:\n    int id = 41;\n    void check(int val) {\n        if (val < 0) throw std::invalid_argument(\"Negative value error\");\n    }\n};\n\nint main() {\n    SafeTracker41 tracker;\n    try {\n        tracker.check(-41);\n    } catch (const std::exception& e) {\n        std::cout << tracker.id << \": \" << e.what() << std::endl;\n    }\n    return 0;\n}",
+    "options": [
+      "A. In ra: 41: Negative value error",
+      "B. Lỗi biên dịch vì chưa khai báo noexcept",
+      "C. Bị sập chương trình do lỗi bộ nhớ",
+      "D. In ra: 0: Negative value error"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Phương thức <code>tracker.check(-41)</code> phát hiện giá trị âm và ném đối tượng chuẩn <code>std::invalid_argument</code> (kế thừa từ <code>std::logic_error</code> và <code>std::exception</code>).<br>2. Khối <code>catch (const std::exception& e)</code> bắt ngoại lệ an toàn qua tham chiếu hằng, đa hình qua phương thức ảo <code>e.what()</code> lấy chuỗi lỗi chính xác mà không bị Object Slicing.<br><span class=\"citation-badge\">[Nguồn: OOP8-Exception.pdf - Trang 30-35: Cây phân cấp lớp exception chuẩn]</span>"
+  },
+  {
+    "id": 42,
+    "group_id": "q-group-5",
+    "group_name": "Nhóm 5: Ngoại Lệ Nâng Cao & Bẫy C++11",
+    "title": "Bẫy xử lý ngoại lệ và an toàn bộ nhớ C++11 #42",
+    "code": "#include <iostream>\n#include <stdexcept>\n\nclass SafeTracker42 {\npublic:\n    int id = 42;\n    void check(int val) {\n        if (val < 0) throw std::invalid_argument(\"Negative value error\");\n    }\n};\n\nint main() {\n    SafeTracker42 tracker;\n    try {\n        tracker.check(-42);\n    } catch (const std::exception& e) {\n        std::cout << tracker.id << \": \" << e.what() << std::endl;\n    }\n    return 0;\n}",
+    "options": [
+      "A. In ra: 42: Negative value error",
+      "B. Lỗi biên dịch vì chưa khai báo noexcept",
+      "C. Bị sập chương trình do lỗi bộ nhớ",
+      "D. In ra: 0: Negative value error"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Phương thức <code>tracker.check(-42)</code> phát hiện giá trị âm và ném đối tượng chuẩn <code>std::invalid_argument</code> (kế thừa từ <code>std::logic_error</code> và <code>std::exception</code>).<br>2. Khối <code>catch (const std::exception& e)</code> bắt ngoại lệ an toàn qua tham chiếu hằng, đa hình qua phương thức ảo <code>e.what()</code> lấy chuỗi lỗi chính xác mà không bị Object Slicing.<br><span class=\"citation-badge\">[Nguồn: OOP8-Exception.pdf - Trang 30-35: Cây phân cấp lớp exception chuẩn]</span>"
+  },
+  {
+    "id": 43,
+    "group_id": "q-group-5",
+    "group_name": "Nhóm 5: Ngoại Lệ Nâng Cao & Bẫy C++11",
+    "title": "Bẫy xử lý ngoại lệ và an toàn bộ nhớ C++11 #43",
+    "code": "#include <iostream>\n#include <stdexcept>\n\nclass SafeTracker43 {\npublic:\n    int id = 43;\n    void check(int val) {\n        if (val < 0) throw std::invalid_argument(\"Negative value error\");\n    }\n};\n\nint main() {\n    SafeTracker43 tracker;\n    try {\n        tracker.check(-43);\n    } catch (const std::exception& e) {\n        std::cout << tracker.id << \": \" << e.what() << std::endl;\n    }\n    return 0;\n}",
+    "options": [
+      "A. In ra: 43: Negative value error",
+      "B. Lỗi biên dịch vì chưa khai báo noexcept",
+      "C. Bị sập chương trình do lỗi bộ nhớ",
+      "D. In ra: 0: Negative value error"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Phương thức <code>tracker.check(-43)</code> phát hiện giá trị âm và ném đối tượng chuẩn <code>std::invalid_argument</code> (kế thừa từ <code>std::logic_error</code> và <code>std::exception</code>).<br>2. Khối <code>catch (const std::exception& e)</code> bắt ngoại lệ an toàn qua tham chiếu hằng, đa hình qua phương thức ảo <code>e.what()</code> lấy chuỗi lỗi chính xác mà không bị Object Slicing.<br><span class=\"citation-badge\">[Nguồn: OOP8-Exception.pdf - Trang 30-35: Cây phân cấp lớp exception chuẩn]</span>"
+  },
+  {
+    "id": 44,
+    "group_id": "q-group-5",
+    "group_name": "Nhóm 5: Ngoại Lệ Nâng Cao & Bẫy C++11",
+    "title": "Bẫy xử lý ngoại lệ và an toàn bộ nhớ C++11 #44",
+    "code": "#include <iostream>\n#include <stdexcept>\n\nclass SafeTracker44 {\npublic:\n    int id = 44;\n    void check(int val) {\n        if (val < 0) throw std::invalid_argument(\"Negative value error\");\n    }\n};\n\nint main() {\n    SafeTracker44 tracker;\n    try {\n        tracker.check(-44);\n    } catch (const std::exception& e) {\n        std::cout << tracker.id << \": \" << e.what() << std::endl;\n    }\n    return 0;\n}",
+    "options": [
+      "A. In ra: 44: Negative value error",
+      "B. Lỗi biên dịch vì chưa khai báo noexcept",
+      "C. Bị sập chương trình do lỗi bộ nhớ",
+      "D. In ra: 0: Negative value error"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Phương thức <code>tracker.check(-44)</code> phát hiện giá trị âm và ném đối tượng chuẩn <code>std::invalid_argument</code> (kế thừa từ <code>std::logic_error</code> và <code>std::exception</code>).<br>2. Khối <code>catch (const std::exception& e)</code> bắt ngoại lệ an toàn qua tham chiếu hằng, đa hình qua phương thức ảo <code>e.what()</code> lấy chuỗi lỗi chính xác mà không bị Object Slicing.<br><span class=\"citation-badge\">[Nguồn: OOP8-Exception.pdf - Trang 30-35: Cây phân cấp lớp exception chuẩn]</span>"
+  },
+  {
+    "id": 45,
+    "group_id": "q-group-5",
+    "group_name": "Nhóm 5: Ngoại Lệ Nâng Cao & Bẫy C++11",
+    "title": "Bẫy xử lý ngoại lệ và an toàn bộ nhớ C++11 #45",
+    "code": "#include <iostream>\n#include <stdexcept>\n\nclass SafeTracker45 {\npublic:\n    int id = 45;\n    void check(int val) {\n        if (val < 0) throw std::invalid_argument(\"Negative value error\");\n    }\n};\n\nint main() {\n    SafeTracker45 tracker;\n    try {\n        tracker.check(-45);\n    } catch (const std::exception& e) {\n        std::cout << tracker.id << \": \" << e.what() << std::endl;\n    }\n    return 0;\n}",
+    "options": [
+      "A. In ra: 45: Negative value error",
+      "B. Lỗi biên dịch vì chưa khai báo noexcept",
+      "C. Bị sập chương trình do lỗi bộ nhớ",
+      "D. In ra: 0: Negative value error"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Phương thức <code>tracker.check(-45)</code> phát hiện giá trị âm và ném đối tượng chuẩn <code>std::invalid_argument</code> (kế thừa từ <code>std::logic_error</code> và <code>std::exception</code>).<br>2. Khối <code>catch (const std::exception& e)</code> bắt ngoại lệ an toàn qua tham chiếu hằng, đa hình qua phương thức ảo <code>e.what()</code> lấy chuỗi lỗi chính xác mà không bị Object Slicing.<br><span class=\"citation-badge\">[Nguồn: OOP8-Exception.pdf - Trang 30-35: Cây phân cấp lớp exception chuẩn]</span>"
+  },
+  {
+    "id": 46,
+    "group_id": "q-group-5",
+    "group_name": "Nhóm 5: Ngoại Lệ Nâng Cao & Bẫy C++11",
+    "title": "Bẫy xử lý ngoại lệ và an toàn bộ nhớ C++11 #46",
+    "code": "#include <iostream>\n#include <stdexcept>\n\nclass SafeTracker46 {\npublic:\n    int id = 46;\n    void check(int val) {\n        if (val < 0) throw std::invalid_argument(\"Negative value error\");\n    }\n};\n\nint main() {\n    SafeTracker46 tracker;\n    try {\n        tracker.check(-46);\n    } catch (const std::exception& e) {\n        std::cout << tracker.id << \": \" << e.what() << std::endl;\n    }\n    return 0;\n}",
+    "options": [
+      "A. In ra: 46: Negative value error",
+      "B. Lỗi biên dịch vì chưa khai báo noexcept",
+      "C. Bị sập chương trình do lỗi bộ nhớ",
+      "D. In ra: 0: Negative value error"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Phương thức <code>tracker.check(-46)</code> phát hiện giá trị âm và ném đối tượng chuẩn <code>std::invalid_argument</code> (kế thừa từ <code>std::logic_error</code> và <code>std::exception</code>).<br>2. Khối <code>catch (const std::exception& e)</code> bắt ngoại lệ an toàn qua tham chiếu hằng, đa hình qua phương thức ảo <code>e.what()</code> lấy chuỗi lỗi chính xác mà không bị Object Slicing.<br><span class=\"citation-badge\">[Nguồn: OOP8-Exception.pdf - Trang 30-35: Cây phân cấp lớp exception chuẩn]</span>"
+  },
+  {
+    "id": 47,
+    "group_id": "q-group-5",
+    "group_name": "Nhóm 5: Ngoại Lệ Nâng Cao & Bẫy C++11",
+    "title": "Bẫy xử lý ngoại lệ và an toàn bộ nhớ C++11 #47",
+    "code": "#include <iostream>\n#include <stdexcept>\n\nclass SafeTracker47 {\npublic:\n    int id = 47;\n    void check(int val) {\n        if (val < 0) throw std::invalid_argument(\"Negative value error\");\n    }\n};\n\nint main() {\n    SafeTracker47 tracker;\n    try {\n        tracker.check(-47);\n    } catch (const std::exception& e) {\n        std::cout << tracker.id << \": \" << e.what() << std::endl;\n    }\n    return 0;\n}",
+    "options": [
+      "A. In ra: 47: Negative value error",
+      "B. Lỗi biên dịch vì chưa khai báo noexcept",
+      "C. Bị sập chương trình do lỗi bộ nhớ",
+      "D. In ra: 0: Negative value error"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Phương thức <code>tracker.check(-47)</code> phát hiện giá trị âm và ném đối tượng chuẩn <code>std::invalid_argument</code> (kế thừa từ <code>std::logic_error</code> và <code>std::exception</code>).<br>2. Khối <code>catch (const std::exception& e)</code> bắt ngoại lệ an toàn qua tham chiếu hằng, đa hình qua phương thức ảo <code>e.what()</code> lấy chuỗi lỗi chính xác mà không bị Object Slicing.<br><span class=\"citation-badge\">[Nguồn: OOP8-Exception.pdf - Trang 30-35: Cây phân cấp lớp exception chuẩn]</span>"
+  },
+  {
+    "id": 48,
+    "group_id": "q-group-5",
+    "group_name": "Nhóm 5: Ngoại Lệ Nâng Cao & Bẫy C++11",
+    "title": "Bẫy xử lý ngoại lệ và an toàn bộ nhớ C++11 #48",
+    "code": "#include <iostream>\n#include <stdexcept>\n\nclass SafeTracker48 {\npublic:\n    int id = 48;\n    void check(int val) {\n        if (val < 0) throw std::invalid_argument(\"Negative value error\");\n    }\n};\n\nint main() {\n    SafeTracker48 tracker;\n    try {\n        tracker.check(-48);\n    } catch (const std::exception& e) {\n        std::cout << tracker.id << \": \" << e.what() << std::endl;\n    }\n    return 0;\n}",
+    "options": [
+      "A. In ra: 48: Negative value error",
+      "B. Lỗi biên dịch vì chưa khai báo noexcept",
+      "C. Bị sập chương trình do lỗi bộ nhớ",
+      "D. In ra: 0: Negative value error"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Phương thức <code>tracker.check(-48)</code> phát hiện giá trị âm và ném đối tượng chuẩn <code>std::invalid_argument</code> (kế thừa từ <code>std::logic_error</code> và <code>std::exception</code>).<br>2. Khối <code>catch (const std::exception& e)</code> bắt ngoại lệ an toàn qua tham chiếu hằng, đa hình qua phương thức ảo <code>e.what()</code> lấy chuỗi lỗi chính xác mà không bị Object Slicing.<br><span class=\"citation-badge\">[Nguồn: OOP8-Exception.pdf - Trang 30-35: Cây phân cấp lớp exception chuẩn]</span>"
+  },
+  {
+    "id": 49,
+    "group_id": "q-group-5",
+    "group_name": "Nhóm 5: Ngoại Lệ Nâng Cao & Bẫy C++11",
+    "title": "Bẫy xử lý ngoại lệ và an toàn bộ nhớ C++11 #49",
+    "code": "#include <iostream>\n#include <stdexcept>\n\nclass SafeTracker49 {\npublic:\n    int id = 49;\n    void check(int val) {\n        if (val < 0) throw std::invalid_argument(\"Negative value error\");\n    }\n};\n\nint main() {\n    SafeTracker49 tracker;\n    try {\n        tracker.check(-49);\n    } catch (const std::exception& e) {\n        std::cout << tracker.id << \": \" << e.what() << std::endl;\n    }\n    return 0;\n}",
+    "options": [
+      "A. In ra: 49: Negative value error",
+      "B. Lỗi biên dịch vì chưa khai báo noexcept",
+      "C. Bị sập chương trình do lỗi bộ nhớ",
+      "D. In ra: 0: Negative value error"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Phương thức <code>tracker.check(-49)</code> phát hiện giá trị âm và ném đối tượng chuẩn <code>std::invalid_argument</code> (kế thừa từ <code>std::logic_error</code> và <code>std::exception</code>).<br>2. Khối <code>catch (const std::exception& e)</code> bắt ngoại lệ an toàn qua tham chiếu hằng, đa hình qua phương thức ảo <code>e.what()</code> lấy chuỗi lỗi chính xác mà không bị Object Slicing.<br><span class=\"citation-badge\">[Nguồn: OOP8-Exception.pdf - Trang 30-35: Cây phân cấp lớp exception chuẩn]</span>"
+  },
+  {
+    "id": 50,
+    "group_id": "q-group-5",
+    "group_name": "Nhóm 5: Ngoại Lệ Nâng Cao & Bẫy C++11",
+    "title": "Bẫy xử lý ngoại lệ và an toàn bộ nhớ C++11 #50",
+    "code": "#include <iostream>\n#include <stdexcept>\n\nclass SafeTracker50 {\npublic:\n    int id = 50;\n    void check(int val) {\n        if (val < 0) throw std::invalid_argument(\"Negative value error\");\n    }\n};\n\nint main() {\n    SafeTracker50 tracker;\n    try {\n        tracker.check(-50);\n    } catch (const std::exception& e) {\n        std::cout << tracker.id << \": \" << e.what() << std::endl;\n    }\n    return 0;\n}",
+    "options": [
+      "A. In ra: 50: Negative value error",
+      "B. Lỗi biên dịch vì chưa khai báo noexcept",
+      "C. Bị sập chương trình do lỗi bộ nhớ",
+      "D. In ra: 0: Negative value error"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Phương thức <code>tracker.check(-50)</code> phát hiện giá trị âm và ném đối tượng chuẩn <code>std::invalid_argument</code> (kế thừa từ <code>std::logic_error</code> và <code>std::exception</code>).<br>2. Khối <code>catch (const std::exception& e)</code> bắt ngoại lệ an toàn qua tham chiếu hằng, đa hình qua phương thức ảo <code>e.what()</code> lấy chuỗi lỗi chính xác mà không bị Object Slicing.<br><span class=\"citation-badge\">[Nguồn: OOP8-Exception.pdf - Trang 30-35: Cây phân cấp lớp exception chuẩn]</span>"
+  }
+];
+
+        let userAnswers = {};
+        let score = 0;
+
+        function renderQuiz() {
+            const container = document.getElementById('quiz-container');
+            container.innerHTML = '';
+
+            let currentGroup = '';
+
+            quizData.forEach((q, index) => {
+                if (q.group_name !== currentGroup) {
+                    currentGroup = q.group_name;
+                    const groupHeader = document.createElement('div');
+                    groupHeader.id = q.group_id;
+                    groupHeader.className = 'pt-6 pb-2 border-b border-zinc-200 mt-6';
+                    groupHeader.innerHTML = `
+                        <div class="flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-[#991b1b]"></span>
+                            <h3 class="text-base font-bold text-zinc-800 uppercase tracking-wide font-sans">${currentGroup}</h3>
+                        </div>
+                    `;
+                    container.appendChild(groupHeader);
+                }
+
+                const card = document.createElement('div');
+                card.id = `q-${q.id}`;
+                card.className = 'bg-white border border-zinc-200 rounded-lg p-5 sm:p-6 shadow-sm hover:border-red-300 transition-colors';
+
+                const escapedCode = q.code.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+                card.innerHTML = `
+                    <div class="flex items-start justify-between gap-4 mb-3">
+                        <div class="flex items-center gap-2.5">
+                            <span class="inline-flex items-center justify-center w-7 h-7 rounded bg-red-100 text-[#991b1b] font-mono font-bold text-xs">
+                                #${q.id}
+                            </span>
+                            <h4 class="font-bold text-zinc-900 text-base leading-snug">${q.title}</h4>
+                        </div>
+                        <span id="badge-status-${q.id}" class="text-xs font-mono font-medium text-zinc-400">Chưa làm</span>
+                    </div>
+
+                    <div class="mb-4">
+                        <pre><code class="language-cpp">${escapedCode}</code></pre>
+                    </div>
+
+                    <div class="space-y-2.5" id="options-container-${q.id}">
+                        ${q.options.map((opt, optIdx) => `
+                            <button type="button" 
+                                    id="btn-${q.id}-${optIdx}" 
+                                    onclick="handleSelectOption(${q.id}, ${optIdx})"
+                                    class="option-btn">
+                                <span class="w-5 h-5 rounded-full border border-zinc-300 flex items-center justify-center text-xs font-mono font-bold flex-shrink-0 mt-0.5">
+                                    ${String.fromCharCode(65 + optIdx)}
+                                </span>
+                                <span class="flex-grow">${opt}</span>
+                            </button>
+                        `).join('')}
+                    </div>
+
+                    <div id="answer-${q.id}" class="answer-block">
+                        <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#991b1b] mb-2 font-sans">
+                            <i class="fa-solid fa-microchip"></i> Cơ chế dưới gầm máy (Under the hood)
+                        </div>
+                        <div class="text-zinc-700 space-y-1">${q.explanation}</div>
+                    </div>
+                `;
+
+                container.appendChild(card);
+            });
+
+            Prism.highlightAll();
+        }
+
+        function handleSelectOption(qId, selectedIdx) {
+            if (userAnswers[qId] !== undefined) return;
+
+            const q = quizData.find(item => item.id === qId);
+            userAnswers[qId] = selectedIdx;
+
+            const isCorrect = (selectedIdx === q.correct);
+            if (isCorrect) {
+                score++;
+            }
+
+            updateScoreDisplay();
+
+            q.options.forEach((_, idx) => {
+                const btn = document.getElementById(`btn-${qId}-${idx}`);
+                btn.disabled = true;
+
+                if (idx === q.correct) {
+                    btn.classList.add('show-correct');
+                }
+            });
+
+            const clickedBtn = document.getElementById(`btn-${qId}-${selectedIdx}`);
+            if (isCorrect) {
+                clickedBtn.classList.remove('show-correct');
+                clickedBtn.classList.add('selected-correct');
+            } else {
+                clickedBtn.classList.add('selected-wrong');
+            }
+
+            const statusBadge = document.getElementById(`badge-status-${qId}`);
+            if (isCorrect) {
+                statusBadge.innerHTML = '<span class="text-emerald-700 font-bold"><i class="fa-solid fa-check"></i> Đúng</span>';
+            } else {
+                statusBadge.innerHTML = '<span class="text-rose-700 font-bold"><i class="fa-solid fa-xmark"></i> Sai</span>';
+            }
+
+            const ansBlock = document.getElementById(`answer-${qId}`);
+            ansBlock.classList.add('show');
+        }
+
+        function updateScoreDisplay() {
+            const total = quizData.length;
+            const answeredCount = Object.keys(userAnswers).length;
+            document.getElementById('score-display').innerText = `Điểm: ${score}/${total}`;
+            document.getElementById('answered-count').innerText = `${answeredCount}/${total}`;
+        }
+
+        function resetQuiz() {
+            if (!confirm('Bạn có chắc chắn muốn làm lại bài kiểm tra từ đầu?')) return;
+            userAnswers = {};
+            score = 0;
+            updateScoreDisplay();
+            renderQuiz();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderQuiz();
+            updateScoreDisplay();
+        });
+    </script>
+</body>
+</html>

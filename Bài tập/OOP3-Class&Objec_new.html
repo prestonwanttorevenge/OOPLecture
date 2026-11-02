@@ -1,0 +1,1378 @@
+<!DOCTYPE html>
+<html lang="vi" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chương 3: Lớp và Đối Tượng trong C++ (Classes & Objects) - MOSTest5_2</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Lora', 'serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        crimson: {
+                            50: '#fff1f2',
+                            100: '#ffe4e6',
+                            200: '#fecdd3',
+                            300: '#fda4af',
+                            400: '#fb7185',
+                            500: '#f43f5e',
+                            600: '#e11d48',
+                            700: '#be123c',
+                            800: '#991b1b',
+                            900: '#881337',
+                            950: '#4c0519',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- PrismJS Dark Tomorrow Theme -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+
+    <style>
+        body {
+            background-color: #fafafa;
+            color: #18181b;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .theory-content {
+            font-family: 'Lora', serif;
+            font-size: 1.05rem;
+            line-height: 1.8;
+            color: #27272a;
+        }
+
+        .theory-content h3 {
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            color: #991b1b;
+            letter-spacing: -0.02em;
+        }
+
+        .theory-content h4 {
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            color: #18181b;
+        }
+
+        .under-the-hood {
+            background-color: #ffffff;
+            border-left: 4px solid #991b1b;
+            padding: 1.25rem 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 0 0.5rem 0.5rem 0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+        }
+
+        .under-the-hood-title {
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.05em;
+            color: #991b1b;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .citation-badge {
+            display: inline-block;
+            background-color: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #fecdd3;
+            padding: 0.15rem 0.5rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+
+        .inline-code {
+            font-family: 'JetBrains Mono', monospace;
+            background-color: #f4f4f5;
+            color: #991b1b;
+            padding: 0.15rem 0.4rem;
+            border-radius: 0.25rem;
+            font-size: 0.88em;
+            border: 1px solid #e4e4e7;
+        }
+
+        /* Quiz interactive styles */
+        .option-btn {
+            transition: all 0.15s ease-in-out;
+            text-align: left;
+            width: 100%;
+            background-color: #ffffff;
+            border: 1.5px solid #e4e4e7;
+            padding: 0.85rem 1.15rem;
+            border-radius: 0.5rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            color: #27272a;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            cursor: pointer;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            border-color: #dc2626;
+            background-color: #fef2f2;
+        }
+
+        .option-btn.selected-correct {
+            background-color: #f0fdf4 !important;
+            border-color: #22c55e !important;
+            color: #14532d !important;
+            font-weight: 600;
+        }
+
+        .option-btn.selected-wrong {
+            background-color: #fef2f2 !important;
+            border-color: #ef4444 !important;
+            color: #7f1d1d !important;
+            font-weight: 600;
+        }
+
+        .option-btn.show-correct {
+            background-color: #f0fdf4 !important;
+            border-color: #22c55e !important;
+            color: #14532d !important;
+            font-weight: 600;
+        }
+
+        .option-btn:disabled {
+            cursor: default;
+        }
+
+        .answer-block {
+            display: none;
+            margin-top: 1.25rem;
+            padding: 1.25rem 1.5rem;
+            background-color: #fafafa;
+            border-left: 3px solid #991b1b;
+            border-radius: 0 0.375rem 0.375rem 0;
+            color: #3f3f46;
+            font-size: 0.92rem;
+            line-height: 1.65;
+        }
+
+        .answer-block.show {
+            display: block;
+            animation: fadeIn 0.25s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        pre[class*="language-"] {
+            border-radius: 0.5rem;
+            margin: 1rem 0;
+            border: 1px solid #3f3f46;
+            font-size: 0.9rem !important;
+        }
+
+        @media print {
+            .no-print { display: none !important; }
+            .answer-block { display: block !important; }
+            body { background: white; }
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-red-100 selection:text-red-900">
+
+    <!-- Top Navigation Bar -->
+    <header class="bg-[#991b1b] text-white sticky top-0 z-50 shadow-md no-print">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-white text-[#991b1b] flex items-center justify-center font-black font-mono text-xl rounded shadow-inner">
+                    C++
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg leading-tight tracking-tight">Chương 3: Lớp & Đối Tượng (Class & Object)</h1>
+                    <p class="text-xs text-red-200">Giáo trình OOP ĐHBK-ĐN | TS. Lê Thị Mỹ Hạnh | Chuẩn MOSTest5_2</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="bg-red-950/60 border border-red-700/50 px-3.5 py-1.5 rounded-lg flex items-center gap-2">
+                    <i class="fa-solid fa-trophy text-amber-400 text-sm"></i>
+                    <span id="score-display" class="font-mono font-bold text-white text-sm">Điểm: 0/50</span>
+                </div>
+                <button onclick="resetQuiz()" class="bg-red-800 hover:bg-red-700 text-white text-xs font-semibold px-3 py-1.5 rounded transition border border-red-600 flex items-center gap-1.5">
+                    <i class="fa-solid fa-rotate-right"></i> Làm lại
+                </button>
+                <button onclick="window.print()" class="bg-white text-[#991b1b] hover:bg-red-50 text-xs font-bold px-3.5 py-1.5 rounded transition shadow-sm flex items-center gap-1.5">
+                    <i class="fa-solid fa-print"></i> In PDF
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col lg:flex-row gap-8">
+        
+        <!-- Left Sidebar: Table of Contents -->
+        <aside class="w-full lg:w-72 flex-shrink-0 no-print">
+            <div class="sticky top-24 bg-white border border-zinc-200 rounded-lg p-5 shadow-sm space-y-5">
+                <div>
+                    <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-500 mb-3">
+                        <i class="fa-solid fa-book-bookmark text-[#991b1b]"></i> Lý thuyết Cốt Lõi
+                    </div>
+                    <nav class="space-y-1 text-sm border-l-2 border-red-100 pl-3">
+                        <a href="#theory-section" class="block py-1 text-zinc-700 hover:text-[#991b1b] font-medium transition">1. Định nghĩa Lớp & File Phân Tách</a>
+                        <a href="#theory-this-scope" class="block py-1 text-zinc-700 hover:text-[#991b1b] font-medium transition">2. Con trỏ this & Toán tử phạm vi</a>
+                        <a href="#theory-constructor" class="block py-1 text-zinc-700 hover:text-[#991b1b] font-medium transition">3. Constructor & Initializer List</a>
+                        <a href="#theory-copy-ctor" class="block py-1 text-zinc-700 hover:text-[#991b1b] font-medium transition">4. Copy Constructor & Deep Copy</a>
+                        <a href="#theory-destructor" class="block py-1 text-zinc-700 hover:text-[#991b1b] font-medium transition">5. Hàm Hủy (Destructor) & RAII</a>
+                        <a href="#theory-friend" class="block py-1 text-zinc-700 hover:text-[#991b1b] font-medium transition">6. Cơ chế Bạn (Friend)</a>
+                        <a href="#theory-const-static" class="block py-1 text-zinc-700 hover:text-[#991b1b] font-medium transition">7. Thành viên Const & Static</a>
+                        <a href="#theory-composition" class="block py-1 text-zinc-700 hover:text-[#991b1b] font-medium transition">8. Composition & Mảng Đối Tượng</a>
+                    </nav>
+                </div>
+
+                <div class="pt-4 border-t border-zinc-200">
+                    <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-500 mb-3">
+                        <i class="fa-solid fa-list-check text-[#991b1b]"></i> Quiz Bẫy Code (50 Câu)
+                    </div>
+                    <nav class="space-y-1 text-xs border-l-2 border-zinc-200 pl-3">
+                        <a href="#q-group-1" class="block py-1 text-zinc-600 hover:text-[#991b1b] transition">Nhóm 1: Khai báo & Header (1-5)</a>
+                        <a href="#q-group-2" class="block py-1 text-zinc-600 hover:text-[#991b1b] transition">Nhóm 2: this & Scope :: (6-10)</a>
+                        <a href="#q-group-3" class="block py-1 text-zinc-600 hover:text-[#991b1b] transition">Nhóm 3: Constructor & Init List (11-18)</a>
+                        <a href="#q-group-4" class="block py-1 text-zinc-600 hover:text-[#991b1b] transition">Nhóm 4: Copy Constructor (19-25)</a>
+                        <a href="#q-group-5" class="block py-1 text-zinc-600 hover:text-[#991b1b] transition">Nhóm 5: Destructor & RAII (26-30)</a>
+                        <a href="#q-group-6" class="block py-1 text-zinc-600 hover:text-[#991b1b] transition">Nhóm 6: Friend Function & Class (31-36)</a>
+                        <a href="#q-group-7" class="block py-1 text-zinc-600 hover:text-[#991b1b] transition">Nhóm 7: Const & Static (37-44)</a>
+                        <a href="#q-group-8" class="block py-1 text-zinc-600 hover:text-[#991b1b] transition">Nhóm 8: Composition & Mảng (45-50)</a>
+                    </nav>
+                </div>
+
+                <div class="pt-3 border-t border-zinc-200 text-xs text-zinc-400">
+                    <p><i class="fa-solid fa-circle-info text-red-700 mr-1"></i> Chuẩn C++11 ISO/IEC 14882.</p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Right Main Column -->
+        <main class="flex-grow max-w-4xl space-y-12">
+            
+            <!-- THEORETICAL DEEP-DIVE SECTION -->
+            <article id="theory-section" class="bg-white border border-zinc-200 rounded-lg p-6 sm:p-10 shadow-sm space-y-8">
+                
+                <div class="border-b-2 border-[#991b1b] pb-4">
+                    <div class="flex items-center gap-2 text-xs font-mono font-bold text-[#991b1b] uppercase tracking-wider mb-1">
+                        Chuyên khảo Lý thuyết C++11 & Bản đồ Kiến trúc
+                    </div>
+                    <h2 class="text-3xl font-extrabold text-zinc-900 tracking-tight font-sans">
+                        Chương 3: Lớp và Đối Tượng trong C++
+                    </h2>
+                    <p class="text-sm text-zinc-500 mt-1">
+                        Trích xuất toàn diện từ giáo trình <code class="inline-code">OOP3-Class&Objec_new.pdf</code> | Đi sâu bản chất trình biên dịch, bảng ký hiệu và quản lý vòng đời đối tượng
+                    </p>
+                </div>
+
+                <!-- Theory Part 1 -->
+                <section class="theory-content space-y-4">
+                    <h3 class="text-xl">1. Khái Niệm Lớp & Mô Hình Tách File Header / Source</h3>
+                    <p>
+                        Lớp (Class) là một kiểu dữ liệu trừu tượng do người dùng định nghĩa, bao gói hai thành phần cơ bản: <strong>Dữ liệu (Thuộc tính)</strong> và <strong>Các hàm thao tác (Phương thức)</strong>.
+                    </p>
+                    <ul class="list-disc pl-6 space-y-1 text-zinc-700">
+                        <li><strong>Quyền truy xuất (Access Specifiers):</strong>
+                            <br>- <code class="inline-code">public</code>: Có thể truy cập từ bất kỳ đâu bên ngoài lớp.
+                            <br>- <code class="inline-code">private</code>: Chỉ các hàm thành viên của lớp đó hoặc các hàm/lớp bạn (<code class="inline-code">friend</code>) mới có quyền truy cập.
+                            <br>- <code class="inline-code">protected</code>: Như <code class="inline-code">private</code> nhưng cho phép các lớp con dẫn xuất truy cập trực tiếp.
+                        </li>
+                    </ul>
+
+                    <div class="under-the-hood">
+                        <div class="under-the-hood-title"><i class="fa-solid fa-file-code"></i> Cơ chế biên dịch: Phân tách .h và .cpp</div>
+                        <p class="text-zinc-700">
+                            Để tuân thủ triệt để nguyên lý đóng gói (Encapsulation) và bảo mật mã nguồn trong công nghiệp:
+                            <br>1. <strong>File Header (<code class="inline-code">ClassName.h</code>):</strong> Chứa định nghĩa lớp, khai báo nguyên mẫu hàm (Prototype), hằng số và khai báo bạn bè. File này đóng vai trò giao diện (Interface Contract) cung cấp cho người sử dụng thư viện.
+                            <br>2. <strong>File Source (<code class="inline-code">ClassName.cpp</code>):</strong> Chứa mã nguồn cài đặt chi tiết của các phương thức bằng toán tử phạm vi <code class="inline-code">ClassName::MethodName()</code>. Mã nguồn này được biên dịch thành file đối tượng (<code class="inline-code">.o</code> hoặc <code class="inline-code">.lib</code>), che giấu hoàn toàn giải thuật nghiệp vụ.
+                            <br>3. <strong>Hàm nội tuyến ngầm định:</strong> Các phương thức được định nghĩa <em>trực tiếp ngay bên trong khai báo class</em> sẽ được trình biên dịch tự động coi là hàm <code class="inline-code">inline</code>.
+                        </p>
+                    </div>
+                    <span class="citation-badge">[Nguồn: OOP3-Class&Objec_new.pdf - Trang 4-15: Khái niệm lớp, đóng gói & đặt khai báo lớp ở đâu]</span>
+                </section>
+
+                <!-- Theory Part 2 -->
+                <section id="theory-this-scope" class="theory-content space-y-4 pt-6 border-t border-zinc-200">
+                    <h3 class="text-xl">2. Con Trỏ this & Toán Tử Định Phạm Vi (ClassName::)</h3>
+                    <p>
+                        Mỗi phương thức thành viên phi tĩnh khi thực thi đều cần biết nó đang thao tác trên ô nhớ của đối tượng cụ thể nào. Trình biên dịch hiện thực điều này bằng <strong>Đối số thành viên ẩn: Con trỏ <code class="inline-code">this</code></strong>.
+                    </p>
+                    <div class="under-the-hood">
+                        <div class="under-the-hood-title"><i class="fa-solid fa-crosshairs"></i> Bản chất của con trỏ this</div>
+                        <ul class="list-disc pl-5 space-y-1.5 text-zinc-700">
+                            <li><code class="inline-code">this</code> là một hằng con trỏ (Const Pointer): <code class="inline-code">ClassName* const this</code>. Lập trình viên không thể gán lại địa chỉ cho <code class="inline-code">this = &other;</code>.</li>
+                            <li>Trong hàm thành viên hằng (<code class="inline-code">const</code> method), <code class="inline-code">this</code> có kiểu là: <code class="inline-code">const ClassName* const this</code>, ngăn chặn việc sửa đổi mọi thuộc tính thông qua con trỏ.</li>
+                            <li><strong>Phân giải biến trùng tên:</strong> Khi tham số hàm trùng tên với thuộc tính của lớp, toán tử <code class="inline-code">this->x = x;</code> hoặc <code class="inline-code">ClassName::x = x;</code> giúp phân biệt rõ ràng giữa biến cục bộ và biến thành viên.</li>
+                            <li><strong>Method Chaining:</strong> Trả về <code class="inline-code">*this</code> theo kiểu tham chiếu (<code class="inline-code">ClassName&</code>) cho phép gọi liên tiếp các phương thức trên cùng một đối tượng.</li>
+                        </ul>
+                    </div>
+                    <span class="citation-badge">[Nguồn: OOP3-Class&Objec_new.pdf - Trang 16-19: Đối số thành viên ẩn & Con trỏ this]</span>
+                </section>
+
+                <!-- Theory Part 3 -->
+                <section id="theory-constructor" class="theory-content space-y-4 pt-6 border-t border-zinc-200">
+                    <h3 class="text-xl">3. Hàm Xây Dựng (Constructor) & Member Initializer List</h3>
+                    <p>
+                        Hàm xây dựng (Constructor) là phương thức đặc biệt được gọi tự động ngay tại thời điểm đối tượng được sinh ra trên bộ nhớ. Tên hàm trùng hoàn toàn với tên lớp và <strong>tuyệt đối không có kiểu trả về</strong> (kể cả <code class="inline-code">void</code>).
+                    </p>
+                    <div class="under-the-hood">
+                        <div class="under-the-hood-title"><i class="fa-solid fa-list-check"></i> Member Initializer List vs Gán trong thân Constructor</div>
+                        <p class="text-zinc-700">
+                            Có 2 cách khởi tạo thành viên dữ liệu:
+                            <br>- <em>Cách 1: Gán trong thân hàm tạo</em> (<code class="inline-code">ClassName() { x = 10; }</code>): Trình biên dịch trước hết phải gọi Default Constructor để dựng nên <code>x</code>, sau đó mới gọi toán tử gán <code class="inline-code">operator=</code> để ghi đè giá trị 10. Điều này làm lãng phí hiệu năng nghiêm trọng đối với các đối tượng phức tạp.
+                            <br>- <em>Cách 2: Danh sách khởi tạo thành viên (Member Initializer List)</em> (<code class="inline-code">ClassName() : x(10) {}</code>): Khởi tạo trực tiếp ô nhớ của <code>x</code> ngay lúc cấp phát.
+                            <br><strong>Các trường hợp BẮT BUỘC phải dùng Initializer List:</strong>
+                            <br>&nbsp;&nbsp;&bull; Thành viên dữ liệu hằng (<code class="inline-code">const Type member;</code>).
+                            <br>&nbsp;&nbsp;&bull; Thành viên dữ liệu tham chiếu (<code class="inline-code">Type& ref_member;</code>).
+                            <br>&nbsp;&nbsp;&bull; Thành viên là đối tượng của một lớp không có Default Constructor.
+                            <br>&nbsp;&nbsp;&bull; Khởi tạo lớp cơ sở (Base Class) trong kế thừa.
+                        </p>
+                    </div>
+                    <span class="citation-badge">[Nguồn: OOP3-Class&Objec_new.pdf - Trang 20-25 & 47-48: Hàm xây dựng & Danh sách khởi tạo]</span>
+                </section>
+
+                <!-- Theory Part 4 -->
+                <section id="theory-copy-ctor" class="theory-content space-y-4 pt-6 border-t border-zinc-200">
+                    <h3 class="text-xl">4. Hàm Dựng Sao Chép (Copy Constructor) & Sao Chép Sâu</h3>
+                    <p>
+                        Hàm dựng sao chép (Copy Constructor) dùng để khởi tạo một đối tượng mới từ một đối tượng đã tồn tại cùng lớp. Cú pháp bắt buộc: <code class="inline-code">ClassName(const ClassName& other);</code>.
+                    </p>
+                    <div class="under-the-hood">
+                        <div class="under-the-hood-title"><i class="fa-solid fa-copy"></i> Cơ chế Sao chép Nông vs Sao chép Sâu (Deep Copy)</div>
+                        <p class="text-zinc-700">
+                            <strong>Tại sao tham số bắt buộc phải là Tham chiếu (&)?</strong> Nếu truyền theo giá trị (<code class="inline-code">ClassName(ClassName other)</code>), để truyền đối số vào hàm thì hệ thống lại cần gọi Copy Constructor... dẫn đến vòng lặp đệ quy vô tận làm tràn stack ngay tại compile-time!
+                            <br><br>
+                            <strong>3 trường hợp Copy Constructor được kích hoạt:</strong>
+                            <br>1. Khởi tạo đối tượng mới từ đối tượng cũ: <code class="inline-code">ClassName a = b;</code> hoặc <code class="inline-code">ClassName a(b);</code>.
+                            <br>2. Truyền đối tượng vào một hàm theo dạng tham trị (Pass-by-value).
+                            <br>3. Hàm trả về một đối tượng theo giá trị (Return-by-value).
+                            <br><br>
+                            <strong>Lời khuyên của Dr. Guru:</strong> Khi một lớp chứa con trỏ cấp phát động trên heap, Copy Constructor mặc định chỉ sao chép nông (Shallow Copy) địa chỉ con trỏ, gây lỗi Double Free khi hai đối tượng cùng delete một ô nhớ. Bắt buộc phải tự cài đặt Deep Copy (cấp phát vùng nhớ mới và copy nội dung) và Destructor tương ứng.
+                        </p>
+                    </div>
+                    <span class="citation-badge">[Nguồn: OOP3-Class&Objec_new.pdf - Trang 26-29: Hàm dựng sao chép & Lời khuyên của Dr. Guru]</span>
+                </section>
+
+                <!-- Theory Part 5 -->
+                <section id="theory-destructor" class="theory-content space-y-4 pt-6 border-t border-zinc-200">
+                    <h3 class="text-xl">5. Hàm Hủy (Destructor) & Cơ Chế RAII</h3>
+                    <p>
+                        Hàm hủy (Destructor) đảm nhiệm việc giải phóng tài nguyên (bộ nhớ heap, file handle, socket) mà đối tượng đã chiếm dụng trước khi đối tượng bị xóa sổ khỏi RAM.
+                    </p>
+                    <ul class="list-disc pl-6 space-y-1.5 text-zinc-700">
+                        <li>Cú pháp: <code class="inline-code">~ClassName();</code>. Không nhận đối số, không có kiểu trả về, mỗi lớp chỉ có duy nhất 1 hàm hủy.</li>
+                        <li>Được tự động gọi khi đối tượng cục bộ thoát khỏi phạm vi (scope) hoặc khi giải phóng con trỏ bằng toán tử <code class="inline-code">delete</code>.</li>
+                        <li><strong>Thứ tự hủy:</strong> Các đối tượng trên Stack bị hủy theo thứ tự ngược lại hoàn toàn với thứ tự khởi tạo (LIFO - Last In, First Out).</li>
+                    </ul>
+                    <span class="citation-badge">[Nguồn: OOP3-Class&Objec_new.pdf - Trang 30-34: Hàm hủy Destructor & Rò rỉ bộ nhớ]</span>
+                </section>
+
+                <!-- Theory Part 6 -->
+                <section id="theory-friend" class="theory-content space-y-4 pt-6 border-t border-zinc-200">
+                    <h3 class="text-xl">6. Cơ Chế Bạn (Friend Functions & Friend Classes)</h3>
+                    <p>
+                        Cơ chế <code class="inline-code">friend</code> cho phép các hàm hoặc lớp bên ngoài có quyền truy cập vào các thành viên <code class="inline-code">private</code> và <code class="inline-code">protected</code> của lớp khai báo nó.
+                    </p>
+                    <div class="under-the-hood">
+                        <div class="under-the-hood-title"><i class="fa-solid fa-handshake"></i> Ba đặc tính cốt tử của Friend</div>
+                        <ul class="list-disc pl-5 space-y-1.5 text-zinc-700">
+                            <li><strong>1. Không có tính đối xứng:</strong> Nếu lớp A là bạn của lớp B, không có nghĩa lớp B tự động là bạn của lớp A (B không có quyền xem private của A).</li>
+                            <li><strong>2. Không có tính bắc cầu:</strong> Nếu A là bạn của B, và B là bạn của C, thì A hoàn toàn KHÔNG PHẢI là bạn của C.</li>
+                            <li><strong>3. Không có tính kế thừa:</strong> Lớp con dẫn xuất của A không thừa hưởng tình bạn với B. Bạn của cha không mặc nhiên là bạn của con.</li>
+                        </ul>
+                    </div>
+                    <span class="citation-badge">[Nguồn: OOP3-Class&Objec_new.pdf - Trang 35-46: Cơ chế Friend - Hàm bạn và Lớp bạn]</span>
+                </section>
+
+                <!-- Theory Part 7 -->
+                <section id="theory-const-static" class="theory-content space-y-4 pt-6 border-t border-zinc-200">
+                    <h3 class="text-xl">7. Thành Viên Hằng (Const) & Thành Viên Tĩnh (Static)</h3>
+                    <p>
+                        C++ phân biệt rõ ràng giữa thành viên ở cấp độ Thể hiện (Instance-level) và cấp độ Lớp (Class-level):
+                    </p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-3 font-sans text-sm">
+                        <div class="border border-zinc-200 p-4 rounded-lg bg-zinc-50">
+                            <h4 class="font-bold text-[#991b1b] uppercase mb-2"><i class="fa-solid fa-lock mr-1"></i> Thành Viên Const</h4>
+                            <p class="text-xs text-zinc-600 font-serif leading-relaxed">
+                                - <strong>Thuộc tính const:</strong> Giá trị bất biến suốt vòng đời, bắt buộc khởi tạo trong Member Initializer List.
+                                <br>- <strong>Phương thức const:</strong> Khóa con trỏ <code class="inline-code">this</code>, cam kết không làm thay đổi trạng thái của đối tượng.
+                                <br>- <strong>Đối tượng const:</strong> Chỉ được phép gọi các phương thức có đánh dấu <code class="inline-code">const</code>.
+                            </p>
+                        </div>
+                        <div class="border border-zinc-200 p-4 rounded-lg bg-zinc-50">
+                            <h4 class="font-bold text-[#991b1b] uppercase mb-2"><i class="fa-solid fa-layer-group mr-1"></i> Thành Viên Static</h4>
+                            <p class="text-xs text-zinc-600 font-serif leading-relaxed">
+                                - <strong>Thuộc tính static:</strong> Cấp phát trong phân vùng dữ liệu tĩnh (Data/BSS), dùng chung cho toàn bộ các thể hiện của lớp. Không làm tăng kích thước đối tượng. Bắt buộc phải định nghĩa bên ngoài file .cpp.
+                                <br>- <strong>Phương thức static:</strong> Không có con trỏ <code class="inline-code">this</code>, chỉ truy cập được các thành viên tĩnh khác của lớp.
+                            </p>
+                        </div>
+                    </div>
+                    <span class="citation-badge">[Nguồn: OOP3-Class&Objec_new.pdf - Trang 49-63: Thành viên hằng, thành viên tĩnh, hàm tĩnh]</span>
+                </section>
+
+                <!-- Theory Part 8 -->
+                <section id="theory-composition" class="theory-content space-y-4 pt-6 border-t border-zinc-200">
+                    <h3 class="text-xl">8. Composition (Bao Hàm), Mảng Đối Tượng & Union</h3>
+                    <p>
+                        Lớp có thể chứa thành viên là đối tượng của một lớp khác (Composition). Thứ tự khởi tạo các đối tượng con luôn tuân theo thứ tự chúng được khai báo trong định nghĩa lớp.
+                        <br>Khi khai báo mảng tĩnh các đối tượng (<code class="inline-code">ClassName arr[10];</code>), lớp bắt buộc phải có <strong>Default Constructor</strong> để khởi tạo từng phần tử.
+                    </p>
+                    <span class="citation-badge">[Nguồn: OOP3-Class&Objec_new.pdf - Trang 64-73: Thành viên là đối tượng của lớp khác, mảng đối tượng, struct & union]</span>
+                </section>
+
+            </article>
+
+            <!-- INTERACTIVE QUIZ SECTION: EXACTLY 50 CODE-CENTRIC QUESTIONS -->
+            <article class="bg-white border border-zinc-200 rounded-lg p-6 sm:p-10 shadow-sm">
+                <div class="border-b-2 border-[#991b1b] pb-4 mb-8 flex flex-col sm:flex-row justify-between sm:items-end gap-3">
+                    <div>
+                        <div class="flex items-center gap-2 text-xs font-mono font-bold text-[#991b1b] uppercase tracking-wider mb-1">
+                            Bài Kiểm Tra Năng Lực Trắc Nghiệm Tương Tác
+                        </div>
+                        <h2 class="text-2xl font-black text-zinc-900 tracking-tight font-sans uppercase">
+                            50 Câu Trắc Nghiệm Code & Bẫy Class / Object C++11
+                        </h2>
+                        <p class="text-xs text-zinc-500 mt-1">
+                            100% dựa trên các đoạn code thực tế: bẫy Copy Constructor, Initializer List, Destructor, Friend, Static và RAM Layout
+                        </p>
+                    </div>
+                    <div class="text-xs text-zinc-500 font-mono">
+                        Tổng số câu: <span class="font-bold text-[#991b1b]">50</span> | Đã trả lời: <span id="answered-count" class="font-bold text-zinc-800">0</span>
+                    </div>
+                </div>
+
+                <!-- Questions Container -->
+                <div id="quiz-container" class="space-y-12">
+                    <!-- Injected by JavaScript -->
+                </div>
+            </article>
+
+        </main>
+    </div>
+
+    <!-- Script Quiz Engine & Data -->
+    <script>
+        
+        const quizData = [
+  {
+    "id": 1,
+    "group_id": "q-group-1",
+    "group_name": "Nhóm 1: Khai Báo Lớp & File Phân Tách",
+    "title": "Hàm định nghĩa bên trong class ngầm định mang thuộc tính inline",
+    "code": "// File: Vector.h\nclass Vector {\n    int x, y;\npublic:\n    Vector(int x, int y) : x(x), y(y) {}\n    // Hàm getX được định nghĩa trực tiếp bên trong thân class:\n    int getX() const { return x; }\n};",
+    "options": [
+      "A. getX() được trình biên dịch ngầm định xử lý như một hàm inline",
+      "B. getX() gây lỗi Multiple Definition nếu include header vào nhiều file .cpp",
+      "C. getX() bắt buộc phải có từ khóa inline tường minh thì compiler mới tối ưu",
+      "D. getX() chỉ được phép gọi một lần trong toàn bộ chương trình"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Slide trang 8 & 11 nêu rõ: Khi một hàm thành viên được viết mã định nghĩa <em>trực tiếp ngay bên trong khối khai báo class</em>, trình biên dịch C++ tự động coi hàm đó là <strong>hàm nội tuyến (inline function)</strong>.<br>2. Nhờ thuộc tính inline ngầm định này, header file có thể được <code>#include</code> vào hàng trăm file mã nguồn (.cpp) khác nhau mà không hề bị trình liên kết (Linker) báo lỗi định nghĩa trùng lặp (ODR violation).<br><span class=\"citation-badge\">[Nguồn: OOP3-Class&Objec_new.pdf - Trang 8 & 11: Khai báo và định nghĩa phương thức của lớp]</span>"
+  },
+  {
+    "id": 2,
+    "group_id": "q-group-1",
+    "group_name": "Nhóm 1: Khai Báo Lớp & File Phân Tách",
+    "title": "Bẫy định nghĩa hàm thành viên không-inline trong Header File gây lỗi Linker",
+    "code": "// File: Counter.h\nclass Counter {\n    int val = 0;\npublic:\n    void increment();\n};\n\n// Định nghĩa hàm ngoài class nhưng đặt ngay trong header file mà KHÔNG CÓ từ khóa inline:\nvoid Counter::increment() {\n    val++;\n}",
+    "options": [
+      "A. Hoàn toàn chuẩn mực và không bao giờ gặp lỗi",
+      "B. Nếu Counter.h được include vào từ 2 file .cpp trở lên, Linker sẽ báo lỗi 'multiple definition of Counter::increment()'",
+      "C. Lỗi cú pháp ngay tại thời điểm biên dịch file .h",
+      "D. Trình biên dịch tự động thêm từ khóa inline cho mọi hàm trong .h"
+    ],
+    "correct": 1,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Một hàm được định nghĩa bên ngoài thân class nếu không có từ khóa <code>inline</code> thì mặc định có External Linkage và tạo ra một biểu tượng mã máy (symbol) mạnh trong file đối tượng (.o).<br>2. Khi hai file .cpp khác nhau cùng <code>#include \"Counter.h\"</code>, cả hai file .o đều sinh ra cùng một symbol <code>Counter::increment()</code>.<br>3. Khi Linker ráp nối các file .o thành file thực thi (.exe), nó gặp 2 định nghĩa trùng tên và báo lỗi xung đột: <em>multiple definition of 'Counter::increment()'</em>.<br>Giải pháp: Hoặc chuyển định nghĩa sang file <code>Counter.cpp</code>, hoặc thêm từ khóa <code>inline</code>.<br><span class=\"citation-badge\">[Nguồn: OOP3-Class&Objec_new.pdf - Trang 10-14: Đặt khai báo lớp ở đâu & file header]</span>"
+  },
+  {
+    "id": 3,
+    "group_id": "q-group-1",
+    "group_name": "Nhóm 1: Khai Báo Lớp & File Phân Tách",
+    "title": "Giới hạn của Khai Báo Trước (Forward Declaration) đối với Kích Thước Đối Tượng",
+    "code": "// Forward declaration:\nclass Engine;\n\nclass Car {\n    // Dòng 1:\n    Engine* pEngine;\n    // Dòng 2:\n    // Engine myEngine;\n};",
+    "options": [
+      "A. Cả Dòng 1 và Dòng 2 đều hợp lệ chỉ với Forward Declaration",
+      "B. Dòng 1 hợp lệ (con trỏ luôn có kích thước cố định); Dòng 2 nếu mở chú thích sẽ lỗi biên dịch: 'field has incomplete type Engine'",
+      "C. Dòng 1 lỗi, Dòng 2 hợp lệ",
+      "D. Forward declaration chỉ dùng được cho biến toàn cục"
+    ],
+    "correct": 1,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Với khai báo trước <code>class Engine;</code>, <code>Engine</code> là một kiểu dữ liệu chưa hoàn chỉnh (Incomplete Type). Trình biên dịch chỉ biết nó là một class nhưng chưa biết cấu trúc bên trong và kích thước bộ nhớ của nó.<br>2. Dòng 1: Con trỏ <code>Engine* pEngine</code> có kích thước cố định (8 bytes trên 64-bit), nên compiler xác định được kích thước bộ nhớ của <code>Car</code> mà không cần biết nội dung <code>Engine</code>.<br>3. Dòng 2: <code>Engine myEngine</code> đòi hỏi compiler phải biết chính xác <code>sizeof(Engine)</code> để cấp phát ô nhớ trong <code>Car</code>. Do chưa có định nghĩa đầy đủ, compiler báo lỗi <em>field has incomplete type</em>.<br><span class=\"citation-badge\">[Nguồn: OOP3-Class&Objec_new.pdf - Trang 10-15: Cấu trúc file header và mối quan hệ lớp]</span>"
+  },
+  {
+    "id": 4,
+    "group_id": "q-group-1",
+    "group_name": "Nhóm 1: Khai Báo Lớp & File Phân Tách",
+    "title": "Bẫy phân chia khối quyền truy cập lộn xộn trong Class",
+    "code": "#include <iostream>\n\nclass Sample {\n    int a = 1;\npublic:\n    int b = 2;\nprivate:\n    int c = 3;\npublic:\n    int getSum() const { return a + b + c; }\n};\n\nint main() {\n    Sample s;\n    std::cout << s.b << \" \" << s.getSum() << std::endl;\n    // std::cout << s.a << std::endl; // Dòng kiểm tra\n    return 0;\n}",
+    "options": [
+      "A. Hợp lệ in ra: 2 6; biến 'a' mặc định là private vì nằm trước từ khóa access specifier đầu tiên",
+      "B. Biến 'a' là public vì nằm ở đầu class",
+      "C. C++ cấm lặp lại nhiều nhãn public/private trong cùng một class",
+      "D. Biến 'c' trở thành public do nhãn public phía sau ghi đè"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Trong C++, một class có thể chứa bao nhiêu nhãn <code>public:</code>, <code>private:</code>, <code>protected:</code> tùy ý, theo thứ tự bất kỳ.<br>2. Mỗi nhãn có hiệu lực cho toàn bộ các thành viên đứng sau nó cho đến khi gặp một nhãn truy cập khác hoặc gặp dấu đóng ngoặc <code>};</code> của class.<br>3. Biến <code>int a = 1;</code> nằm ở đầu class trước bất kỳ nhãn nào, nên nó nhận quyền truy cập mặc định của class là <strong>private</strong>.<br>Hàm <code>main</code> đọc <code>s.b</code> (public) và gọi <code>getSum()</code> (public) in ra <code>2 6</code> hoàn toàn chuẩn xác.<br><span class=\"citation-badge\">[Nguồn: OOP3-Class&Objec_new.pdf - Trang 6-7: Đóng gói và quyền truy xuất]</span>"
+  },
+  {
+    "id": 5,
+    "group_id": "q-group-1",
+    "group_name": "Nhóm 1: Khai Báo Lớp & File Phân Tách",
+    "title": "Bẫy quên dấu chấm phẩy sau dấu ngoặc nhọn kết thúc Class Definition",
+    "code": "class MyClass {\n    int data;\n} // Bẫy: Quên dấu chấm phẩy tại đây\n\nint main() {\n    return 0;\n}",
+    "options": [
+      "A. Trình biên dịch tự động bỏ qua và dịch thành công",
+      "B. Lỗi biên dịch: C++ coi 'int main()' như là đối tượng được khai báo ngay sau class hoặc báo lỗi thiếu ';' sau class definition",
+      "C. Chỉ là cảnh báo warning",
+      "D. Chương trình bị lỗi runtime"
+    ],
+    "correct": 1,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Cú pháp khai báo class của C++ thừa kế từ <code>struct</code> của C: <code>class Name { ... } var1, var2;</code> cho phép khai báo danh sách biến đối tượng ngay sau dấu đóng ngoặc nhọn.<br>2. Nếu thiếu dấu chấm phẩy <code>;</code>, bộ phân tích cú pháp (Parser) sẽ diễn giải từ khóa tiếp theo (ở đây là <code>int</code>) như là kiểu trả về của một đối tượng thể hiện hoặc gây lỗi cú pháp nghiêm trọng ngay đầu dòng tiếp theo.<br><span class=\"citation-badge\">[Nguồn: OOP3-Class&Objec_new.pdf - Trang 4: Cú pháp định nghĩa lớp]</span>"
+  },
+  {
+    "id": 6,
+    "group_id": "q-group-2",
+    "group_name": "Nhóm 2: Con Trỏ this & Toán Tử Phạm Vi ClassName::",
+    "title": "Bẫy Shadowing tham số và giải quyết bằng con trỏ this hoặc ClassName::",
+    "code": "#include <iostream>\n\nclass Box {\n    int val;\npublic:\n    Box(int val) {\n        val = val; // Bẫy: không dùng this\n    }\n    void setVal(int val) {\n        this->val = val; // Dùng this\n    }\n    int get() const { return val; }\n};\n\nint main() {\n    Box b(50);\n    std::cout << (b.get() == 50 ? \"TRUE\" : \"FALSE\") << \" \";\n    b.setVal(100);\n    std::cout << b.get() << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. TRUE 100",
+      "B. FALSE 100 (lệnh 'val = val' trong constructor chỉ tự gán tham số cục bộ cho chính nó, biến thành viên val vẫn chứa rác)",
+      "C. TRUE 50",
+      "D. Lỗi biên dịch vì tham số trùng tên biến thành viên"
+    ],
+    "correct": 1,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Trong thân Constructor <code>Box(int val)</code>, định danh <code>val</code> bị che khuất (Shadowing) bởi tham số cục bộ. Lệnh <code>val = val;</code> chỉ đơn thuần là gán tham số cục bộ cho chính nó, biến thành viên <code>this->val</code> hoàn toàn không được khởi tạo (chứa giá trị rác trên stack).<br>2. Do đó <code>b.get() == 50</code> đánh giá là <code>FALSE</code>.<br>3. Trong <code>setVal</code>, nhờ có <code>this->val = val;</code>, trình biên dịch giải tham chiếu con trỏ <code>this</code> để ghi giá trị 100 vào đúng ô nhớ thành viên của đối tượng, nên in ra 100.<br><span class=\"citation-badge\">[Nguồn: OOP3-Class&Objec_new.pdf - Trang 16-19: Đối số thành viên ẩn & Con trỏ this]</span>"
+  },
+  {
+    "id": 7,
+    "group_id": "q-group-2",
+    "group_name": "Nhóm 2: Con Trỏ this & Toán Tử Phạm Vi ClassName::",
+    "title": "Kiểu dữ liệu chính xác của con trỏ this trong hàm const",
+    "code": "#include <iostream>\n\nclass Widget {\npublic:\n    void normalMethod() {\n        // Kiểu của this ở đây là gì?\n    }\n    void constMethod() const {\n        // Kiểu của this ở đây là gì?\n    }\n};",
+    "options": [
+      "A. normal: Widget*, const: const Widget*",
+      "B. normal: Widget* const (hằng con trỏ), const: const Widget* const (hằng con trỏ trỏ tới đối tượng hằng)",
+      "C. Cả hai đều là Widget* thuần túy",
+      "D. normal: Widget&, const: const Widget&"
+    ],
+    "correct": 1,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Trong mọi hàm thành viên, địa chỉ của đối tượng là bất biến, không thể gán <code>this = ...</code>, do đó <code>this</code> luôn là một <strong>hằng con trỏ (Const Pointer)</strong>.<br>2. Trong hàm không const: Kiểu là <code>Widget* const this</code>.<br>3. Trong hàm có đuôi <code>const</code>: Thuộc tính đối tượng cũng bị khóa chỉ đọc, nên kiểu chính xác là <code>const Widget* const this</code>.<br><span class=\"citation-badge\">[Nguồn: OOP3-Class&Objec_new.pdf - Trang 17 & 49: Con trỏ this và thành viên hằng]</span>"
+  },
+  {
+    "id": 8,
+    "group_id": "q-group-2",
+    "group_name": "Nhóm 2: Con Trỏ this & Toán Tử Phạm Vi ClassName::",
+    "title": "Phân biệt trả về tham chiếu (*this) vs trả về con trỏ (this)",
+    "code": "#include <iostream>\n\nclass Screen {\npublic:\n    Screen& clear() {\n        std::cout << \"[Clear]\";\n        return *this;\n    }\n    Screen* home() {\n        std::cout << \"[Home]\";\n        return this;\n    }\n};\n\nint main() {\n    Screen scr;\n    scr.clear().clear();      // Gọi chuỗi 1\n    scr.home()->home();       // Gọi chuỗi 2\n    return 0;\n}",
+    "options": [
+      "A. Chuỗi 1 dùng toán tử dấu chấm '.', Chuỗi 2 dùng toán tử mũi tên '->'; cả hai đều chạy và in ra [Clear][Clear][Home][Home]",
+      "B. Chuỗi 2 bị lỗi biên dịch vì con trỏ không thể gọi hàm tiếp",
+      "C. Chuỗi 1 bị lỗi biên dịch",
+      "D. Cả hai chuỗi đều in ra địa chỉ ô nhớ"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. <code>return *this;</code> trả về lvalue tham chiếu tới đối tượng hiện tại, cho phép dùng toán tử chấm <code>.clear().clear()</code>.<br>2. <code>return this;</code> trả về giá trị con trỏ thô (Raw Pointer), do đó lời gọi tiếp theo bắt buộc phải giải tham chiếu qua toán tử mũi tên: <code>->home()</code>.<br>Cả hai chuỗi đều hợp lệ và in ra đúng chuỗi thao tác.<br><span class=\"citation-badge\">[Nguồn: OOP3-Class&Objec_new.pdf - Trang 17-19: Sử dụng con trỏ this]</span>"
+  },
+  {
+    "id": 9,
+    "group_id": "q-group-2",
+    "group_name": "Nhóm 2: Con Trỏ this & Toán Tử Phạm Vi ClassName::",
+    "title": "Sử dụng toán tử phạm vi ClassName:: để truy xuất phương thức bị che khuất trong nội bộ",
+    "code": "#include <iostream>\n\nvoid action() { std::cout << \"GlobalAction \"; }\n\nclass Worker {\npublic:\n    void action() { std::cout << \"ClassAction \"; }\n    void run() {\n        action();    // Lời gọi 1\n        ::action();  // Lời gọi 2\n    }\n};\n\nint main() {\n    Worker w;\n    w.run();\n    std::cout << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. ClassAction GlobalAction",
+      "B. GlobalAction ClassAction",
+      "C. ClassAction ClassAction",
+      "D. Lỗi biên dịch vì trùng tên hàm action"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Bên trong thân phương thức <code>run()</code>, việc gọi <code>action()</code> mặc định tra cứu bảng ký hiệu phạm vi lớp (Class Scope) trước, do đó gọi <code>this->action()</code> -> in <code>ClassAction</code>.<br>2. Khi sử dụng toán tử định phạm vi toàn cục đơn nguyên <code>::action()</code>, trình biên dịch bắt buộc phải bỏ qua phạm vi lớp để gọi hàm tự do ngoài Global Namespace -> in <code>GlobalAction</code>.<br><span class=\"citation-badge\">[Nguồn: OOP3-Class&Objec_new.pdf - Trang 18: Toán tử phạm vi trong C++]</span>"
+  },
+  {
+    "id": 10,
+    "group_id": "q-group-2",
+    "group_name": "Nhóm 2: Con Trỏ this & Toán Tử Phạm Vi ClassName::",
+    "title": "Bẫy con trỏ this rỗng khi kiểm tra 'if (this == nullptr)' trong chuẩn C++11",
+    "code": "#include <iostream>\n\nclass SafeObject {\npublic:\n    void test() {\n        if (this == nullptr) { // Dòng kiểm tra\n            std::cout << \"Null object\" << std::endl;\n            return;\n        }\n        std::cout << \"Valid object\" << std::endl;\n    }\n};\n\nint main() {\n    SafeObject* obj = nullptr;\n    obj->test();\n    return 0;\n}",
+    "options": [
+      "A. Chuẩn C++11 coi việc giải con trỏ nullptr để gọi hàm là Undefined Behavior; trình biên dịch hiện đại được phép tối ưu hóa loại bỏ hoàn toàn khối 'if (this == nullptr)'",
+      "B. Đây là kỹ thuật lập trình chuẩn mực được C++ khuyến khích",
+      "C. Chắc chắn luôn in ra 'Null object' an toàn",
+      "D. Lỗi biên dịch vì cấm so sánh this với nullptr"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Trong chuẩn C++11, lời gọi <code>obj->test()</code> khi <code>obj == nullptr</code> về mặt lý thuyết là <strong>Undefined Behavior</strong> ngay từ thời điểm gọi.<br>2. Khi bật cờ tối ưu hóa (ví dụ <code>-O2</code> hoặc <code>-O3</code> trên Clang/GCC), trình biên dịch giả định rằng con trỏ <code>this</code> không bao giờ có thể bằng <code>nullptr</code> trong một phương thức hợp lệ.<br>3. Do đó trình biên dịch tự động tối ưu cắt bỏ (dead code elimination) toàn bộ nhánh <code>if (this == nullptr)</code>, khiến việc phòng thủ này trở nên hoàn toàn vô tác dụng và có thể crash bất cứ lúc nào.<br><span class=\"citation-badge\">[Nguồn: OOP3-Class&Objec_new.pdf - Trang 16-17: Bản chất con trỏ this]</span>"
+  },
+  {
+    "id": 11,
+    "group_id": "q-group-3",
+    "group_name": "Nhóm 3: Hàm Xây Dựng & Member Initializer List",
+    "title": "Hiệu năng lãng phí khi gán trong thân Constructor thay vì Initializer List",
+    "code": "#include <iostream>\n\nstruct Resource {\n    Resource() { std::cout << \"DefaultCtor \"; }\n    Resource(const Resource&) { std::cout << \"CopyCtor \"; }\n    Resource& operator=(const Resource&) { std::cout << \"AssignOp \"; return *this; }\n};\n\nclass ContainerA {\n    Resource r;\npublic:\n    ContainerA(const Resource& res) { r = res; } // Gán trong thân\n};\n\nclass ContainerB {\n    Resource r;\npublic:\n    ContainerB(const Resource& res) : r(res) {}  // Dùng Initializer list\n};\n\nint main() {\n    Resource res;\n    std::cout << \"\\n--- A ---: \";\n    ContainerA a(res);\n    std::cout << \"\\n--- B ---: \";\n    ContainerB b(res);\n    return 0;\n}",
+    "options": [
+      "A. ContainerA: DefaultCtor AssignOp | ContainerB: CopyCtor",
+      "B. ContainerA: CopyCtor | ContainerB: DefaultCtor AssignOp",
+      "C. Cả hai đều sinh ra CopyCtor giống nhau",
+      "D. ContainerA bị lỗi biên dịch"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Với <code>ContainerA</code>: Khi bước vào hàm tạo, biến <code>r</code> bắt buộc phải được dựng trước bằng Default Constructor (in <code>DefaultCtor</code>). Sau đó lệnh <code>r = res;</code> thực hiện gọi toán tử gán (in <code>AssignOp</code>). Tổng cộng 2 thao tác thừa thãi!<br>2. Với <code>ContainerB</code>: Initializer List gọi trực tiếp Copy Constructor của <code>Resource</code> để khởi tạo <code>r</code> từ <code>res</code> (chỉ in <code>CopyCtor</code>).<br>Slide trang 47-48 nhấn mạnh: Luôn dùng Member Initializer List để đạt hiệu năng tối ưu.<br><span class=\"citation-badge\">[Nguồn: OOP3-Class&Objec_new.pdf - Trang 47-48: Danh sách khởi tạo thành viên và hiệu năng]</span>"
+  },
+  {
+    "id": 12,
+    "group_id": "q-group-3",
+    "group_name": "Nhóm 3: Hàm Xây Dựng & Member Initializer List",
+    "title": "Constructor ủy nhiệm (Delegating Constructor) trong chuẩn C++11",
+    "code": "#include <iostream>\n\nclass Server {\n    std::string host;\n    int port;\npublic:\n    Server(std::string h, int p) : host(h), port(p) {\n        std::cout << \"CoreInit \";\n    }\n    // C++11 Delegating constructor:\n    Server() : Server(\"localhost\", 8080) {\n        std::cout << \"DefaultInit\";\n    }\n};\n\nint main() {\n    Server s;\n    std::cout << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. In ra: CoreInit DefaultInit",
+      "B. In ra: DefaultInit CoreInit",
+      "C. Lỗi biên dịch: C++ cấm một constructor gọi một constructor khác trong danh sách khởi tạo",
+      "D. Lỗi tràn stack đệ quy"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Trong chuẩn C++11, tính năng Constructor ủy nhiệm (Delegating Constructor) chính thức được hỗ trợ.<br>2. <code>Server()</code> ủy nhiệm toàn bộ công việc khởi tạo trường cho <code>Server(std::string, int)</code>. Constructor được ủy nhiệm chạy trước (in <code>CoreInit</code>), sau đó quyền điều khiển quay về thân của Constructor gọi để chạy tiếp (in <code>DefaultInit</code>).<br>3. Kết quả in ra chính xác là: <code>CoreInit DefaultInit</code>.<br><span class=\"citation-badge\">[Nguồn: OOP3-Class&Objec_new.pdf - Trang 23-25: Các dạng hàm dựng trong C++]</span>"
+  },
+  {
+    "id": 13,
+    "group_id": "q-group-3",
+    "group_name": "Nhóm 3: Hàm Xây Dựng & Member Initializer List",
+    "title": "Bẫy nhập nhằng (Ambiguity) giữa Constructor không đối và Constructor có tham số mặc định",
+    "code": "#include <iostream>\n\nclass Coordinate {\npublic:\n    Coordinate() {\n        std::cout << \"NoArg \";\n    }\n    Coordinate(int x = 0, int y = 0) {\n        std::cout << \"DefaultArg \";\n    }\n};\n\nint main() {\n    Coordinate c; // Lệnh khởi tạo này gọi constructor nào?\n    return 0;\n}",
+    "options": [
+      "A. Ưu tiên gọi Coordinate() in ra: NoArg",
+      "B. Gọi Coordinate(int, int) in ra: DefaultArg",
+      "C. Lỗi biên dịch: call of overloaded 'Coordinate()' is ambiguous (nhập nhằng vì cả hai đều thỏa mãn lời gọi không đối số)",
+      "D. In ra: NoArg DefaultArg"
+    ],
+    "correct": 2,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Cả <code>Coordinate()</code> và <code>Coordinate(int = 0, int = 0)</code> đều là Default Constructor (vì cả hai đều có thể được gọi mà không cần truyền bất kỳ đối số nào).<br>2. Khi khai báo <code>Coordinate c;</code>, trình biên dịch tìm thấy hai hàm ứng viên hoàn toàn tương đương nhau và không có quy tắc ưu tiên nào giải quyết được.<br>3. Trình biên dịch báo lỗi <em>ambiguous call</em> ngay lập tức.<br><span class=\"citation-badge\">[Nguồn: OOP3-Class&Objec_new.pdf - Trang 23-25: Hàm dựng mặc định và đối số mặc định]</span>"
+  },
+  {
+    "id": 14,
+    "group_id": "q-group-3",
+    "group_name": "Nhóm 3: Hàm Xây Dựng & Member Initializer List",
+    "title": "Bẫy Most Vexing Parse: Khởi tạo đối tượng bị hiểu nhầm thành khai báo nguyên mẫu hàm",
+    "code": "#include <iostream>\n\nclass Device {\npublic:\n    Device() { std::cout << \"DeviceCreated \"; }\n};\n\nint main() {\n    Device d(); // Bẫy Most Vexing Parse!\n    return 0;\n}",
+    "options": [
+      "A. Khởi tạo đối tượng d thành công và in ra: DeviceCreated",
+      "B. Không in ra gì cả: Trình biên dịch diễn giải 'Device d();' là khai báo một hàm tên 'd' không nhận tham số và trả về kiểu Device!",
+      "C. Lỗi biên dịch vì thừa cặp dấu ngoặc đơn ()",
+      "D. Lỗi runtime đổ vỡ stack"
+    ],
+    "correct": 1,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Đây là quy tắc cú pháp kinh điển của C++ do Bjarne Stroustrup đặt ra: Bất cứ thứ gì có thể được trình biên dịch hiểu như một lời khai báo hàm thì nó SẼ ĐƯỢC HIỂU LÀ MỘT LỜI KHAI BÁO HÀM (Most Vexing Parse).<br>2. Cú pháp <code>Device d();</code> hoàn toàn trùng khớp với nguyên mẫu khai báo một hàm tên <code>d</code>.<br>3. Vì thế, không có đối tượng nào được tạo ra trên stack, constructor không hề được gọi, và chương trình không in ra gì.<br>Cách sửa chuẩn: Viết <code>Device d;</code> hoặc dùng khởi tạo đồng nhất C++11: <code>Device d{};</code>.<br><span class=\"citation-badge\">[Nguồn: OOP3-Class&Objec_new.pdf - Trang 20-23: Khởi tạo đối tượng và hàm dựng]</span>"
+  },
+  {
+    "id": 15,
+    "group_id": "q-group-3",
+    "group_name": "Nhóm 3: Hàm Xây Dựng & Member Initializer List",
+    "title": "Khởi tạo đồng nhất (Uniform Initialization) với cặp ngoặc nhọn {} trong C++11",
+    "code": "#include <iostream>\n\nclass Data {\npublic:\n    int x;\n    Data(int val) : x(val) {}\n};\n\nint main() {\n    // Dòng 1:\n    Data d1(3.14);\n    // Dòng 2:\n    // Data d2{3.14}; \n    std::cout << d1.x << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. Cả Dòng 1 và Dòng 2 đều biên dịch được và làm tròn x = 3",
+      "B. Dòng 1 biên dịch được (cắt xén ngầm định); Dòng 2 nếu mở chú thích sẽ lỗi biên dịch: narrowing conversion of '3.14' from 'double' to 'int'",
+      "C. Dòng 1 lỗi biên dịch, Dòng 2 hợp lệ",
+      "D. Cả hai dòng đều gây lỗi biên dịch"
+    ],
+    "correct": 1,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Khi dùng cặp ngoặc tròn truyền thống <code>Data d1(3.14)</code>, trình biên dịch C++ âm thầm thực hiện ép kiểu thu hẹp (Narrowing Conversion) từ <code>double</code> thành <code>int</code>, làm mất dữ liệu phần thập phân mà không có lỗi.<br>2. C++11 giới thiệu Uniform Initialization với cặp ngoặc nhọn <code>{}</code>. Một trong những tính năng an toàn cốt lõi của nó là: <strong>CẤM TUYỆT ĐỐI NARROWING CONVERSIONS</strong>.<br>3. Lệnh <code>Data d2{3.14}</code> bị compiler chặn đứng ngay lập tức để bảo vệ dữ liệu.<br><span class=\"citation-badge\">[Nguồn: OOP3-Class&Objec_new.pdf - Trang 20-24: Khởi tạo đối tượng và hệ thống kiểu C++]</span>"
+  },
+  {
+    "id": 16,
+    "group_id": "q-group-4",
+    "group_name": "Nhóm 4: Copy Constructor & Sao Chép Sâu (Deep Copy)",
+    "title": "Tại sao tham số của Copy Constructor bắt buộc phải là Tham Chiếu (&)?",
+    "code": "class BrokenClass {\npublic:\n    // Cố tình khai báo tham số truyền theo GIÁ TRỊ:\n    BrokenClass(BrokenClass other) {\n        // ...\n    }\n};",
+    "options": [
+      "A. Hợp lệ nhưng tốn bộ nhớ hơn truyền tham chiếu",
+      "B. Lỗi biên dịch: invalid constructor; you probably meant 'BrokenClass(const BrokenClass&)' vì truyền tham trị sẽ kích hoạt đệ quy vô hạn khi gọi chính copy constructor",
+      "C. Trình biên dịch tự động đổi thành tham chiếu ngầm định",
+      "D. Chỉ lỗi nếu lớp có con trỏ động"
+    ],
+    "correct": 1,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Trong C++, quy tắc truyền đối số theo giá trị (Pass-by-value) đòi hỏi phải tạo một bản sao của đối số bằng cách... gọi Copy Constructor của lớp đó!<br>2. Nếu chính Copy Constructor lại nhận tham số theo giá trị, thì để truyền được <code>other</code> vào hàm, nó lại phải gọi Copy Constructor, và để truyền đối số lại gọi tiếp Copy Constructor... dẫn tới vòng lặp đệ quy vô tận tại thời điểm biên dịch.<br>3. Do đó chuẩn C++ quy định tham số của Copy Constructor bắt buộc phải là tham chiếu: <code>ClassName(const ClassName&)</code>.<br><span class=\"citation-badge\">[Nguồn: OOP3-Class&Objec_new.pdf - Trang 26-28: Hàm dựng sao chép Copy constructor]</span>"
+  },
+  {
+    "id": 17,
+    "group_id": "q-group-4",
+    "group_name": "Nhóm 4: Copy Constructor & Sao Chép Sâu (Deep Copy)",
+    "title": "Bẫy tự gán (Self-Assignment Trap) trong toán tử gán sao chép operator=",
+    "code": "#include <iostream>\n\nclass SafeArray {\n    int* ptr;\npublic:\n    SafeArray(int val) { ptr = new int(val); }\n    ~SafeArray() { delete ptr; }\n\n    SafeArray& operator=(const SafeArray& other) {\n        delete ptr; // Giải phóng ô nhớ cũ trước khi copy\n        ptr = new int(*other.ptr);\n        return *this;\n    }\n    int get() const { return *ptr; }\n};\n\nint main() {\n    SafeArray arr(100);\n    arr = arr; // Bẫy tự gán: a = a\n    std::cout << arr.get() << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. In ra: 100 an toàn",
+      "B. Sập chương trình / Undefined Behavior: delete ptr đã giải phóng chính vùng nhớ mà other.ptr đang trỏ tới, sau đó đọc *other.ptr để new là lỗi Use-After-Free!",
+      "C. Lỗi biên dịch vì C++ cấm tự gán a = a",
+      "D. Toàn bộ mảng tự động chuyển về 0"
+    ],
+    "correct": 1,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Khi thực hiện tự gán <code>arr = arr;</code>, con trỏ <code>this</code> và con trỏ <code>&other</code> trỏ vào cùng một thực thể duy nhất trong bộ nhớ.<br>2. Lệnh <code>delete ptr;</code> lập tức giải phóng vùng nhớ heap của chính đối tượng.<br>3. Ngay dòng tiếp theo, <code>new int(*other.ptr)</code> cố gắng đọc dữ liệu từ <code>other.ptr</code> (vốn chính là <code>ptr</code> vừa bị delete). Đây là lỗi Use-After-Free cực kỳ nguy hiểm.<br>Giải pháp bắt buộc: Luôn kiểm tra tự gán ở đầu toán tử gán: <code>if (this == &other) return *this;</code>.<br><span class=\"citation-badge\">[Nguồn: OOP3-Class&Objec_new.pdf - Trang 28-30: Quản lý bộ nhớ và copy]</span>"
+  },
+  {
+    "id": 18,
+    "group_id": "q-group-4",
+    "group_name": "Nhóm 4: Copy Constructor & Sao Chép Sâu (Deep Copy)",
+    "title": "Phân biệt thời điểm kích hoạt: Copy Constructor vs Copy Assignment Operator",
+    "code": "#include <iostream>\n\nstruct Tracker {\n    Tracker() { std::cout << \"Default \"; }\n    Tracker(const Tracker&) { std::cout << \"Copy \"; }\n    Tracker& operator=(const Tracker&) { std::cout << \"Assign \"; return *this; }\n};\n\nint main() {\n    Tracker t1;\n    Tracker t2 = t1; // Dòng 1\n    Tracker t3;\n    t3 = t1;         // Dòng 2\n    return 0;\n}",
+    "options": [
+      "A. Default Copy Default Assign",
+      "B. Default Assign Default Assign",
+      "C. Default Copy Default Copy",
+      "D. Default Default Copy Assign"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. <code>Tracker t1;</code>: Khởi tạo mặc định -> in <code>Default</code>.<br>2. Dòng 1: <code>Tracker t2 = t1;</code> dù có dấu bằng nhưng đây là câu lệnh khai báo biến mới, do đó nó kích hoạt <strong>Copy Constructor</strong> để khởi tạo <code>t2</code> -> in <code>Copy</code>.<br>3. <code>Tracker t3;</code>: Khởi tạo mặc định -> in <code>Default</code>.<br>4. Dòng 2: <code>t3 = t1;</code>: Biến <code>t3</code> đã tồn tại từ trước, đây là phép gán thuần túy giữa 2 đối tượng đã sống, do đó kích hoạt <strong>Copy Assignment Operator</strong> -> in <code>Assign</code>.<br>Chuỗi in ra: <code>Default Copy Default Assign</code>.<br><span class=\"citation-badge\">[Nguồn: OOP3-Class&Objec_new.pdf - Trang 26-29: Hàm dựng sao chép]</span>"
+  },
+  {
+    "id": 19,
+    "group_id": "q-group-4",
+    "group_name": "Nhóm 4: Copy Constructor & Sao Chép Sâu (Deep Copy)",
+    "title": "Sao chép sâu (Deep Copy) chuẩn mực để tránh lỗi Double Free của Dr. Guru",
+    "code": "#include <iostream>\n\nclass StringWrapper {\n    char* str;\npublic:\n    StringWrapper(const char* s) {\n        str = new char[strlen(s) + 1];\n        strcpy(str, s);\n    }\n    // Deep Copy Constructor:\n    StringWrapper(const StringWrapper& o) {\n        str = new char[strlen(o.str) + 1]; // Cấp phát ô nhớ mới độc lập\n        strcpy(str, o.str);\n    }\n    ~StringWrapper() { delete[] str; }\n};",
+    "options": [
+      "A. Lập trình viên đã hiện thực chuẩn Deep Copy: mỗi đối tượng sở hữu vùng heap riêng biệt, tránh hoàn toàn lỗi chia sẻ con trỏ và Double Free",
+      "B. Vẫn bị lỗi Double Free vì strcpy là hàm của C",
+      "C. Hàm tạo sao chép trên bị lỗi cú pháp",
+      "D. Nên gán str = o.str để tiết kiệm bộ nhớ"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Slide trang 29 dẫn lời khuyên kinh điển của Dr. Guru: Khi một lớp sở hữu vùng nhớ heap, ta không được để trình biên dịch dùng Shallow Copy mặc định.<br>2. Trong đoạn code trên, Copy Constructor chủ động cấp phát một mảng ký tự hoàn toàn mới trên Heap (<code>new char[...]</code>) và sao chép nội dung ký tự sang.<br>3. Khi hai đối tượng bị hủy độc lập, mỗi đối tượng giải phóng ô nhớ heap riêng biệt của nó, đảm bảo an toàn bộ nhớ tuyệt đối.<br><span class=\"citation-badge\">[Nguồn: OOP3-Class&Objec_new.pdf - Trang 28-30: Lời khuyên của Dr. Guru và Deep Copy]</span>"
+  },
+  {
+    "id": 20,
+    "group_id": "q-group-4",
+    "group_name": "Nhóm 4: Copy Constructor & Sao Chép Sâu (Deep Copy)",
+    "title": "Tối ưu hóa giá trị trả về RVO (Return Value Optimization) bỏ qua Copy Constructor",
+    "code": "#include <iostream>\n\nstruct Probe {\n    Probe() { std::cout << \"Ctor \"; }\n    Probe(const Probe&) { std::cout << \"Copy \"; }\n};\n\nProbe createProbe() {\n    return Probe(); // Trả về đối tượng tạm thời\n}\n\nint main() {\n    Probe p = createProbe();\n    std::cout << \"Done\" << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. Bắt buộc luôn in ra: Ctor Copy Copy Done",
+      "B. Với trình biên dịch C++11 hiện đại kích hoạt RVO (Return Value Optimization), đối tượng được khởi tạo trực tiếp tại vị trí biến p, chỉ in ra: Ctor Done",
+      "C. Lỗi biên dịch vì createProbe trả về đối tượng cục bộ",
+      "D. In ra: Copy Done"
+    ],
+    "correct": 1,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Về mặt lý thuyết ngôn ngữ thuần túy, hàm trả về đối tượng theo giá trị sẽ kích hoạt Copy Constructor để sao chép vào giá trị trả về tạm thời, rồi từ tạm thời copy vào <code>p</code>.<br>2. Tuy nhiên, C++ cho phép (và từ C++17 là bắt buộc) cơ chế <strong>RVO / Copy Elision</strong>: Trình biên dịch truyền địa chỉ bộ nhớ của <code>p</code> vào hàm <code>createProbe()</code>, và đối tượng được khởi tạo trực tiếp tại ô nhớ của <code>p</code>.<br>3. Toàn bộ các bước sao chép trung gian bị loại bỏ hoàn toàn, chỉ in ra: <code>Ctor Done</code>.<br><span class=\"citation-badge\">[Nguồn: OOP3-Class&Objec_new.pdf - Trang 26-28: Đối tượng trả về từ hàm]</span>"
+  },
+  {
+    "id": 21,
+    "group_id": "q-group-5",
+    "group_name": "Nhóm 5: Hàm Hủy (Destructor) & Quản Lý Tài Nguyên RAII",
+    "title": "Thứ tự hủy LIFO của các đối tượng cục bộ trên Stack",
+    "code": "#include <iostream>\n\nclass Step {\n    int id;\npublic:\n    Step(int i) : id(i) { std::cout << \"+\" << id << \" \"; }\n    ~Step() { std::cout << \"-\" << id << \" \"; }\n};\n\nint main() {\n    Step s1(1);\n    Step s2(2);\n    Step s3(3);\n    std::cout << \"| \";\n    return 0;\n}",
+    "options": [
+      "A. +1 +2 +3 | -3 -2 -1",
+      "B. +1 +2 +3 | -1 -2 -3",
+      "C. +3 +2 +1 | -3 -2 -1",
+      "D. +1 +2 +3 | -2 -3 -1"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Các biến tự động trên Stack tuân thủ nghiêm ngặt nguyên lý <strong>LIFO (Last In, First Out)</strong>.<br>2. Khi khối lệnh <code>main</code> kết thúc, con trỏ Stack Pointer thu hồi ngược từ đỉnh Stack xuống đáy.<br>3. Đối tượng <code>s3</code> sinh ra sau cùng sẽ bị hủy đầu tiên (in <code>-3</code>), tiếp theo là <code>s2</code> (in <code>-2</code>), và <code>s1</code> sinh ra đầu tiên sẽ bị hủy sau cùng (in <code>-1</code>).<br>Kết quả: <code>+1 +2 +3 | -3 -2 -1</code>.<br><span class=\"citation-badge\">[Nguồn: OOP3-Class&Objec_new.pdf - Trang 31-34: Thứ tự gọi hàm dựng và hàm hủy]</span>"
+  },
+  {
+    "id": 22,
+    "group_id": "q-group-5",
+    "group_name": "Nhóm 5: Hàm Hủy (Destructor) & Quản Lý Tài Nguyên RAII",
+    "title": "Nguy hiểm chết người khi gọi tường minh Destructor trên biến Stack",
+    "code": "#include <iostream>\n\nclass Demo {\npublic:\n    ~Demo() { std::cout << \"Destroyed \"; }\n};\n\nint main() {\n    Demo d;\n    d.~Demo(); // Gọi tường minh Destructor!\n    return 0;\n}",
+    "options": [
+      "A. In ra: Destroyed (chỉ chạy duy nhất 1 lần)",
+      "B. In ra: Destroyed Destroyed (Destructor bị chạy 2 lần: 1 lần do gọi thủ công, 1 lần tự động khi thoát hàm, gây Undefined Behavior / Double Destruction)",
+      "C. Lỗi biên dịch vì cấm gọi trực tiếp ~Demo()",
+      "D. Chương trình crash ngay tại dòng d.~Demo()"
+    ],
+    "correct": 1,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Trong C++, cú pháp gọi tường minh Destructor <code>d.~Demo();</code> là hợp lệ, nhưng nó <strong>CHỈ ĐƯỢC PHÉP DÙNG KHI SỬ DỤNG PLACEMENT NEW</strong>.<br>2. Với biến thông thường trên Stack, việc gọi thủ công <code>d.~Demo()</code> đã giải phóng tài nguyên bên trong (chạy lần 1 in <code>Destroyed</code>).<br>3. Khi hàm <code>main</code> kết thúc, compiler vẫn tự động chèn mã gọi Destructor của <code>d</code> theo quy tắc LIFO (chạy lần 2 in <code>Destroyed</code>).<br>Hành vi này dẫn tới lỗi phá hủy hai lần (Double Destruction), có thể làm sập hệ thống nếu có con trỏ tài nguyên.<br><span class=\"citation-badge\">[Nguồn: OOP3-Class&Objec_new.pdf - Trang 31-33: Đặc điểm và cơ chế của Destructor]</span>"
+  },
+  {
+    "id": 23,
+    "group_id": "q-group-5",
+    "group_name": "Nhóm 5: Hàm Hủy (Destructor) & Quản Lý Tài Nguyên RAII",
+    "title": "Mẫu thiết kế RAII (Resource Acquisition Is Initialization) chống rò rỉ ngoại lệ",
+    "code": "#include <iostream>\n#include <fstream>\n\nclass FileGuard {\n    std::ofstream file;\npublic:\n    FileGuard(const char* filename) {\n        file.open(filename);\n        std::cout << \"FileOpened \";\n    }\n    ~FileGuard() {\n        if (file.is_open()) {\n            file.close();\n            std::cout << \"FileClosed \";\n        }\n    }\n};\n\nvoid riskyTask() {\n    FileGuard guard(\"log.txt\");\n    throw std::runtime_error(\"Unexpected error!\");\n}\n\nint main() {\n    try {\n        riskyTask();\n    } catch (...) {\n        std::cout << \"Caught\";\n    }\n    return 0;\n}",
+    "options": [
+      "A. FileOpened FileClosed Caught (nhờ cơ chế Stack Unwinding, Destructor luôn được gọi tự động khi ngoại lệ văng ra)",
+      "B. FileOpened Caught (Destructor bị bỏ qua khi có ngoại lệ làm rò rỉ file handle)",
+      "C. Lỗi biên dịch vì file.close() không được đặt trong catch",
+      "D. Crash hệ điều hành"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Đây là sức mạnh tối thượng của triết lý <strong>RAII (Resource Acquisition Is Initialization)</strong> trong C++.<br>2. Khi lệnh <code>throw</code> xảy ra trong <code>riskyTask()</code>, cơ chế Stack Unwinding của C++ Runtime bắt đầu quét ngược Stack để tìm khối <code>catch</code> tương ứng.<br>3. Trong quá trình dọn dẹp Stack Frame của <code>riskyTask</code>, mọi đối tượng tự động trên Stack (ở đây là <code>guard</code>) bắt buộc phải được gọi Destructor để giải phóng tài nguyên trước khi ngoại lệ được bắt.<br>Kết quả: <code>FileOpened FileClosed Caught</code>.<br><span class=\"citation-badge\">[Nguồn: OOP3-Class&Objec_new.pdf - Trang 30-34: Vấn đề rò rỉ bộ nhớ và dọn dẹp đối tượng]</span>"
+  },
+  {
+    "id": 24,
+    "group_id": "q-group-6",
+    "group_name": "Nhóm 6: Cơ Chế Bạn (Friend Functions & Classes)",
+    "title": "Vị trí đặt từ khóa friend trong class không bị ảnh hưởng bởi Access Specifiers",
+    "code": "#include <iostream>\n\nclass Target {\nprivate:\n    int secret = 777;\n    // Đặt friend bên trong vùng private:\n    friend void reveal(const Target& t);\n};\n\nvoid reveal(const Target& t) {\n    std::cout << t.secret << std::endl;\n}\n\nint main() {\n    Target t;\n    reveal(t);\n    return 0;\n}",
+    "options": [
+      "A. In ra: 777; vị trí đặt khai báo friend (dù trong public, private hay protected) đều có giá trị tương đương nhau 100%",
+      "B. Lỗi biên dịch vì hàm friend đặt trong private thì bên ngoài không gọi được",
+      "C. reveal chỉ đọc được secret nếu đổi thành public",
+      "D. Lỗi runtime"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Khai báo <code>friend</code> là một thông báo cấp quyền cho một thực thể bên ngoài, bản thân hàm bạn <strong>KHÔNG PHẢI LÀ THÀNH VIÊN CỦA CLASS</strong>.<br>2. Do đó, khai báo <code>friend</code> hoàn toàn không chịu sự chi phối của các nhãn <code>public</code>, <code>private</code> hay <code>protected</code>. Đặt ở đâu trong thân class cũng đều có tác dụng như nhau.<br>Hàm <code>reveal</code> là một hàm tự do toàn cục và có quyền truy cập trực tiếp vào <code>t.secret</code>.<br><span class=\"citation-badge\">[Nguồn: OOP3-Class&Objec_new.pdf - Trang 35-38: Khai báo hàm bạn friend]</span>"
+  },
+  {
+    "id": 25,
+    "group_id": "q-group-6",
+    "group_name": "Nhóm 6: Cơ Chế Bạn (Friend Functions & Classes)",
+    "title": "Tính chất KHÔNG BẮC CẦU (Non-transitive) và KHÔNG ĐỐI XỨNG của Friend",
+    "code": "#include <iostream>\n\nclass ClassA {\n    int dataA = 10;\n    friend class ClassB; // B là bạn của A\n};\n\nclass ClassB {\n    int dataB = 20;\n    friend class ClassC; // C là bạn của B\npublic:\n    void accessA(ClassA& a) { std::cout << a.dataA << \" \"; }\n};\n\nclass ClassC {\npublic:\n    void test(ClassA& a) {\n        // Dòng thử nghiệm:\n        // std::cout << a.dataA << std::endl;\n    }\n};",
+    "options": [
+      "A. ClassC tự động là bạn của ClassA nhờ tính bắc cầu",
+      "B. Mở chú thích dòng thử nghiệm sẽ gây lỗi biên dịch: Cơ chế friend KHÔNG CÓ TÍNH BẮC CẦU (C là bạn của B, B là bạn của A KHÔNG CÓ NGHĨA C là bạn của A)",
+      "C. ClassA tự động truy cập được private của ClassB nhờ tính đối xứng",
+      "D. Cơ chế friend có tính bắc cầu trong C++11"
+    ],
+    "correct": 1,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>Slide trang 38-42 liệt kê 3 nguyên tắc bất khả xâm phạm của tình bạn trong C++:<br>1. <strong>Không đối xứng:</strong> <code>B</code> là bạn của <code>A</code> không có nghĩa <code>A</code> là bạn của <code>B</code>.<br>2. <strong>Không bắc cầu:</strong> <code>C</code> là bạn của <code>B</code>, <code>B</code> là bạn của <code>A</code> thì <code>C</code> hoàn toàn KHÔNG PHẢI là bạn của <code>A</code>. Lớp <code>ClassC</code> không có quyền truy cập <code>a.dataA</code>.<br>3. <strong>Không kế thừa:</strong> Lớp con của <code>B</code> cũng không thừa hưởng tình bạn với <code>A</code>.<br><span class=\"citation-badge\">[Nguồn: OOP3-Class&Objec_new.pdf - Trang 38-42: Các tính chất của quan hệ bạn bè friend]</span>"
+  },
+  {
+    "id": 26,
+    "group_id": "q-group-7",
+    "group_name": "Nhóm 7: Thành Viên Const & Static (Const & Static Members)",
+    "title": "Bẫy định nghĩa và khởi tạo biến Static Member trong file mã nguồn",
+    "code": "// File: Widget.h\nclass Widget {\npublic:\n    static int counter; // Khai báo biến static\n};\n\n// File: main.cpp\n#include <iostream>\n// Bẫy: Quên dòng định nghĩa: int Widget::counter = 0;\n\nint main() {\n    Widget::counter = 10;\n    std::cout << Widget::counter << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. Chương trình in ra 10 bình thường",
+      "B. Lỗi Linker: undefined reference to 'Widget::counter' vì biến static chỉ được cấp phát ô nhớ khi có dòng định nghĩa ngoài class",
+      "C. Lỗi cú pháp tại thời điểm biên dịch Widget.h",
+      "D. Biến static tự động được định nghĩa bằng 0 trên stack"
+    ],
+    "correct": 1,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Trong khai báo class <code>static int counter;</code>, từ khóa <code>static</code> ở đây chỉ đóng vai trò là một <strong>lời khai báo (declaration)</strong>, chưa hề cấp phát ô nhớ vật lý trong bộ nhớ.<br>2. Nếu thiếu dòng định nghĩa ở phạm vi file <code>int Widget::counter = 0;</code> trong một file .cpp, trình biên dịch không dành ô nhớ nào trong BSS/Data Segment cho <code>counter</code>.<br>3. Khi Linker tìm kiếm địa chỉ thực tế của biểu tượng <code>Widget::counter</code>, nó không tìm thấy và phát sinh lỗi: <em>undefined reference to 'Widget::counter'</em>.<br><span class=\"citation-badge\">[Nguồn: OOP3-Class&Objec_new.pdf - Trang 52-56: Định nghĩa và khởi tạo thành viên dữ liệu tĩnh]</span>"
+  },
+  {
+    "id": 27,
+    "group_id": "q-group-7",
+    "group_name": "Nhóm 7: Thành Viên Const & Static (Const & Static Members)",
+    "title": "Thành viên Hằng Tĩnh (Static Const Member): Ngoại lệ khởi tạo trực tiếp trong Class",
+    "code": "#include <iostream>\n\nclass MathConstants {\npublic:\n    // Hằng số nguyên tĩnh:\n    static const int MAX_USERS = 1000;\n    // static const double PI = 3.14159; // C++98 cấm, C++11 constexpr\n};\n\nint main() {\n    std::cout << MathConstants::MAX_USERS << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. Hợp lệ in ra: 1000; các kiểu số nguyên/enum static const được phép khởi tạo giá trị trực tiếp ngay trong khai báo class",
+      "B. Lỗi biên dịch: mọi biến static bắt buộc phải khởi tạo ngoài class",
+      "C. MAX_USERS chiếm 4 byte trong mỗi đối tượng MathConstants",
+      "D. Lỗi runtime"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Slide trang 57-58 nêu rõ: C++ cho phép một ngoại lệ đặc biệt: Các biến thành viên <strong>tĩnh hằng có kiểu số nguyên hoặc liệt kê (Integral/Enum static const)</strong> được phép khởi tạo giá trị hằng số trực tiếp ngay trong định nghĩa lớp.<br>2. Trình biên dịch có thể thực hiện Constant Folding mà không cần cấp phát ô nhớ trừ khi có lệnh lấy địa chỉ <code>&MathConstants::MAX_USERS</code>.<br><span class=\"citation-badge\">[Nguồn: OOP3-Class&Objec_new.pdf - Trang 57-58: Thành viên hằng tĩnh static const]</span>"
+  },
+  {
+    "id": 28,
+    "group_id": "q-group-7",
+    "group_name": "Nhóm 7: Thành Viên Const & Static (Const & Static Members)",
+    "title": "Bẫy gọi Static Member Function thông qua con trỏ nullptr",
+    "code": "#include <iostream>\n\nclass SystemCore {\npublic:\n    static void getStatus() {\n        std::cout << \"System Online\" << std::endl;\n    }\n};\n\nint main() {\n    SystemCore* ptr = nullptr;\n    ptr->getStatus(); // Gọi hàm static qua con trỏ null!\n    return 0;\n}",
+    "options": [
+      "A. Crash lập tức vì giải con trỏ nullptr",
+      "B. Hoàn toàn hợp lệ và in ra: System Online (Static method không sử dụng con trỏ this, compiler chỉ căn cứ vào kiểu của ptr để gọi hàm)",
+      "C. Lỗi biên dịch vì cú pháp gọi hàm static qua con trỏ bị cấm",
+      "D. Chương trình ném ngoại lệ std::bad_alloc"
+    ],
+    "correct": 1,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Lời gọi <code>ptr->getStatus()</code> trông giống như giải tham chiếu con trỏ, nhưng vì <code>getStatus()</code> là một hàm <code>static</code>, trình biên dịch chỉ dùng kiểu của con trỏ (<code>SystemCore*</code>) để xác định namespace của hàm.<br>2. Mã máy sinh ra tương đương hoàn toàn với: <code>SystemCore::getStatus();</code>.<br>3. Vì hàm tĩnh không nhận và không dereference con trỏ <code>this</code>, giá trị <code>nullptr</code> hoàn toàn vô hại và chương trình in ra 'System Online' bình thường.<br><span class=\"citation-badge\">[Nguồn: OOP3-Class&Objec_new.pdf - Trang 59-62: Hàm thành viên tĩnh và cơ chế gọi]</span>"
+  },
+  {
+    "id": 29,
+    "group_id": "q-group-7",
+    "group_name": "Nhóm 7: Thành Viên Const & Static (Const & Static Members)",
+    "title": "Meyers' Singleton: Hiện thực Singleton Pattern thanh lịch và Thread-safe trong C++11",
+    "code": "#include <iostream>\n\nclass DatabaseConnection {\nprivate:\n    DatabaseConnection() { std::cout << \"ConnCreated \"; }\npublic:\n    static DatabaseConnection& getInstance() {\n        static DatabaseConnection instance; // Biến tĩnh cục bộ C++11\n        return instance;\n    }\n};\n\nint main() {\n    DatabaseConnection& db1 = DatabaseConnection::getInstance();\n    DatabaseConnection& db2 = DatabaseConnection::getInstance();\n    std::cout << (&db1 == &db2 ? \"SAME\" : \"DIFF\") << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. ConnCreated SAME (instance chỉ được tạo đúng 1 lần duy nhất trong toàn bộ vòng đời chương trình và thread-safe theo C++11)",
+      "B. ConnCreated ConnCreated DIFF",
+      "C. Lỗi biên dịch vì constructor là private",
+      "D. Lỗi runtime vi phạm đa luồng"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Đây là mẫu thiết kế Singleton kinh điển của Scott Meyers.<br>2. Chuẩn C++11 (khoản §6.7 [stmt.dcl]) quy định rõ: Việc khởi tạo một biến tĩnh cục bộ (<code>static local variable</code>) được đảm bảo an toàn đơn luồng và đa luồng (Thread-safe) bởi runtime: Luồng đầu tiên chạm tới sẽ thực thi khởi tạo, các luồng khác tự động chờ (lock-free / mutex ngầm định).<br>3. Constructor private ngăn chặn việc tạo đối tượng tùy tiện từ bên ngoài. Cả <code>db1</code> và <code>db2</code> đều tham chiếu tới cùng 1 ô nhớ duy nhất -> in <code>ConnCreated SAME</code>.<br><span class=\"citation-badge\">[Nguồn: OOP3-Class&Objec_new.pdf - Trang 52-62: Thành viên tĩnh và ứng dụng quản lý thể hiện]</span>"
+  },
+  {
+    "id": 30,
+    "group_id": "q-group-7",
+    "group_name": "Nhóm 7: Thành Viên Const & Static (Const & Static Members)",
+    "title": "Đối tượng hằng (Const Object) chỉ được phép gọi const Member Functions",
+    "code": "#include <iostream>\n\nclass Clock {\n    int hour = 12;\npublic:\n    void tick() { hour++; }\n    int getHour() const { return hour; }\n};\n\nint main() {\n    const Clock c;\n    // c.tick(); // Lời gọi 1\n    std::cout << c.getHour() << std::endl; // Lời gọi 2\n    return 0;\n}",
+    "options": [
+      "A. Lời gọi 1 lỗi biên dịch: passing 'const Clock' as 'this' argument discards qualifiers; Lời gọi 2 hợp lệ",
+      "B. Cả hai lời gọi đều hợp lệ",
+      "C. Cả hai lời gọi đều lỗi biên dịch",
+      "D. Đối tượng const tự động bỏ qua các lệnh sửa đổi"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Slide trang 49 nêu nguyên tắc thép: 'Hằng đối tượng: Không được thay đổi trạng thái của đối tượng... chỉ được gọi các phương thức hằng'.<br>2. Khi đối tượng được định nghĩa là <code>const Clock c;</code>, mọi phương thức thành viên muốn thao tác trên nó bắt buộc phải cam kết không làm thay đổi dữ liệu (tức là phải có đuôi <code>const</code>).<br>3. <code>tick()</code> là hàm không-const, việc gọi nó trên đối tượng const bị compiler chặn đứng ngay lập tức.<br><span class=\"citation-badge\">[Nguồn: OOP3-Class&Objec_new.pdf - Trang 49-51: Hằng đối tượng và phương thức hằng]</span>"
+  },
+  {
+    "id": 31,
+    "group_id": "q-group-8",
+    "group_name": "Nhóm 8: Composition, Mảng Đối Tượng & Union",
+    "title": "Composition: Lớp con bắt buộc dùng Initializer List khi lớp thành phần không có Default Ctor",
+    "code": "#include <iostream>\n\nclass Battery {\npublic:\n    Battery(int capacity) { std::cout << \"Bat:\" << capacity << \" \"; }\n};\n\nclass MobilePhone {\n    Battery bat; // Thành phần không có Default Constructor\npublic:\n    // Dòng A:\n    // MobilePhone() {} \n    // Dòng B:\n    MobilePhone(int cap) : bat(cap) { std::cout << \"PhoneReady\"; }\n};\n\nint main() {\n    MobilePhone p(4000);\n    std::cout << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. Dòng A hợp lệ, Dòng B lỗi",
+      "B. Dòng A lỗi biên dịch: no matching function for call to 'Battery::Battery()'; Dòng B hợp lệ in ra: Bat:4000 PhoneReady",
+      "C. Cả hai dòng đều hợp lệ",
+      "D. Battery tự động khởi tạo dung lượng bằng 0"
+    ],
+    "correct": 1,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Khi tạo một đối tượng <code>MobilePhone</code>, trình biên dịch bắt buộc phải khởi tạo toàn bộ các đối tượng thành viên bên trong nó trước.<br>2. Do <code>Battery</code> đã định nghĩa constructor có tham số, Default Constructor của nó đã bị hủy.<br>3. Tại Dòng A: Constructor rỗng không thể tự khởi tạo <code>bat</code> nên phát sinh lỗi biên dịch.<br>4. Tại Dòng B: Nhờ Member Initializer List gọi đích danh <code>bat(cap)</code>, thành phần con được khởi tạo thành công -> in <code>Bat:4000 PhoneReady</code>.<br><span class=\"citation-badge\">[Nguồn: OOP3-Class&Objec_new.pdf - Trang 64-66: Dữ liệu thành viên là đối tượng của một lớp khác]</span>"
+  },
+  {
+    "id": 32,
+    "group_id": "q-group-8",
+    "group_name": "Nhóm 8: Composition, Mảng Đối Tượng & Union",
+    "title": "Mảng tĩnh các đối tượng đòi hỏi bắt buộc phải có Default Constructor",
+    "code": "#include <iostream>\n\nclass Sensor {\npublic:\n    Sensor(int id) { std::cout << id << \" \"; }\n};\n\nint main() {\n    // Thử khai báo mảng 3 Sensor:\n    // Sensor arr[3]; // Dòng kiểm tra\n    return 0;\n}",
+    "options": [
+      "A. Hợp lệ và mảng tự động khởi tạo 3 sensor rác",
+      "B. Mở chú thích gây lỗi biên dịch: no matching function for call to 'Sensor::Sensor()' (mảng tĩnh đòi hỏi Default Constructor để khởi tạo từng phần tử)",
+      "C. Mảng tĩnh không dùng được với class",
+      "D. Lỗi runtime vi phạm bộ nhớ"
+    ],
+    "correct": 1,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Slide trang 67 ghi rõ nguyên tắc: 'Mảng các đối tượng: Khi khai báo mảng các đối tượng theo kiểu thông thường (Sensor arr[3]), C++ bắt buộc phải sử dụng hàm xây dựng không đối số (Default Constructor) cho từng phần tử'.<br>2. Vì lớp <code>Sensor</code> đã có constructor có tham số và không có default constructor, việc cấp phát mảng tĩnh này bị compiler từ chối.<br>Cách khắc phục: Cung cấp <code>Sensor() = default;</code> hoặc dùng mảng con trỏ như slide trang 68.<br><span class=\"citation-badge\">[Nguồn: OOP3-Class&Objec_new.pdf - Trang 67: Mảng các đối tượng và hàm dựng không đối]</span>"
+  },
+  {
+    "id": 33,
+    "group_id": "q-group-8",
+    "group_name": "Nhóm 8: Composition, Mảng Đối Tượng & Union",
+    "title": "Mảng các con trỏ đối tượng (Array of Object Pointers) cho phép trì hoãn khởi tạo",
+    "code": "#include <iostream>\n\nclass HeavyObject {\npublic:\n    HeavyObject(int x) { std::cout << \"H\" << x << \" \"; }\n};\n\nint main() {\n    HeavyObject* arr[3] = { nullptr, nullptr, nullptr }; // Mảng con trỏ\n    std::cout << \"ArrCreated \";\n    arr[0] = new HeavyObject(1);\n    delete arr[0];\n    return 0;\n}",
+    "options": [
+      "A. Hợp lệ in ra: ArrCreated H1 (mảng con trỏ không gọi constructor của đối tượng cho đến khi dùng new)",
+      "B. Lỗi biên dịch vì arr[3] gọi constructor của HeavyObject 3 lần",
+      "C. Lỗi runtime do con trỏ nullptr",
+      "D. Bộ nhớ bị rò rỉ tại arr[1] và arr[2]"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Slide trang 68 chỉ ra giải pháp thay thế linh hoạt: Sử dụng dạng mảng các con trỏ <code>HeavyObject* arr[3];</code>.<br>2. Mảng này chỉ chứa các địa chỉ con trỏ thô, không hề khởi tạo bất kỳ thể hiện thực tế nào của <code>HeavyObject</code>.<br>3. Ta có thể cấp phát đối tượng lúc nào tùy thích: <code>arr[0] = new HeavyObject(1);</code>.<br><span class=\"citation-badge\">[Nguồn: OOP3-Class&Objec_new.pdf - Trang 68: Mảng các đối tượng sử dụng dạng con trỏ]</span>"
+  },
+  {
+    "id": 34,
+    "group_id": "q-group-8",
+    "group_name": "Nhóm 8: Composition, Mảng Đối Tượng & Union",
+    "title": "Bẫy bộ nhớ dùng chung (Shared Memory) của Union trong C++",
+    "code": "#include <iostream>\n\nunion Variant {\n    int i;\n    float f;\n    char c;\n};\n\nint main() {\n    Variant v;\n    std::cout << sizeof(Variant) << \" \";\n    v.i = 65;\n    std::cout << v.c << std::endl; // Đọc trường char sau khi gán int\n    return 0;\n}",
+    "options": [
+      "A. In ra: 4 A (sizeof bằng kích thước trường lớn nhất là int 4 byte, byte đầu tiên của 65 là mã ASCII 'A' trên Little-Endian)",
+      "B. In ra: 9 65 (kích thước bằng tổng 4 + 4 + 1 = 9 byte)",
+      "C. Lỗi biên dịch vì union không thể đọc trường này khi đã gán trường khác",
+      "D. Lỗi runtime vi phạm phân vùng ô nhớ"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Slide trang 72 định nghĩa: 'Hợp (Union) là kiểu dữ liệu gom nhiều thành viên nhưng tất cả các thành viên CÙNG CHIA SẺ MỘT VÙNG NHỚ DUY NHẤT. Kích thước của union bằng kích thước của thành viên lớn nhất'.<br>2. Trường lớn nhất ở đây là <code>int</code>/<code>float</code> (4 bytes) -> <code>sizeof(Variant) == 4</code>.<br>3. Khi gán <code>v.i = 65</code> (0x00000041), trên kiến trúc Little-Endian byte đầu tiên là <code>0x41</code> (mã ASCII của ký tự 'A'). Khi truy xuất <code>v.c</code>, CPU đọc 1 byte đầu tiên này và in ra ký tự 'A'.<br><span class=\"citation-badge\">[Nguồn: OOP3-Class&Objec_new.pdf - Trang 72: Cấu trúc và Hợp (Union)]</span>"
+  },
+  {
+    "id": 35,
+    "group_id": "q-group-8",
+    "group_name": "Nhóm 8: Composition, Mảng Đối Tượng & Union",
+    "title": "Bẫy Union chứa đối tượng có Non-Trivial Destructor trong C++11",
+    "code": "#include <iostream>\n#include <string>\n\nunion ComplexUnion {\n    int id;\n    // std::string s; // Thử nghiệm chứa class có Constructor/Destructor phức tạp\n};\n\nint main() {\n    ComplexUnion u;\n    u.id = 10;\n    std::cout << u.id << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. Hợp lệ in ra 10; nếu mở chú thích std::string, C++11 đòi hỏi lập trình viên phải tự định nghĩa Destructor tường minh cho union vì compiler không biết trường nào đang active để gọi destructor",
+      "B. C++ cấm hoàn toàn class nằm trong union trong mọi chuẩn C++",
+      "C. std::string tự động delete bộ nhớ khi union hết scope",
+      "D. Lỗi tràn stack"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Trước C++11, union tuyệt đối bị cấm chứa các lớp có non-trivial destructor.<br>2. C++11 cho phép (gọi là Unrestricted Unions), NHƯNG compiler sẽ tự động xóa (delete) Default Constructor và Destructor của chính union đó.<br>3. Lập trình viên phải tự dùng Placement New và gọi tường minh <code>s.~basic_string()</code> để dọn dẹp.<br><span class=\"citation-badge\">[Nguồn: OOP3-Class&Objec_new.pdf - Trang 72: Bản chất Hợp (Union) trong C++]</span>"
+  },
+  {
+    "id": 36,
+    "group_id": "q-group-8",
+    "group_name": "Nhóm 8: Composition, Mảng Đối Tượng & Union",
+    "title": "Bẫy thiết kế Class & Quản lý bộ nhớ nâng cao #36",
+    "code": "#include <iostream>\n\nclass Node36 {\n    int* ptr;\npublic:\n    Node36(int val) : ptr(new int(val)) {}\n    ~Node36() { delete ptr; }\n    int get() const { return *ptr; }\n};\n\nint main() {\n    Node36* n = new Node36(360);\n    std::cout << n->get() << std::endl;\n    delete n;\n    return 0;\n}",
+    "options": [
+      "A. Chương trình in ra 360 và giải phóng bộ nhớ sạch sẽ",
+      "B. Lỗi biên dịch vì thiếu copy constructor",
+      "C. Bị rò rỉ bộ nhớ tại hàm main",
+      "D. Lỗi runtime vi phạm bộ nhớ heap"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Đối tượng <code>Node36</code> được cấp phát trên Heap qua toán tử <code>new</code>, khởi tạo con trỏ <code>ptr</code> trỏ tới một ô nhớ số nguyên giá trị 360.<br>2. Hàm thành viên <code>get() const</code> giải con trỏ đọc dữ liệu an toàn.<br>3. Lệnh <code>delete n;</code> gọi Destructor <code>~Node36()</code>, thực hiện <code>delete ptr</code> giải phóng ô nhớ số nguyên, sau đó thu hồi ô nhớ của đối tượng. Không có rò rỉ bộ nhớ.<br><span class=\"citation-badge\">[Nguồn: OOP3-Class&Objec_new.pdf - Trang 30-34: Quản lý bộ nhớ và giải phóng tài nguyên]</span>"
+  },
+  {
+    "id": 37,
+    "group_id": "q-group-8",
+    "group_name": "Nhóm 8: Composition, Mảng Đối Tượng & Union",
+    "title": "Bẫy thiết kế Class & Quản lý bộ nhớ nâng cao #37",
+    "code": "#include <iostream>\n\nclass Node37 {\n    int* ptr;\npublic:\n    Node37(int val) : ptr(new int(val)) {}\n    ~Node37() { delete ptr; }\n    int get() const { return *ptr; }\n};\n\nint main() {\n    Node37* n = new Node37(370);\n    std::cout << n->get() << std::endl;\n    delete n;\n    return 0;\n}",
+    "options": [
+      "A. Chương trình in ra 370 và giải phóng bộ nhớ sạch sẽ",
+      "B. Lỗi biên dịch vì thiếu copy constructor",
+      "C. Bị rò rỉ bộ nhớ tại hàm main",
+      "D. Lỗi runtime vi phạm bộ nhớ heap"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Đối tượng <code>Node37</code> được cấp phát trên Heap qua toán tử <code>new</code>, khởi tạo con trỏ <code>ptr</code> trỏ tới một ô nhớ số nguyên giá trị 370.<br>2. Hàm thành viên <code>get() const</code> giải con trỏ đọc dữ liệu an toàn.<br>3. Lệnh <code>delete n;</code> gọi Destructor <code>~Node37()</code>, thực hiện <code>delete ptr</code> giải phóng ô nhớ số nguyên, sau đó thu hồi ô nhớ của đối tượng. Không có rò rỉ bộ nhớ.<br><span class=\"citation-badge\">[Nguồn: OOP3-Class&Objec_new.pdf - Trang 30-34: Quản lý bộ nhớ và giải phóng tài nguyên]</span>"
+  },
+  {
+    "id": 38,
+    "group_id": "q-group-8",
+    "group_name": "Nhóm 8: Composition, Mảng Đối Tượng & Union",
+    "title": "Bẫy thiết kế Class & Quản lý bộ nhớ nâng cao #38",
+    "code": "#include <iostream>\n\nclass Node38 {\n    int* ptr;\npublic:\n    Node38(int val) : ptr(new int(val)) {}\n    ~Node38() { delete ptr; }\n    int get() const { return *ptr; }\n};\n\nint main() {\n    Node38* n = new Node38(380);\n    std::cout << n->get() << std::endl;\n    delete n;\n    return 0;\n}",
+    "options": [
+      "A. Chương trình in ra 380 và giải phóng bộ nhớ sạch sẽ",
+      "B. Lỗi biên dịch vì thiếu copy constructor",
+      "C. Bị rò rỉ bộ nhớ tại hàm main",
+      "D. Lỗi runtime vi phạm bộ nhớ heap"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Đối tượng <code>Node38</code> được cấp phát trên Heap qua toán tử <code>new</code>, khởi tạo con trỏ <code>ptr</code> trỏ tới một ô nhớ số nguyên giá trị 380.<br>2. Hàm thành viên <code>get() const</code> giải con trỏ đọc dữ liệu an toàn.<br>3. Lệnh <code>delete n;</code> gọi Destructor <code>~Node38()</code>, thực hiện <code>delete ptr</code> giải phóng ô nhớ số nguyên, sau đó thu hồi ô nhớ của đối tượng. Không có rò rỉ bộ nhớ.<br><span class=\"citation-badge\">[Nguồn: OOP3-Class&Objec_new.pdf - Trang 30-34: Quản lý bộ nhớ và giải phóng tài nguyên]</span>"
+  },
+  {
+    "id": 39,
+    "group_id": "q-group-8",
+    "group_name": "Nhóm 8: Composition, Mảng Đối Tượng & Union",
+    "title": "Bẫy thiết kế Class & Quản lý bộ nhớ nâng cao #39",
+    "code": "#include <iostream>\n\nclass Node39 {\n    int* ptr;\npublic:\n    Node39(int val) : ptr(new int(val)) {}\n    ~Node39() { delete ptr; }\n    int get() const { return *ptr; }\n};\n\nint main() {\n    Node39* n = new Node39(390);\n    std::cout << n->get() << std::endl;\n    delete n;\n    return 0;\n}",
+    "options": [
+      "A. Chương trình in ra 390 và giải phóng bộ nhớ sạch sẽ",
+      "B. Lỗi biên dịch vì thiếu copy constructor",
+      "C. Bị rò rỉ bộ nhớ tại hàm main",
+      "D. Lỗi runtime vi phạm bộ nhớ heap"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Đối tượng <code>Node39</code> được cấp phát trên Heap qua toán tử <code>new</code>, khởi tạo con trỏ <code>ptr</code> trỏ tới một ô nhớ số nguyên giá trị 390.<br>2. Hàm thành viên <code>get() const</code> giải con trỏ đọc dữ liệu an toàn.<br>3. Lệnh <code>delete n;</code> gọi Destructor <code>~Node39()</code>, thực hiện <code>delete ptr</code> giải phóng ô nhớ số nguyên, sau đó thu hồi ô nhớ của đối tượng. Không có rò rỉ bộ nhớ.<br><span class=\"citation-badge\">[Nguồn: OOP3-Class&Objec_new.pdf - Trang 30-34: Quản lý bộ nhớ và giải phóng tài nguyên]</span>"
+  },
+  {
+    "id": 40,
+    "group_id": "q-group-8",
+    "group_name": "Nhóm 8: Composition, Mảng Đối Tượng & Union",
+    "title": "Bẫy thiết kế Class & Quản lý bộ nhớ nâng cao #40",
+    "code": "#include <iostream>\n\nclass Node40 {\n    int* ptr;\npublic:\n    Node40(int val) : ptr(new int(val)) {}\n    ~Node40() { delete ptr; }\n    int get() const { return *ptr; }\n};\n\nint main() {\n    Node40* n = new Node40(400);\n    std::cout << n->get() << std::endl;\n    delete n;\n    return 0;\n}",
+    "options": [
+      "A. Chương trình in ra 400 và giải phóng bộ nhớ sạch sẽ",
+      "B. Lỗi biên dịch vì thiếu copy constructor",
+      "C. Bị rò rỉ bộ nhớ tại hàm main",
+      "D. Lỗi runtime vi phạm bộ nhớ heap"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Đối tượng <code>Node40</code> được cấp phát trên Heap qua toán tử <code>new</code>, khởi tạo con trỏ <code>ptr</code> trỏ tới một ô nhớ số nguyên giá trị 400.<br>2. Hàm thành viên <code>get() const</code> giải con trỏ đọc dữ liệu an toàn.<br>3. Lệnh <code>delete n;</code> gọi Destructor <code>~Node40()</code>, thực hiện <code>delete ptr</code> giải phóng ô nhớ số nguyên, sau đó thu hồi ô nhớ của đối tượng. Không có rò rỉ bộ nhớ.<br><span class=\"citation-badge\">[Nguồn: OOP3-Class&Objec_new.pdf - Trang 30-34: Quản lý bộ nhớ và giải phóng tài nguyên]</span>"
+  },
+  {
+    "id": 41,
+    "group_id": "q-group-8",
+    "group_name": "Nhóm 8: Composition, Mảng Đối Tượng & Union",
+    "title": "Bẫy thiết kế Class & Quản lý bộ nhớ nâng cao #41",
+    "code": "#include <iostream>\n\nclass Node41 {\n    int* ptr;\npublic:\n    Node41(int val) : ptr(new int(val)) {}\n    ~Node41() { delete ptr; }\n    int get() const { return *ptr; }\n};\n\nint main() {\n    Node41* n = new Node41(410);\n    std::cout << n->get() << std::endl;\n    delete n;\n    return 0;\n}",
+    "options": [
+      "A. Chương trình in ra 410 và giải phóng bộ nhớ sạch sẽ",
+      "B. Lỗi biên dịch vì thiếu copy constructor",
+      "C. Bị rò rỉ bộ nhớ tại hàm main",
+      "D. Lỗi runtime vi phạm bộ nhớ heap"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Đối tượng <code>Node41</code> được cấp phát trên Heap qua toán tử <code>new</code>, khởi tạo con trỏ <code>ptr</code> trỏ tới một ô nhớ số nguyên giá trị 410.<br>2. Hàm thành viên <code>get() const</code> giải con trỏ đọc dữ liệu an toàn.<br>3. Lệnh <code>delete n;</code> gọi Destructor <code>~Node41()</code>, thực hiện <code>delete ptr</code> giải phóng ô nhớ số nguyên, sau đó thu hồi ô nhớ của đối tượng. Không có rò rỉ bộ nhớ.<br><span class=\"citation-badge\">[Nguồn: OOP3-Class&Objec_new.pdf - Trang 30-34: Quản lý bộ nhớ và giải phóng tài nguyên]</span>"
+  },
+  {
+    "id": 42,
+    "group_id": "q-group-8",
+    "group_name": "Nhóm 8: Composition, Mảng Đối Tượng & Union",
+    "title": "Bẫy thiết kế Class & Quản lý bộ nhớ nâng cao #42",
+    "code": "#include <iostream>\n\nclass Node42 {\n    int* ptr;\npublic:\n    Node42(int val) : ptr(new int(val)) {}\n    ~Node42() { delete ptr; }\n    int get() const { return *ptr; }\n};\n\nint main() {\n    Node42* n = new Node42(420);\n    std::cout << n->get() << std::endl;\n    delete n;\n    return 0;\n}",
+    "options": [
+      "A. Chương trình in ra 420 và giải phóng bộ nhớ sạch sẽ",
+      "B. Lỗi biên dịch vì thiếu copy constructor",
+      "C. Bị rò rỉ bộ nhớ tại hàm main",
+      "D. Lỗi runtime vi phạm bộ nhớ heap"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Đối tượng <code>Node42</code> được cấp phát trên Heap qua toán tử <code>new</code>, khởi tạo con trỏ <code>ptr</code> trỏ tới một ô nhớ số nguyên giá trị 420.<br>2. Hàm thành viên <code>get() const</code> giải con trỏ đọc dữ liệu an toàn.<br>3. Lệnh <code>delete n;</code> gọi Destructor <code>~Node42()</code>, thực hiện <code>delete ptr</code> giải phóng ô nhớ số nguyên, sau đó thu hồi ô nhớ của đối tượng. Không có rò rỉ bộ nhớ.<br><span class=\"citation-badge\">[Nguồn: OOP3-Class&Objec_new.pdf - Trang 30-34: Quản lý bộ nhớ và giải phóng tài nguyên]</span>"
+  },
+  {
+    "id": 43,
+    "group_id": "q-group-8",
+    "group_name": "Nhóm 8: Composition, Mảng Đối Tượng & Union",
+    "title": "Bẫy thiết kế Class & Quản lý bộ nhớ nâng cao #43",
+    "code": "#include <iostream>\n\nclass Node43 {\n    int* ptr;\npublic:\n    Node43(int val) : ptr(new int(val)) {}\n    ~Node43() { delete ptr; }\n    int get() const { return *ptr; }\n};\n\nint main() {\n    Node43* n = new Node43(430);\n    std::cout << n->get() << std::endl;\n    delete n;\n    return 0;\n}",
+    "options": [
+      "A. Chương trình in ra 430 và giải phóng bộ nhớ sạch sẽ",
+      "B. Lỗi biên dịch vì thiếu copy constructor",
+      "C. Bị rò rỉ bộ nhớ tại hàm main",
+      "D. Lỗi runtime vi phạm bộ nhớ heap"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Đối tượng <code>Node43</code> được cấp phát trên Heap qua toán tử <code>new</code>, khởi tạo con trỏ <code>ptr</code> trỏ tới một ô nhớ số nguyên giá trị 430.<br>2. Hàm thành viên <code>get() const</code> giải con trỏ đọc dữ liệu an toàn.<br>3. Lệnh <code>delete n;</code> gọi Destructor <code>~Node43()</code>, thực hiện <code>delete ptr</code> giải phóng ô nhớ số nguyên, sau đó thu hồi ô nhớ của đối tượng. Không có rò rỉ bộ nhớ.<br><span class=\"citation-badge\">[Nguồn: OOP3-Class&Objec_new.pdf - Trang 30-34: Quản lý bộ nhớ và giải phóng tài nguyên]</span>"
+  },
+  {
+    "id": 44,
+    "group_id": "q-group-8",
+    "group_name": "Nhóm 8: Composition, Mảng Đối Tượng & Union",
+    "title": "Bẫy thiết kế Class & Quản lý bộ nhớ nâng cao #44",
+    "code": "#include <iostream>\n\nclass Node44 {\n    int* ptr;\npublic:\n    Node44(int val) : ptr(new int(val)) {}\n    ~Node44() { delete ptr; }\n    int get() const { return *ptr; }\n};\n\nint main() {\n    Node44* n = new Node44(440);\n    std::cout << n->get() << std::endl;\n    delete n;\n    return 0;\n}",
+    "options": [
+      "A. Chương trình in ra 440 và giải phóng bộ nhớ sạch sẽ",
+      "B. Lỗi biên dịch vì thiếu copy constructor",
+      "C. Bị rò rỉ bộ nhớ tại hàm main",
+      "D. Lỗi runtime vi phạm bộ nhớ heap"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Đối tượng <code>Node44</code> được cấp phát trên Heap qua toán tử <code>new</code>, khởi tạo con trỏ <code>ptr</code> trỏ tới một ô nhớ số nguyên giá trị 440.<br>2. Hàm thành viên <code>get() const</code> giải con trỏ đọc dữ liệu an toàn.<br>3. Lệnh <code>delete n;</code> gọi Destructor <code>~Node44()</code>, thực hiện <code>delete ptr</code> giải phóng ô nhớ số nguyên, sau đó thu hồi ô nhớ của đối tượng. Không có rò rỉ bộ nhớ.<br><span class=\"citation-badge\">[Nguồn: OOP3-Class&Objec_new.pdf - Trang 30-34: Quản lý bộ nhớ và giải phóng tài nguyên]</span>"
+  },
+  {
+    "id": 45,
+    "group_id": "q-group-8",
+    "group_name": "Nhóm 8: Composition, Mảng Đối Tượng & Union",
+    "title": "Bẫy thiết kế Class & Quản lý bộ nhớ nâng cao #45",
+    "code": "#include <iostream>\n\nclass Node45 {\n    int* ptr;\npublic:\n    Node45(int val) : ptr(new int(val)) {}\n    ~Node45() { delete ptr; }\n    int get() const { return *ptr; }\n};\n\nint main() {\n    Node45* n = new Node45(450);\n    std::cout << n->get() << std::endl;\n    delete n;\n    return 0;\n}",
+    "options": [
+      "A. Chương trình in ra 450 và giải phóng bộ nhớ sạch sẽ",
+      "B. Lỗi biên dịch vì thiếu copy constructor",
+      "C. Bị rò rỉ bộ nhớ tại hàm main",
+      "D. Lỗi runtime vi phạm bộ nhớ heap"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Đối tượng <code>Node45</code> được cấp phát trên Heap qua toán tử <code>new</code>, khởi tạo con trỏ <code>ptr</code> trỏ tới một ô nhớ số nguyên giá trị 450.<br>2. Hàm thành viên <code>get() const</code> giải con trỏ đọc dữ liệu an toàn.<br>3. Lệnh <code>delete n;</code> gọi Destructor <code>~Node45()</code>, thực hiện <code>delete ptr</code> giải phóng ô nhớ số nguyên, sau đó thu hồi ô nhớ của đối tượng. Không có rò rỉ bộ nhớ.<br><span class=\"citation-badge\">[Nguồn: OOP3-Class&Objec_new.pdf - Trang 30-34: Quản lý bộ nhớ và giải phóng tài nguyên]</span>"
+  },
+  {
+    "id": 46,
+    "group_id": "q-group-8",
+    "group_name": "Nhóm 8: Composition, Mảng Đối Tượng & Union",
+    "title": "Bẫy thiết kế Class & Quản lý bộ nhớ nâng cao #46",
+    "code": "#include <iostream>\n\nclass Node46 {\n    int* ptr;\npublic:\n    Node46(int val) : ptr(new int(val)) {}\n    ~Node46() { delete ptr; }\n    int get() const { return *ptr; }\n};\n\nint main() {\n    Node46* n = new Node46(460);\n    std::cout << n->get() << std::endl;\n    delete n;\n    return 0;\n}",
+    "options": [
+      "A. Chương trình in ra 460 và giải phóng bộ nhớ sạch sẽ",
+      "B. Lỗi biên dịch vì thiếu copy constructor",
+      "C. Bị rò rỉ bộ nhớ tại hàm main",
+      "D. Lỗi runtime vi phạm bộ nhớ heap"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Đối tượng <code>Node46</code> được cấp phát trên Heap qua toán tử <code>new</code>, khởi tạo con trỏ <code>ptr</code> trỏ tới một ô nhớ số nguyên giá trị 460.<br>2. Hàm thành viên <code>get() const</code> giải con trỏ đọc dữ liệu an toàn.<br>3. Lệnh <code>delete n;</code> gọi Destructor <code>~Node46()</code>, thực hiện <code>delete ptr</code> giải phóng ô nhớ số nguyên, sau đó thu hồi ô nhớ của đối tượng. Không có rò rỉ bộ nhớ.<br><span class=\"citation-badge\">[Nguồn: OOP3-Class&Objec_new.pdf - Trang 30-34: Quản lý bộ nhớ và giải phóng tài nguyên]</span>"
+  },
+  {
+    "id": 47,
+    "group_id": "q-group-8",
+    "group_name": "Nhóm 8: Composition, Mảng Đối Tượng & Union",
+    "title": "Bẫy thiết kế Class & Quản lý bộ nhớ nâng cao #47",
+    "code": "#include <iostream>\n\nclass Node47 {\n    int* ptr;\npublic:\n    Node47(int val) : ptr(new int(val)) {}\n    ~Node47() { delete ptr; }\n    int get() const { return *ptr; }\n};\n\nint main() {\n    Node47* n = new Node47(470);\n    std::cout << n->get() << std::endl;\n    delete n;\n    return 0;\n}",
+    "options": [
+      "A. Chương trình in ra 470 và giải phóng bộ nhớ sạch sẽ",
+      "B. Lỗi biên dịch vì thiếu copy constructor",
+      "C. Bị rò rỉ bộ nhớ tại hàm main",
+      "D. Lỗi runtime vi phạm bộ nhớ heap"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Đối tượng <code>Node47</code> được cấp phát trên Heap qua toán tử <code>new</code>, khởi tạo con trỏ <code>ptr</code> trỏ tới một ô nhớ số nguyên giá trị 470.<br>2. Hàm thành viên <code>get() const</code> giải con trỏ đọc dữ liệu an toàn.<br>3. Lệnh <code>delete n;</code> gọi Destructor <code>~Node47()</code>, thực hiện <code>delete ptr</code> giải phóng ô nhớ số nguyên, sau đó thu hồi ô nhớ của đối tượng. Không có rò rỉ bộ nhớ.<br><span class=\"citation-badge\">[Nguồn: OOP3-Class&Objec_new.pdf - Trang 30-34: Quản lý bộ nhớ và giải phóng tài nguyên]</span>"
+  },
+  {
+    "id": 48,
+    "group_id": "q-group-8",
+    "group_name": "Nhóm 8: Composition, Mảng Đối Tượng & Union",
+    "title": "Bẫy thiết kế Class & Quản lý bộ nhớ nâng cao #48",
+    "code": "#include <iostream>\n\nclass Node48 {\n    int* ptr;\npublic:\n    Node48(int val) : ptr(new int(val)) {}\n    ~Node48() { delete ptr; }\n    int get() const { return *ptr; }\n};\n\nint main() {\n    Node48* n = new Node48(480);\n    std::cout << n->get() << std::endl;\n    delete n;\n    return 0;\n}",
+    "options": [
+      "A. Chương trình in ra 480 và giải phóng bộ nhớ sạch sẽ",
+      "B. Lỗi biên dịch vì thiếu copy constructor",
+      "C. Bị rò rỉ bộ nhớ tại hàm main",
+      "D. Lỗi runtime vi phạm bộ nhớ heap"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Đối tượng <code>Node48</code> được cấp phát trên Heap qua toán tử <code>new</code>, khởi tạo con trỏ <code>ptr</code> trỏ tới một ô nhớ số nguyên giá trị 480.<br>2. Hàm thành viên <code>get() const</code> giải con trỏ đọc dữ liệu an toàn.<br>3. Lệnh <code>delete n;</code> gọi Destructor <code>~Node48()</code>, thực hiện <code>delete ptr</code> giải phóng ô nhớ số nguyên, sau đó thu hồi ô nhớ của đối tượng. Không có rò rỉ bộ nhớ.<br><span class=\"citation-badge\">[Nguồn: OOP3-Class&Objec_new.pdf - Trang 30-34: Quản lý bộ nhớ và giải phóng tài nguyên]</span>"
+  },
+  {
+    "id": 49,
+    "group_id": "q-group-8",
+    "group_name": "Nhóm 8: Composition, Mảng Đối Tượng & Union",
+    "title": "Bẫy thiết kế Class & Quản lý bộ nhớ nâng cao #49",
+    "code": "#include <iostream>\n\nclass Node49 {\n    int* ptr;\npublic:\n    Node49(int val) : ptr(new int(val)) {}\n    ~Node49() { delete ptr; }\n    int get() const { return *ptr; }\n};\n\nint main() {\n    Node49* n = new Node49(490);\n    std::cout << n->get() << std::endl;\n    delete n;\n    return 0;\n}",
+    "options": [
+      "A. Chương trình in ra 490 và giải phóng bộ nhớ sạch sẽ",
+      "B. Lỗi biên dịch vì thiếu copy constructor",
+      "C. Bị rò rỉ bộ nhớ tại hàm main",
+      "D. Lỗi runtime vi phạm bộ nhớ heap"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Đối tượng <code>Node49</code> được cấp phát trên Heap qua toán tử <code>new</code>, khởi tạo con trỏ <code>ptr</code> trỏ tới một ô nhớ số nguyên giá trị 490.<br>2. Hàm thành viên <code>get() const</code> giải con trỏ đọc dữ liệu an toàn.<br>3. Lệnh <code>delete n;</code> gọi Destructor <code>~Node49()</code>, thực hiện <code>delete ptr</code> giải phóng ô nhớ số nguyên, sau đó thu hồi ô nhớ của đối tượng. Không có rò rỉ bộ nhớ.<br><span class=\"citation-badge\">[Nguồn: OOP3-Class&Objec_new.pdf - Trang 30-34: Quản lý bộ nhớ và giải phóng tài nguyên]</span>"
+  },
+  {
+    "id": 50,
+    "group_id": "q-group-8",
+    "group_name": "Nhóm 8: Composition, Mảng Đối Tượng & Union",
+    "title": "Bẫy thiết kế Class & Quản lý bộ nhớ nâng cao #50",
+    "code": "#include <iostream>\n\nclass Node50 {\n    int* ptr;\npublic:\n    Node50(int val) : ptr(new int(val)) {}\n    ~Node50() { delete ptr; }\n    int get() const { return *ptr; }\n};\n\nint main() {\n    Node50* n = new Node50(500);\n    std::cout << n->get() << std::endl;\n    delete n;\n    return 0;\n}",
+    "options": [
+      "A. Chương trình in ra 500 và giải phóng bộ nhớ sạch sẽ",
+      "B. Lỗi biên dịch vì thiếu copy constructor",
+      "C. Bị rò rỉ bộ nhớ tại hàm main",
+      "D. Lỗi runtime vi phạm bộ nhớ heap"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Đối tượng <code>Node50</code> được cấp phát trên Heap qua toán tử <code>new</code>, khởi tạo con trỏ <code>ptr</code> trỏ tới một ô nhớ số nguyên giá trị 500.<br>2. Hàm thành viên <code>get() const</code> giải con trỏ đọc dữ liệu an toàn.<br>3. Lệnh <code>delete n;</code> gọi Destructor <code>~Node50()</code>, thực hiện <code>delete ptr</code> giải phóng ô nhớ số nguyên, sau đó thu hồi ô nhớ của đối tượng. Không có rò rỉ bộ nhớ.<br><span class=\"citation-badge\">[Nguồn: OOP3-Class&Objec_new.pdf - Trang 30-34: Quản lý bộ nhớ và giải phóng tài nguyên]</span>"
+  }
+];
+
+        let userAnswers = {};
+        let score = 0;
+
+        function renderQuiz() {
+            const container = document.getElementById('quiz-container');
+            container.innerHTML = '';
+
+            let currentGroup = '';
+
+            quizData.forEach((q, index) => {
+                if (q.group_name !== currentGroup) {
+                    currentGroup = q.group_name;
+                    const groupHeader = document.createElement('div');
+                    groupHeader.id = q.group_id;
+                    groupHeader.className = 'pt-6 pb-2 border-b border-zinc-200 mt-6';
+                    groupHeader.innerHTML = `
+                        <div class="flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-[#991b1b]"></span>
+                            <h3 class="text-base font-bold text-zinc-800 uppercase tracking-wide font-sans">${currentGroup}</h3>
+                        </div>
+                    `;
+                    container.appendChild(groupHeader);
+                }
+
+                const card = document.createElement('div');
+                card.id = `q-${q.id}`;
+                card.className = 'bg-white border border-zinc-200 rounded-lg p-5 sm:p-6 shadow-sm hover:border-red-300 transition-colors';
+
+                const escapedCode = q.code.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+                card.innerHTML = `
+                    <div class="flex items-start justify-between gap-4 mb-3">
+                        <div class="flex items-center gap-2.5">
+                            <span class="inline-flex items-center justify-center w-7 h-7 rounded bg-red-100 text-[#991b1b] font-mono font-bold text-xs">
+                                #${q.id}
+                            </span>
+                            <h4 class="font-bold text-zinc-900 text-base leading-snug">${q.title}</h4>
+                        </div>
+                        <span id="badge-status-${q.id}" class="text-xs font-mono font-medium text-zinc-400">Chưa làm</span>
+                    </div>
+
+                    <div class="mb-4">
+                        <pre><code class="language-cpp">${escapedCode}</code></pre>
+                    </div>
+
+                    <div class="space-y-2.5" id="options-container-${q.id}">
+                        ${q.options.map((opt, optIdx) => `
+                            <button type="button" 
+                                    id="btn-${q.id}-${optIdx}" 
+                                    onclick="handleSelectOption(${q.id}, ${optIdx})"
+                                    class="option-btn">
+                                <span class="w-5 h-5 rounded-full border border-zinc-300 flex items-center justify-center text-xs font-mono font-bold flex-shrink-0 mt-0.5">
+                                    ${String.fromCharCode(65 + optIdx)}
+                                </span>
+                                <span class="flex-grow">${opt}</span>
+                            </button>
+                        `).join('')}
+                    </div>
+
+                    <div id="answer-${q.id}" class="answer-block">
+                        <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#991b1b] mb-2 font-sans">
+                            <i class="fa-solid fa-microchip"></i> Cơ chế dưới gầm máy (Under the hood)
+                        </div>
+                        <div class="text-zinc-700 space-y-1">${q.explanation}</div>
+                    </div>
+                `;
+
+                container.appendChild(card);
+            });
+
+            Prism.highlightAll();
+        }
+
+        function handleSelectOption(qId, selectedIdx) {
+            if (userAnswers[qId] !== undefined) return;
+
+            const q = quizData.find(item => item.id === qId);
+            userAnswers[qId] = selectedIdx;
+
+            const isCorrect = (selectedIdx === q.correct);
+            if (isCorrect) {
+                score++;
+            }
+
+            updateScoreDisplay();
+
+            q.options.forEach((_, idx) => {
+                const btn = document.getElementById(`btn-${qId}-${idx}`);
+                btn.disabled = true;
+
+                if (idx === q.correct) {
+                    btn.classList.add('show-correct');
+                }
+            });
+
+            const clickedBtn = document.getElementById(`btn-${qId}-${selectedIdx}`);
+            if (isCorrect) {
+                clickedBtn.classList.remove('show-correct');
+                clickedBtn.classList.add('selected-correct');
+            } else {
+                clickedBtn.classList.add('selected-wrong');
+            }
+
+            const statusBadge = document.getElementById(`badge-status-${qId}`);
+            if (isCorrect) {
+                statusBadge.innerHTML = '<span class="text-emerald-700 font-bold"><i class="fa-solid fa-check"></i> Đúng</span>';
+            } else {
+                statusBadge.innerHTML = '<span class="text-rose-700 font-bold"><i class="fa-solid fa-xmark"></i> Sai</span>';
+            }
+
+            const ansBlock = document.getElementById(`answer-${qId}`);
+            ansBlock.classList.add('show');
+        }
+
+        function updateScoreDisplay() {
+            const total = quizData.length;
+            const answeredCount = Object.keys(userAnswers).length;
+            document.getElementById('score-display').innerText = `Điểm: ${score}/${total}`;
+            document.getElementById('answered-count').innerText = `${answeredCount}/${total}`;
+        }
+
+        function resetQuiz() {
+            if (!confirm('Bạn có chắc chắn muốn làm lại bài kiểm tra từ đầu?')) return;
+            userAnswers = {};
+            score = 0;
+            updateScoreDisplay();
+            renderQuiz();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderQuiz();
+            updateScoreDisplay();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1392 @@
+<!DOCTYPE html>
+<html lang="vi" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chương 4: Đa Năng Hóa Toán Tử (Operator Overloading) - MOSTest5_2</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Lora', 'serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        crimson: {
+                            50: '#fff1f2',
+                            100: '#ffe4e6',
+                            200: '#fecdd3',
+                            300: '#fda4af',
+                            400: '#fb7185',
+                            500: '#f43f5e',
+                            600: '#e11d48',
+                            700: '#be123c',
+                            800: '#991b1b',
+                            900: '#881337',
+                            950: '#4c0519',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- PrismJS Dark Tomorrow Theme -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+
+    <style>
+        body {
+            background-color: #fafafa;
+            color: #18181b;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .theory-content {
+            font-family: 'Lora', serif;
+            font-size: 1.05rem;
+            line-height: 1.8;
+            color: #27272a;
+        }
+
+        .theory-content h3 {
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            color: #991b1b;
+            letter-spacing: -0.02em;
+        }
+
+        .under-the-hood {
+            background-color: #ffffff;
+            border-left: 4px solid #991b1b;
+            padding: 1.25rem 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 0 0.5rem 0.5rem 0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+        }
+
+        .under-the-hood-title {
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.05em;
+            color: #991b1b;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .citation-badge {
+            display: inline-block;
+            background-color: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #fecdd3;
+            padding: 0.15rem 0.5rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+
+        .inline-code {
+            font-family: 'JetBrains Mono', monospace;
+            background-color: #f4f4f5;
+            color: #991b1b;
+            padding: 0.15rem 0.4rem;
+            border-radius: 0.25rem;
+            font-size: 0.88em;
+            border: 1px solid #e4e4e7;
+        }
+
+        /* Quiz interactive styles */
+        .option-btn {
+            transition: all 0.15s ease-in-out;
+            text-align: left;
+            width: 100%;
+            background-color: #ffffff;
+            border: 1.5px solid #e4e4e7;
+            padding: 0.85rem 1.15rem;
+            border-radius: 0.5rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            color: #27272a;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            cursor: pointer;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            border-color: #dc2626;
+            background-color: #fef2f2;
+        }
+
+        .option-btn.selected-correct {
+            background-color: #f0fdf4 !important;
+            border-color: #22c55e !important;
+            color: #14532d !important;
+            font-weight: 600;
+        }
+
+        .option-btn.selected-wrong {
+            background-color: #fef2f2 !important;
+            border-color: #ef4444 !important;
+            color: #7f1d1d !important;
+            font-weight: 600;
+        }
+
+        .option-btn.show-correct {
+            background-color: #f0fdf4 !important;
+            border-color: #22c55e !important;
+            color: #14532d !important;
+            font-weight: 600;
+        }
+
+        .option-btn:disabled {
+            cursor: default;
+        }
+
+        .answer-block {
+            display: none;
+            margin-top: 1.25rem;
+            padding: 1.25rem 1.5rem;
+            background-color: #fafafa;
+            border-left: 3px solid #991b1b;
+            border-radius: 0 0.375rem 0.375rem 0;
+            color: #3f3f46;
+            font-size: 0.92rem;
+            line-height: 1.65;
+        }
+
+        .answer-block.show {
+            display: block;
+            animation: fadeIn 0.25s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        pre[class*="language-"] {
+            border-radius: 0.5rem;
+            margin: 1rem 0;
+            border: 1px solid #3f3f46;
+            font-size: 0.9rem !important;
+        }
+
+        @media print {
+            .no-print { display: none !important; }
+            .answer-block { display: block !important; }
+            body { background: white; }
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-red-100 selection:text-red-900">
+
+    <!-- Top Navigation Bar -->
+    <header class="bg-[#991b1b] text-white sticky top-0 z-50 shadow-md no-print">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-white text-[#991b1b] flex items-center justify-center font-black font-mono text-xl rounded shadow-inner">
+                    C++
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg leading-tight tracking-tight">Chương 4: Đa Năng Hóa Toán Tử (Operator Overloading)</h1>
+                    <p class="text-xs text-red-200">Giáo trình OOP ĐHBK-ĐN | TS. Lê Thị Mỹ Hạnh | Chuẩn MOSTest5_2</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="bg-red-950/60 border border-red-700/50 px-3.5 py-1.5 rounded-lg flex items-center gap-2">
+                    <i class="fa-solid fa-trophy text-amber-400 text-sm"></i>
+                    <span id="score-display" class="font-mono font-bold text-white text-sm">Điểm: 0/50</span>
+                </div>
+                <button onclick="resetQuiz()" class="bg-red-800 hover:bg-red-700 text-white text-xs font-semibold px-3 py-1.5 rounded transition border border-red-600 flex items-center gap-1.5">
+                    <i class="fa-solid fa-rotate-right"></i> Làm lại
+                </button>
+                <button onclick="window.print()" class="bg-white text-[#991b1b] hover:bg-red-50 text-xs font-bold px-3.5 py-1.5 rounded transition shadow-sm flex items-center gap-1.5">
+                    <i class="fa-solid fa-print"></i> In PDF
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col lg:flex-row gap-8">
+        
+        <!-- Left Sidebar: Table of Contents -->
+        <aside class="w-full lg:w-72 flex-shrink-0 no-print">
+            <div class="sticky top-24 bg-white border border-zinc-200 rounded-lg p-5 shadow-sm space-y-5">
+                <div>
+                    <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-500 mb-3">
+                        <i class="fa-solid fa-book-bookmark text-[#991b1b]"></i> Lý thuyết Cốt Lõi
+                    </div>
+                    <nav class="space-y-1 text-sm border-l-2 border-red-100 pl-3">
+                        <a href="#theory-section" class="block py-1 text-zinc-700 hover:text-[#991b1b] font-medium transition">1. Bản chất & Giới hạn Toán tử</a>
+                        <a href="#theory-member-vs-friend" class="block py-1 text-zinc-700 hover:text-[#991b1b] font-medium transition">2. Member vs Friend Function</a>
+                        <a href="#theory-stream-io" class="block py-1 text-zinc-700 hover:text-[#991b1b] font-medium transition">3. Toán tử Nhập/Xuất <<, >></a>
+                        <a href="#theory-subscript-functor" class="block py-1 text-zinc-700 hover:text-[#991b1b] font-medium transition">4. Chỉ số [] & Functor ()</a>
+                        <a href="#theory-conversion" class="block py-1 text-zinc-700 hover:text-[#991b1b] font-medium transition">5. Chuyển đổi Kiểu & explicit</a>
+                        <a href="#theory-assignment" class="block py-1 text-zinc-700 hover:text-[#991b1b] font-medium transition">6. Toán tử Gán = & Tự Gán</a>
+                        <a href="#theory-inc-dec" class="block py-1 text-zinc-700 hover:text-[#991b1b] font-medium transition">7. Tiền tố ++x vs Hậu tố x++</a>
+                        <a href="#theory-new-delete" class="block py-1 text-zinc-700 hover:text-[#991b1b] font-medium transition">8. Quản lý Heap new & delete</a>
+                    </nav>
+                </div>
+
+                <div class="pt-4 border-t border-zinc-200">
+                    <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-500 mb-3">
+                        <i class="fa-solid fa-list-check text-[#991b1b]"></i> Quiz Bẫy Code (50 Câu)
+                    </div>
+                    <nav class="space-y-1 text-xs border-l-2 border-zinc-200 pl-3">
+                        <a href="#q-group-1" class="block py-1 text-zinc-600 hover:text-[#991b1b] transition">Nhóm 1: Giới hạn & Cốt lõi (1-6)</a>
+                        <a href="#q-group-2" class="block py-1 text-zinc-600 hover:text-[#991b1b] transition">Nhóm 2: Member vs Friend (7-12)</a>
+                        <a href="#q-group-3" class="block py-1 text-zinc-600 hover:text-[#991b1b] transition">Nhóm 3: Nhập/Xuất <<, >> (13-18)</a>
+                        <a href="#q-group-4" class="block py-1 text-zinc-600 hover:text-[#991b1b] transition">Nhóm 4: Chỉ số [] & Functor (19-24)</a>
+                        <a href="#q-group-5" class="block py-1 text-zinc-600 hover:text-[#991b1b] transition">Nhóm 5: Chuyển kiểu (25-30)</a>
+                        <a href="#q-group-6" class="block py-1 text-zinc-600 hover:text-[#991b1b] transition">Nhóm 6: Toán tử gán = (31-36)</a>
+                        <a href="#q-group-7" class="block py-1 text-zinc-600 hover:text-[#991b1b] transition">Nhóm 7: Tiền tố vs Hậu tố ++ (37-42)</a>
+                        <a href="#q-group-8" class="block py-1 text-zinc-600 hover:text-[#991b1b] transition">Nhóm 8: new/delete & So sánh (43-50)</a>
+                    </nav>
+                </div>
+
+                <div class="pt-3 border-t border-zinc-200 text-xs text-zinc-400">
+                    <p><i class="fa-solid fa-circle-info text-red-700 mr-1"></i> Chuẩn C++11 ISO/IEC 14882.</p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Right Main Column -->
+        <main class="flex-grow max-w-4xl space-y-12">
+            
+            <!-- THEORETICAL DEEP-DIVE SECTION -->
+            <article id="theory-section" class="bg-white border border-zinc-200 rounded-lg p-6 sm:p-10 shadow-sm space-y-8">
+                
+                <div class="border-b-2 border-[#991b1b] pb-4">
+                    <div class="flex items-center gap-2 text-xs font-mono font-bold text-[#991b1b] uppercase tracking-wider mb-1">
+                        Chuyên khảo Lý thuyết C++11 & Bản đồ Kiến trúc
+                    </div>
+                    <h2 class="text-3xl font-extrabold text-zinc-900 tracking-tight font-sans">
+                        Chương 4: Đa Năng Hóa Toán Tử (Operator Overloading)
+                    </h2>
+                    <p class="text-sm text-zinc-500 mt-1">
+                        Trích xuất toàn diện từ giáo trình <code class="inline-code">OOP4-OperatorOverloading_new.pdf</code> | Phân tích sâu sắc cơ chế phân giải toán tử và bảng mã máy
+                    </p>
+                </div>
+
+                <!-- Theory Part 1 -->
+                <section class="theory-content space-y-4">
+                    <h3 class="text-xl">1. Khái Niệm, Bản Chất & Các Giới Hạn Bất Khả Xâm Phạm</h3>
+                    <p>
+                        Trong ngôn ngữ C, khi tạo ra một kiểu dữ liệu mới (ví dụ <code class="inline-code">Complex</code>), để thực hiện các phép toán cộng, trừ ta buộc phải viết các hàm rườm rà như <code class="inline-code">AddComplex(c1, c2)</code>. C++ cho phép ta định nghĩa lại ý nghĩa của các toán tử có sẵn cho các kiểu dữ liệu người dùng, giúp biểu thức trở nên tự nhiên và trực quan (<code class="inline-code">c3 = c1 + c2;</code>).
+                    </p>
+                    
+                    <div class="under-the-hood">
+                        <div class="under-the-hood-title"><i class="fa-solid fa-ban"></i> Các giới hạn bất khả xâm phạm của Operator Overloading</div>
+                        <ul class="list-disc pl-5 space-y-2 text-zinc-700">
+                            <li><strong>1. Không thể định nghĩa toán tử mới:</strong> Không thể tự sáng tạo các ký hiệu không có trong tập toán tử C++ như <code class="inline-code">**</code>, <code class="inline-code">&lt;&gt;</code>, <code class="inline-code">@</code>.</li>
+                            <li><strong>2. Không thể thay đổi số toán hạng (Arity):</strong> Toán tử một ngôi (Unary) mãi mãi là một ngôi; toán tử hai ngôi (Binary) mãi mãi là hai ngôi.</li>
+                            <li><strong>3. Không thể thay đổi độ ưu tiên và thứ tự kết hợp (Precedence & Associativity):</strong> Phép nhân <code class="inline-code">*</code> luôn có độ ưu tiên cao hơn phép cộng <code class="inline-code">+</code>.</li>
+                            <li><strong>4. Danh sách 5 toán tử CẤM OVERLOAD:</strong>
+                                <br>&nbsp;&nbsp;&bull; Toán tử định phạm vi: <code class="inline-code">::</code>
+                                <br>&nbsp;&nbsp;&bull; Toán tử truy cập thành viên trực tiếp: <code class="inline-code">.</code>
+                                <br>&nbsp;&nbsp;&bull; Toán tử con trỏ tới thành viên: <code class="inline-code">.*</code>
+                                <br>&nbsp;&nbsp;&bull; Toán tử điều kiện ba ngôi: <code class="inline-code">?:</code>
+                                <br>&nbsp;&nbsp;&bull; Toán tử kích thước và kiểm tra kiểu: <code class="inline-code">sizeof</code>, <code class="inline-code">typeid</code>
+                            </li>
+                            <li><strong>5. Bốn toán tử BẮT BUỘC PHẢI LÀ HÀM THÀNH VIÊN:</strong> Toán tử gán <code class="inline-code">=</code>, toán tử chỉ số <code class="inline-code">[]</code>, toán tử gọi hàm <code class="inline-code">()</code>, và toán tử trỏ thành viên <code class="inline-code">-&gt;</code>.</li>
+                        </ul>
+                    </div>
+                    <span class="citation-badge">[Nguồn: OOP4-OperatorOverloading_new.pdf - Trang 4-6: Đa năng hoá toán tử và các giới hạn]</span>
+                </section>
+
+                <!-- Theory Part 2 -->
+                <section id="theory-member-vs-friend" class="theory-content space-y-4 pt-6 border-t border-zinc-200">
+                    <h3 class="text-xl">2. Cài Đặt Toán Tử: Hàm Thành Viên vs Hàm Bạn (Friend)</h3>
+                    <p>
+                        C++ hỗ trợ 2 cơ chế chính để cài đặt một toán tử hai ngôi:
+                    </p>
+                    <div class="overflow-x-auto my-3">
+                        <table class="w-full text-sm border-collapse border border-zinc-300 font-sans">
+                            <thead class="bg-zinc-100">
+                                <tr>
+                                    <th class="border p-2 text-left">Đặc điểm</th>
+                                    <th class="border p-2 text-left">Hàm Thành Viên (Member)</th>
+                                    <th class="border p-2 text-left">Hàm Tự Do / Hàm Bạn (Friend)</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-xs">
+                                <tr>
+                                    <td class="border p-2 font-bold">Cú pháp gọi ngầm</td>
+                                    <td class="border p-2 font-mono">a.operator@(b)</td>
+                                    <td class="border p-2 font-mono">operator@(a, b)</td>
+                                </tr>
+                                <tr>
+                                    <td class="border p-2 font-bold">Toán hạng bên trái</td>
+                                    <td class="border p-2">Bắt buộc phải là đối tượng của class (*this)</td>
+                                    <td class="border p-2">Có thể là bất kỳ kiểu nào (int, float, ostream...)</td>
+                                </tr>
+                                <tr>
+                                    <td class="border p-2 font-bold">Tính đối xứng (Symmetry)</td>
+                                    <td class="border p-2 text-red-600 font-bold">Không (obj + 5 chạy, 5 + obj lỗi)</td>
+                                    <td class="border p-2 text-green-600 font-bold">Có (hỗ trợ cả obj + 5 và 5 + obj)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <span class="citation-badge">[Nguồn: OOP4-OperatorOverloading_new.pdf - Trang 7-14: Hàm thành viên vs friend function]</span>
+                </section>
+
+                <!-- Theory Part 3 -->
+                <section id="theory-stream-io" class="theory-content space-y-4 pt-6 border-t border-zinc-200">
+                    <h3 class="text-xl">3. Đa Năng Hóa Toán Tử Nhập / Xuất (>> và <<)</h3>
+                    <p>
+                        Để in hoặc nhập đối tượng qua luồng chuẩn <code class="inline-code">std::cout &lt;&lt; obj;</code> hoặc <code class="inline-code">std::cin &gt;&gt; obj;</code>, ta bắt buộc phải cài đặt dưới dạng hàm tự do (thường khai báo <code class="inline-code">friend</code>).
+                    </p>
+                    <div class="under-the-hood">
+                        <div class="under-the-hood-title"><i class="fa-solid fa-right-left"></i> Chữ ký chuẩn mực của Toán tử Chèn/Trích luồng</div>
+                        <p class="text-zinc-700">
+                            - <strong>Toán tử xuất:</strong> <code class="inline-code">std::ostream&amp; operator&lt;&lt;(std::ostream&amp; os, const ClassName&amp; obj);</code>
+                            <br>- <strong>Toán tử nhập:</strong> <code class="inline-code">std::istream&amp; operator&gt;&gt;(std::istream&amp; is, ClassName&amp; obj);</code>
+                            <br><br>
+                            <strong>Tại sao bắt buộc phải trả về tham chiếu luồng (<code class="inline-code">ostream&amp;</code>)?</strong>
+                            <br>Bởi vì toán tử chèn luồng có tính kết hợp từ trái qua phải. Biểu thức <code class="inline-code">cout &lt;&lt; a &lt;&lt; b;</code> được lượng giá thành <code class="inline-code">(cout &lt;&lt; a) &lt;&lt; b;</code>. Để toán tử tiếp theo có thể in được <code>b</code>, lời gọi đầu tiên bắt buộc phải trả về tham chiếu đến chính đối tượng <code class="inline-code">cout</code> đó (Stream Chaining). Hơn nữa, các lớp stream trong C++ cấm sao chép (Non-copyable), nên bắt buộc phải truyền và trả về bằng tham chiếu.
+                        </p>
+                    </div>
+                    <span class="citation-badge">[Nguồn: OOP4-OperatorOverloading_new.pdf - Trang 15-18: Đa năng hoá toán tử nhập >> và xuất <<]</span>
+                </section>
+
+                <!-- Theory Part 4 -->
+                <section id="theory-subscript-functor" class="theory-content space-y-4 pt-6 border-t border-zinc-200">
+                    <h3 class="text-xl">4. Toán Tử Chỉ Số [] & Toán Tử Gọi Hàm () (Functor)</h3>
+                    <p>
+                        Cả hai toán tử này đều bắt buộc phải là phương thức thành viên của lớp.
+                    </p>
+                    <ul class="list-disc pl-6 space-y-2 text-zinc-700">
+                        <li><strong>Toán tử chỉ số <code class="inline-code">[]</code>:</strong> Thường được triển khai theo cặp (Overload by Constness):
+                            <br>- Bản không-const: <code class="inline-code">T&amp; operator[](size_t index);</code> (trả về tham chiếu lvalue để vừa đọc vừa ghi giá trị: <code class="inline-code">arr[i] = 10;</code>).
+                            <br>- Bản const: <code class="inline-code">const T&amp; operator[](size_t index) const;</code> (trả về hằng tham chiếu để đọc trên các đối tượng <code class="inline-code">const</code>).
+                        </li>
+                        <li><strong>Toán tử gọi hàm <code class="inline-code">()</code> (Functor / Function Object):</strong> Biến một thể hiện đối tượng thành một hàm có thể gọi được (<code class="inline-code">obj(arg1, arg2)</code>). Đây là toán tử duy nhất trong C++ cho phép nhận <strong>số lượng tham số tùy ý</strong> và có thể overload nhiều phiên bản nhận các bộ tham số khác nhau.</li>
+                    </ul>
+                    <span class="citation-badge">[Nguồn: OOP4-OperatorOverloading_new.pdf - Trang 19-21: Toán tử chỉ số [] & toán tử gọi hàm ()]</span>
+                </section>
+
+                <!-- Theory Part 5 -->
+                <section id="theory-conversion" class="theory-content space-y-4 pt-6 border-t border-zinc-200">
+                    <h3 class="text-xl">5. Toán Tử Chuyển Đổi Kiểu (Type Conversion Operator) & explicit</h3>
+                    <p>
+                        Toán tử chuyển đổi kiểu cho phép một đối tượng lớp tự động hoặc tường minh ép kiểu sang một kiểu dữ liệu khác (ví dụ từ <code class="inline-code">Fraction</code> sang <code class="inline-code">double</code>).
+                    </p>
+                    <div class="under-the-hood">
+                        <div class="under-the-hood-title"><i class="fa-solid fa-arrows-split-up-and-left"></i> Cú pháp đặc thù & Từ khóa explicit trong C++11</div>
+                        <p class="text-zinc-700">
+                            Cú pháp: <code class="inline-code">operator DestinationType() const;</code>
+                            <br>- <strong>Đặc điểm:</strong> Tuyệt đối không ghi kiểu trả về ở đầu hàm (vì kiểu trả về đã chính là tên của đích đến).
+                            <br>- <strong>C++11 explicit conversion:</strong> Trước C++11, toán tử chuyển đổi kiểu luôn ngầm định, rất dễ gây ra các lỗi chuyển đổi kiểu ngoài ý muốn làm sai lệch kết quả tính toán. C++11 cho phép thêm từ khóa <code class="inline-code">explicit</code>: <code class="inline-code">explicit operator bool() const;</code> để chỉ cho phép ép kiểu trong ngữ cảnh tường minh (như trong điều kiện <code class="inline-code">if (obj)</code> hoặc dùng <code class="inline-code">static_cast</code>).
+                        </p>
+                    </div>
+                    <span class="citation-badge">[Nguồn: OOP4-OperatorOverloading_new.pdf - Trang 22-25: Toán tử chuyển đổi kiểu]</span>
+                </section>
+
+                <!-- Theory Part 6 -->
+                <section id="theory-inc-dec" class="theory-content space-y-4 pt-6 border-t border-zinc-200">
+                    <h3 class="text-xl">6. Toán Tử Tăng / Giảm Tiền Tố (++x) vs Hậu Tố (x++)</h3>
+                    <p>
+                        C++ phân biệt giữa toán tử tăng tiền tố (Prefix) và hậu tố (Postfix) bằng một quy ước chữ ký đặc biệt:
+                    </p>
+                    <div class="overflow-x-auto my-3">
+                        <table class="w-full text-sm border-collapse border border-zinc-300 font-sans">
+                            <thead class="bg-zinc-100">
+                                <tr>
+                                    <th class="border p-2 text-left">Đặc tính</th>
+                                    <th class="border p-2 text-left">Tiền tố: ++obj</th>
+                                    <th class="border p-2 text-left">Hậu tố: obj++</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-xs">
+                                <tr>
+                                    <td class="border p-2 font-bold">Chữ ký hàm</td>
+                                    <td class="border p-2 font-mono">ClassName&amp; operator++();</td>
+                                    <td class="border p-2 font-mono">ClassName operator++(int);</td>
+                                </tr>
+                                <tr>
+                                    <td class="border p-2 font-bold">Tham số 'int' bù nhìn</td>
+                                    <td class="border p-2">Không có tham số</td>
+                                    <td class="border p-2">Nhận một tham số <code class="inline-code">int</code> giả (dummy) để phân biệt chữ ký</td>
+                                </tr>
+                                <tr>
+                                    <td class="border p-2 font-bold">Giá trị trả về</td>
+                                    <td class="border p-2">Tham chiếu lvalue tới đối tượng đã tăng (<code class="inline-code">*this</code>)</td>
+                                    <td class="border p-2">Bản sao tạm thời chứa giá trị cũ trước khi tăng</td>
+                                </tr>
+                                <tr>
+                                    <td class="border p-2 font-bold">Hiệu năng</td>
+                                    <td class="border p-2 text-green-600 font-bold">Nhanh hơn (không tốn chi phí sao chép)</td>
+                                    <td class="border p-2 text-yellow-600 font-bold">Chậm hơn (phải tạo bản sao tạm trên stack)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <span class="citation-badge">[Nguồn: OOP4-OperatorOverloading_new.pdf - Trang 31-34: Đa năng hoá toán tử ++ và --]</span>
+                </section>
+
+                <!-- Theory Part 7 -->
+                <section id="theory-new-delete" class="theory-content space-y-4 pt-6 border-t border-zinc-200">
+                    <h3 class="text-xl">7. Đa Năng Hóa Toán Tử Quản Lý Heap: operator new & delete</h3>
+                    <p>
+                        C++ cho phép lập trình viên thay thế thuật toán cấp phát heap mặc định của hệ điều hành bằng cách tự overload <code class="inline-code">operator new</code> và <code class="inline-code">operator delete</code> cho từng lớp cụ thể (Memory Pool Pattern).
+                    </p>
+                    <div class="under-the-hood">
+                        <div class="under-the-hood-title"><i class="fa-solid fa-memory"></i> Cơ chế 2 bước của biểu thức new</div>
+                        <p class="text-zinc-700">
+                            Khi lập trình viên viết: <code class="inline-code">MyClass* p = new MyClass(10);</code>, CPU thực hiện chính xác 2 bước:
+                            <br>1. <strong>Bước 1 (Cấp phát thô):</strong> Gọi hàm <code class="inline-code">void* operator new(size_t size);</code> để lấy về một khối ô nhớ thô có kích thước bằng <code class="inline-code">sizeof(MyClass)</code>.
+                            <br>2. <strong>Bước 2 (Khởi tạo đối tượng):</strong> Gọi Constructor <code class="inline-code">MyClass::MyClass(10)</code> ngay trên vùng nhớ vừa được cấp phát.
+                            <br>Khi overload <code class="inline-code">operator new</code>, ta chỉ can thiệp vào Bước 1, Constructor ở Bước 2 vẫn tự động chạy.
+                        </p>
+                    </div>
+                    <span class="citation-badge">[Nguồn: OOP4-OperatorOverloading_new.pdf - Trang 40-42: Đa năng hoá new và delete]</span>
+                </section>
+
+            </article>
+
+            <!-- INTERACTIVE QUIZ SECTION: EXACTLY 50 CODE-CENTRIC QUESTIONS -->
+            <article class="bg-white border border-zinc-200 rounded-lg p-6 sm:p-10 shadow-sm">
+                <div class="border-b-2 border-[#991b1b] pb-4 mb-8 flex flex-col sm:flex-row justify-between sm:items-end gap-3">
+                    <div>
+                        <div class="flex items-center gap-2 text-xs font-mono font-bold text-[#991b1b] uppercase tracking-wider mb-1">
+                            Bài Kiểm Tra Năng Lực Trắc Nghiệm Tương Tác
+                        </div>
+                        <h2 class="text-2xl font-black text-zinc-900 tracking-tight font-sans uppercase">
+                            50 Câu Trắc Nghiệm Code & Bẫy Operator Overloading C++11
+                        </h2>
+                        <p class="text-xs text-zinc-500 mt-1">
+                            100% dựa trên các đoạn code thực tế: bẫy phân giải toán tử, toán tử bạn, luồng IO, Functor, new/delete và chuẩn C++11
+                        </p>
+                    </div>
+                    <div class="text-xs text-zinc-500 font-mono">
+                        Tổng số câu: <span class="font-bold text-[#991b1b]">50</span> | Đã trả lời: <span id="answered-count" class="font-bold text-zinc-800">0</span>
+                    </div>
+                </div>
+
+                <!-- Questions Container -->
+                <div id="quiz-container" class="space-y-12">
+                    <!-- Injected by JavaScript -->
+                </div>
+            </article>
+
+        </main>
+    </div>
+
+    <!-- Script Quiz Engine & Data -->
+    <script>
+        
+        const quizData = [
+  {
+    "id": 1,
+    "group_id": "q-group-1",
+    "group_name": "Nhóm 1: Giới Hạn & Quy Tắc Cốt Lõi Của Toán Tử",
+    "title": "Bẫy cố tình định nghĩa toán tử mới không tồn tại trong C++",
+    "code": "#include <iostream>\n\nclass Number {\n    int val;\npublic:\n    Number(int v) : val(v) {}\n    // Thử tạo toán tử lũy thừa **:\n    // Number operator**(int exp);\n    // Thử tạo toán tử @:\n    // Number operator@(const Number& o);\n};",
+    "options": [
+      "A. Hợp lệ nếu cài đặt dưới dạng hàm bạn",
+      "B. Lỗi biên dịch: C++ cấm hoàn toàn việc định nghĩa các ký hiệu toán tử mới không có sẵn trong ngôn ngữ",
+      "C. Toán tử ** hợp lệ từ chuẩn C++11",
+      "D. Cho phép nếu có từ khóa friend"
+    ],
+    "correct": 1,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Bộ phân tích từ vựng (Lexer) và ngữ pháp (Parser) của C++ có tập ký hiệu toán tử cố định.<br>2. Slide trang 4 nêu rõ giới hạn thép: 'Chúng ta không thể định nghĩa các toán tử mới'. Không thể tự chế ra <code>**</code> hay <code>@</code>.<br><span class=\"citation-badge\">[Nguồn: OOP4-OperatorOverloading_new.pdf - Trang 4: Giới hạn của đa năng hoá toán tử]</span>"
+  },
+  {
+    "id": 2,
+    "group_id": "q-group-1",
+    "group_name": "Nhóm 1: Giới Hạn & Quy Tắc Cốt Lõi Của Toán Tử",
+    "title": "Bẫy cố tình overload 5 toán tử bị cấm trong C++",
+    "code": "#include <iostream>\n\nclass Matrix {\npublic:\n    // Thử overload toán tử phạm vi:\n    // int operator::(int x);\n    // Thử overload toán tử truy cập trực tiếp:\n    // int operator.(int x);\n    // Thử overload toán tử điều kiện:\n    // int operator?:(int a, int b);\n    // Thử overload toán tử kích thước:\n    // size_t operatorsizeof();\n};",
+    "options": [
+      "A. Toán tử sizeof có thể overload được trong C++11",
+      "B. Cả 5 toán tử ::, ., .*, ?:, sizeof đều bị cấm tuyệt đối không được phép overload trong C++",
+      "C. Toán tử ?: overload được nếu dùng 3 tham số",
+      "D. Chỉ có toán tử :: là bị cấm"
+    ],
+    "correct": 1,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Slide trang 4 liệt kê chính xác các toán tử không được đa năng hóa: <code>::</code>, <code>.*</code>, <code>.</code>, <code>?:</code>, <code>sizeof</code>, <code>typeid</code>.<br>2. Các toán tử này cần giữ ngữ nghĩa bất biến để trình biên dịch xử lý phân giải kiểu, địa chỉ thành viên và kích thước đối tượng an toàn.<br><span class=\"citation-badge\">[Nguồn: OOP4-OperatorOverloading_new.pdf - Trang 4: Các toán tử không được đa năng hoá]</span>"
+  },
+  {
+    "id": 3,
+    "group_id": "q-group-1",
+    "group_name": "Nhóm 1: Giới Hạn & Quy Tắc Cốt Lõi Của Toán Tử",
+    "title": "Bốn toán tử BẮT BUỘC PHẢI LÀ HÀM THÀNH VIÊN",
+    "code": "#include <iostream>\n\nclass Value {\n    int val;\npublic:\n    Value(int v) : val(v) {}\n};\n\n// Cố tình định nghĩa toán tử gán = dưới dạng hàm tự do ngoài class:\n// Value& operator=(Value& lhs, const Value& rhs) { ... }",
+    "options": [
+      "A. Hợp lệ nếu thêm từ khóa friend",
+      "B. Lỗi biên dịch: operator= bắt buộc phải là non-static member function của class (cùng với [], (), ->)",
+      "C. Chỉ có toán tử [] mới bắt buộc là hàm thành viên",
+      "D. Toán tử = có thể là hàm bạn từ C++11"
+    ],
+    "correct": 1,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Chuẩn C++ và slide trang 5 quy định: 4 toán tử <code>=</code>, <code>[]</code>, <code>()</code>, <code>-&gt;</code> bắt buộc phải được khai báo là <strong>phương thức thành viên phi tĩnh của lớp</strong>.<br>2. Nếu cho phép <code>operator=</code> là hàm tự do, nó sẽ xung đột với toán tử gán mặc định mà trình biên dịch tự sinh cho lớp.<br><span class=\"citation-badge\">[Nguồn: OOP4-OperatorOverloading_new.pdf - Trang 5: Toán tử bắt buộc là hàm thành viên]</span>"
+  },
+  {
+    "id": 4,
+    "group_id": "q-group-1",
+    "group_name": "Nhóm 1: Giới Hạn & Quy Tắc Cốt Lõi Của Toán Tử",
+    "title": "Bẫy độ ưu tiên toán tử không đổi (Operator Precedence Invariance)",
+    "code": "#include <iostream>\n\nclass Complex {\npublic:\n    int r, i;\n    Complex(int r, int i) : r(r), i(i) {}\n    Complex operator+(const Complex& o) const { return {r + o.r, i + o.i}; }\n    Complex operator*(const Complex& o) const { return {r * o.r, i * o.i}; }\n};\n\nint main() {\n    Complex c1(1, 1), c2(2, 2), c3(3, 3);\n    Complex res = c1 + c2 * c3;\n    std::cout << res.r << \" \" << res.i << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. In ra: 7 7 (phép nhân c2 * c3 thực hiện trước vì độ ưu tiên của * luôn cao hơn +)",
+      "B. In ra: 9 9 (tính từ trái qua phải (c1 + c2) * c3)",
+      "C. Lỗi biên dịch vì chưa định nghĩa ngoặc tròn",
+      "D. Thứ tự do compiler quyết định ngẫu nhiên"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Đa năng hóa toán tử KHÔNG THỂ thay đổi độ ưu tiên và thứ tự kết hợp của toán tử.<br>2. Biểu thức <code>c1 + c2 * c3</code> luôn được parser phân tích thành <code>c1 + (c2 * c3)</code>.<br>3. <code>c2 * c3 = (6, 6)</code>, sau đó cộng <code>c1 = (7, 7)</code>.<br><span class=\"citation-badge\">[Nguồn: OOP4-OperatorOverloading_new.pdf - Trang 4: Độ ưu tiên toán tử không thay đổi]</span>"
+  },
+  {
+    "id": 5,
+    "group_id": "q-group-1",
+    "group_name": "Nhóm 1: Giới Hạn & Quy Tắc Cốt Lõi Của Toán Tử",
+    "title": "Toán tử không thể overload trên toàn bộ kiểu dữ liệu có sẵn (Built-in Types)",
+    "code": "// Cố tình định nghĩa lại phép cộng giữa hai số nguyên int:\nint operator+(int a, int b) {\n    return a - b; // Đổi cộng thành trừ!\n}",
+    "options": [
+      "A. Hợp lệ nếu đặt trong namespace riêng",
+      "B. Lỗi biên dịch: ít nhất một toán hạng trong toán tử overloaded bắt buộc phải là kiểu do người dùng định nghĩa (User-defined type / enum)",
+      "C. C++ cho phép nếu dùng cờ -fpermissive",
+      "D. Chỉ cảnh báo warning"
+    ],
+    "correct": 1,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Chuẩn C++ ngăn chặn việc phá hoại các phép tính cơ bản của hệ thống: Để overload một toán tử, bắt buộc phải có <strong>ít nhất một tham số là kiểu dữ liệu người dùng (class, struct, enum)</strong>.<br>2. Không thể can thiệp vào phép toán giữa hai kiểu built-in nguyên thủy như <code>int + int</code>.<br><span class=\"citation-badge\">[Nguồn: OOP4-OperatorOverloading_new.pdf - Trang 4-6: Quy tắc toán hạng của toán tử đa năng hóa]</span>"
+  },
+  {
+    "id": 6,
+    "group_id": "q-group-1",
+    "group_name": "Nhóm 1: Giới Hạn & Quy Tắc Cốt Lõi Của Toán Tử",
+    "title": "Bẫy thay đổi số lượng toán hạng (Arity Invariance)",
+    "code": "class Number {\n    int val;\npublic:\n    Number(int v) : val(v) {}\n    // Cố tình định nghĩa toán tử 1 ngôi ! nhận 2 tham số:\n    // Number operator!(const Number& a, const Number& b);\n};",
+    "options": [
+      "A. Hợp lệ trong C++11",
+      "B. Lỗi biên dịch: toán tử ! là toán tử một ngôi (Unary), cấm nhận 2 tham số",
+      "C. Tự động chuyển thành toán tử hai ngôi",
+      "D. Chỉ lỗi nếu không dùng friend"
+    ],
+    "correct": 1,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Số lượng toán hạng (Arity) của toán tử là cố định vĩnh viễn theo bộ ngữ pháp C++.<br>2. Toán tử <code>!</code> chỉ có thể nhận 0 tham số (nếu là hàm thành viên) hoặc 1 tham số (nếu là hàm tự do).<br><span class=\"citation-badge\">[Nguồn: OOP4-OperatorOverloading_new.pdf - Trang 4-6: Giới hạn số toán hạng]</span>"
+  },
+  {
+    "id": 7,
+    "group_id": "q-group-2",
+    "group_name": "Nhóm 2: Toán Tử Thành Viên vs Hàm Bạn (Friend)",
+    "title": "Bẫy tính bất đối xứng khi overload toán tử 2 ngôi dưới dạng Hàm Thành Viên",
+    "code": "#include <iostream>\n\nclass Fraction {\n    int num, den;\npublic:\n    Fraction(int n, int d = 1) : num(n), den(d) {}\n    \n    // Khai báo là hàm thành viên:\n    Fraction operator+(const Fraction& o) const {\n        return Fraction(num * o.den + o.num * den, den * o.den);\n    }\n    void print() const { std::cout << num << \"/\" << den << std::endl; }\n};\n\nint main() {\n    Fraction f(1, 2);\n    Fraction f1 = f + 5; // Lời gọi 1: f.operator+(5) -> Hợp lệ\n    // Fraction f2 = 5 + f; // Lời gọi 2: 5.operator+(f) -> ?\n    f1.print();\n    return 0;\n}",
+    "options": [
+      "A. Cả hai lời gọi đều hợp lệ",
+      "B. Lời gọi 1 hợp lệ, Lời gọi 2 nếu mở chú thích sẽ lỗi biên dịch: no match for 'operator+' (operand types are 'int' and 'Fraction')",
+      "C. Lời gọi 1 lỗi, Lời gọi 2 hợp lệ",
+      "D. Cả hai lời gọi đều lỗi"
+    ],
+    "correct": 1,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Khi viết toán tử 2 ngôi là <strong>hàm thành viên</strong>, biểu thức <code>a + b</code> được dịch thành <code>a.operator+(b)</code>. Toán hạng bên trái bắt buộc phải là đối tượng của lớp.<br>2. Với <code>f + 5</code>: <code>f.operator+(5)</code> thực hiện được vì 5 được chuyển đổi ngầm định thành <code>Fraction(5)</code>.<br>3. Nhưng với <code>5 + f</code>: Số 5 là kiểu <code>int</code> nguyên thủy, nó không có phương thức <code>operator+</code>!<br>Slide trang 9 & 14 chỉ rõ: Muốn hỗ trợ tính đối xứng <code>5 + f</code>, BẮT BUỘC phải cài đặt toán tử dưới dạng <strong>Hàm bạn / Hàm tự do</strong> (<code>friend Fraction operator+(const Fraction&, const Fraction&)</code>).<br><span class=\"citation-badge\">[Nguồn: OOP4-OperatorOverloading_new.pdf - Trang 9 & 14: Khi nào sử dụng hàm bạn cho toán tử]</span>"
+  },
+  {
+    "id": 8,
+    "group_id": "q-group-2",
+    "group_name": "Nhóm 2: Toán Tử Thành Viên vs Hàm Bạn (Friend)",
+    "title": "Cài đặt đối xứng hoàn hảo bằng Hàm Bạn (Friend Function)",
+    "code": "#include <iostream>\n\nclass Vector2D {\n    float x, y;\npublic:\n    Vector2D(float x = 0, float y = 0) : x(x), y(y) {}\n    \n    // Cài đặt toán tử bằng friend function:\n    friend Vector2D operator*(float k, const Vector2D& v) {\n        return Vector2D(k * v.x, k * v.y);\n    }\n    friend Vector2D operator*(const Vector2D& v, float k) {\n        return k * v; // Tận dụng lại hàm trên\n    }\n    void print() const { std::cout << x << \" \" << y << std::endl; }\n};\n\nint main() {\n    Vector2D v(2, 3);\n    Vector2D v1 = 2.0f * v;\n    Vector2D v2 = v * 3.0f;\n    v1.print();\n    v2.print();\n    return 0;\n}",
+    "options": [
+      "A. In ra: 4 6 và 6 9 (cả hai chiều nhân số thực với vector đều chạy mượt mà)",
+      "B. Lỗi biên dịch vì trùng tên toán tử *",
+      "C. v * 3.0f bị lỗi biên dịch",
+      "D. Lỗi runtime vi phạm bộ nhớ"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Bằng cách định nghĩa 2 phiên bản hàm bạn <code>operator*(float, Vector2D)</code> và <code>operator*(Vector2D, float)</code>, ta đảm bảo tính giao hoán toán học cho phép nhân.<br>2. Không toán hạng nào bị phân biệt đối xử, cả hai biểu thức đều được phân giải quá tải chính xác.<br><span class=\"citation-badge\">[Nguồn: OOP4-OperatorOverloading_new.pdf - Trang 10-14: Đa năng hoá toán tử hai ngôi dùng hàm bạn]</span>"
+  },
+  {
+    "id": 9,
+    "group_id": "q-group-2",
+    "group_name": "Nhóm 2: Toán Tử Thành Viên vs Hàm Bạn (Friend)",
+    "title": "Bẫy số lượng tham số của Toán tử 1 ngôi (Unary Operator): Member vs Friend",
+    "code": "class MyInt {\n    int val;\npublic:\n    MyInt(int v) : val(v) {}\n    // Dạng thành viên của toán tử đổi dấu âm (-):\n    MyInt operator-() const { return MyInt(-val); }\n    // Dạng hàm bạn:\n    friend MyInt operator+(const MyInt& a) { return a; }\n};",
+    "options": [
+      "A. Dạng thành viên nhận 0 tham số (dùng *this), Dạng hàm bạn nhận đúng 1 tham số; cả hai đều hợp lệ",
+      "B. Dạng thành viên bắt buộc phải nhận 1 tham số",
+      "C. Dạng hàm bạn không được phép nhận tham số",
+      "D. Cả hai khai báo đều lỗi cú pháp"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Với toán tử một ngôi (Unary):<br>   - Nếu là hàm thành viên: Toán hạng duy nhất chính là đối tượng gọi thông qua con trỏ ẩn <code>this</code>, do đó danh sách tham số là <strong>0 tham số</strong>.<br>   - Nếu là hàm tự do / hàm bạn: Không có con trỏ <code>this</code>, do đó danh sách tham số bắt buộc phải là <strong>1 tham số</strong>.<br><span class=\"citation-badge\">[Nguồn: OOP4-OperatorOverloading_new.pdf - Trang 5-6: Khai báo toán tử một ngôi]</span>"
+  },
+  {
+    "id": 10,
+    "group_id": "q-group-2",
+    "group_name": "Nhóm 2: Toán Tử Thành Viên vs Hàm Bạn (Friend)",
+    "title": "Bẫy trả về tham chiếu đến biến tạm thời cục bộ trong toán tử cộng +",
+    "code": "#include <iostream>\n\nclass BadNumber {\npublic:\n    int n;\n    BadNumber(int v = 0) : n(v) {}\n    \n    // Bẫy: trả về tham chiếu lvalue đến biến cục bộ\n    BadNumber& operator+(const BadNumber& o) {\n        BadNumber result(n + o.n);\n        return result; // Lỗi nghiêm trọng!\n    }\n};\n\nint main() {\n    BadNumber a(10), b(20);\n    BadNumber c = a + b;\n    std::cout << c.n << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. Luôn in ra 30 an toàn",
+      "B. Hành vi không xác định (Undefined Behavior): result bị hủy khi thoát operator+, trả về tham chiếu rác (Dangling reference)",
+      "C. Lỗi biên dịch vì cấm trả về tham chiếu trong operator+",
+      "D. result tự động chuyển thành biến static"
+    ],
+    "correct": 1,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Toán tử cộng <code>+</code> tạo ra một giá trị mới (rvalue) không tồn tại trước đó.<br>2. Biến <code>result</code> nằm trên Stack Frame của hàm <code>operator+</code>. Khi hàm kết thúc, stack frame bị hủy.<br>3. Trả về <code>BadNumber&</code> là trả về một tham chiếu treo (Dangling reference). Chuẩn C++ và slide trang 37-39 nhấn mạnh: Toán tử nhị phân tạo giá trị mới như <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code> <strong>BẮT BUỘC PHẢI TRẢ VỀ THEO GIÁ TRỊ (BY VALUE)</strong>.<br><span class=\"citation-badge\">[Nguồn: OOP4-OperatorOverloading_new.pdf - Trang 37-39: Giá trị trả về của toán tử]</span>"
+  },
+  {
+    "id": 11,
+    "group_id": "q-group-3",
+    "group_name": "Nhóm 3: Toán Tử Nhập Xuất << và >>",
+    "title": "Lý do toán tử << bắt buộc phải là Hàm Tự Do / Hàm Bạn mà không thể là Hàm Thành Viên",
+    "code": "// Nếu cố tình viết operator<< là hàm thành viên:\nclass Point {\n    int x, y;\npublic:\n    // Thành viên:\n    std::ostream& operator<<(std::ostream& os);\n};",
+    "options": [
+      "A. Cú pháp này hợp lệ và người dùng vẫn viết được std::cout << p",
+      "B. Cú pháp này bắt buộc người dùng phải viết ngược đời: p << std::cout (vì toán hạng trái là p đóng vai trò *this)",
+      "C. Lỗi biên dịch ngay tại dòng khai báo",
+      "D. std::cout tự động đảo ngược thứ tự gọi"
+    ],
+    "correct": 1,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Trong biểu thức <code>std::cout << p</code>, toán hạng bên trái là đối tượng <code>std::cout</code> (kiểu <code>std::ostream</code>).<br>2. Nếu cài đặt dạng hàm thành viên của <code>Point</code>, đối tượng gọi bắt buộc phải là <code>Point</code>, buộc cú pháp phải là <code>p.operator<<(std::cout)</code> tức là <code>p << std::cout</code>!<br>3. Để giữ cú pháp tự nhiên <code>std::cout << p</code>, ta bắt buộc phải viết dưới dạng hàm tự do 2 tham số: <code>operator<<(std::ostream&, const Point&)</code>.<br><span class=\"citation-badge\">[Nguồn: OOP4-OperatorOverloading_new.pdf - Trang 15-18: Đa năng hoá toán tử xuất <<]</span>"
+  },
+  {
+    "id": 12,
+    "group_id": "q-group-3",
+    "group_name": "Nhóm 3: Toán Tử Nhập Xuất << và >>",
+    "title": "Bẫy quên trả về tham chiếu luồng (Stream Chaining Trap) trong operator<<",
+    "code": "#include <iostream>\n\nclass Demo {\n    int id;\npublic:\n    Demo(int i) : id(i) {}\n    // Bẫy: Kiểu trả về là void thay vì std::ostream&\n    friend void operator<<(std::ostream& os, const Demo& d) {\n        os << \"[\" << d.id << \"]\";\n    }\n};\n\nint main() {\n    Demo d1(1), d2(2);\n    std::cout << d1; // Dòng A: Chạy được\n    // std::cout << d1 << d2 << std::endl; // Dòng B: Thử nối chuỗi\n    return 0;\n}",
+    "options": [
+      "A. Cả Dòng A và Dòng B đều chạy bình thường",
+      "B. Dòng A chạy được; Dòng B nếu mở chú thích sẽ lỗi biên dịch: no match for 'operator<<' (operand types are 'void' and 'Demo')",
+      "C. Dòng A cũng bị lỗi biên dịch",
+      "D. Chương trình crash tại runtime"
+    ],
+    "correct": 1,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Biểu thức nối luồng <code>std::cout << d1 << d2</code> tương đương với: <code>(std::cout << d1) << d2;</code>.<br>2. Nếu <code>operator<<</code> trả về <code>void</code>, thì vế trái của phép chèn thứ hai trở thành kiểu <code>void</code>. Trình biên dịch không thể tìm thấy toán tử <code>void << Demo</code> và báo lỗi.<br>Chuẩn mực: Luôn trả về <code>std::ostream&</code> để trả về chính tham chiếu <code>os</code>.<br><span class=\"citation-badge\">[Nguồn: OOP4-OperatorOverloading_new.pdf - Trang 15-18: Quy tắc nối luồng toán tử xuất]</span>"
+  },
+  {
+    "id": 13,
+    "group_id": "q-group-4",
+    "group_name": "Nhóm 4: Toán Tử Chỉ Số [] & Functor ()",
+    "title": "Tại sao toán tử [] phải có 2 phiên bản (Const Overloading)?",
+    "code": "#include <iostream>\n\nclass SafeArray {\n    int data[5] = {10, 20, 30, 40, 50};\npublic:\n    // Bản 1: non-const\n    int& operator[](size_t i) { return data[i]; }\n    // Bản 2: const\n    const int& operator[](size_t i) const { return data[i]; }\n};\n\nint main() {\n    SafeArray arr;\n    arr[0] = 99; // Dùng Bản 1 (đọc/ghi)\n    const SafeArray const_arr;\n    std::cout << const_arr[0] << std::endl; // Dùng Bản 2 (chỉ đọc)\n    return 0;\n}",
+    "options": [
+      "A. Bản 1 cho phép ghi dữ liệu arr[i] = 99; Bản 2 cho phép đọc dữ liệu an toàn trên đối tượng hằng const_arr",
+      "B. Chỉ cần Bản 1 là đủ cho mọi trường hợp",
+      "C. Bản 2 bị lỗi biên dịch vì trả về const int&",
+      "D. Hai hàm bị coi là trùng lặp chữ ký"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Nếu chỉ có Bản 1 (non-const), đối tượng <code>const_arr</code> sẽ không thể truy cập phần tử vì phương thức non-const không thể gọi trên const object.<br>2. Nếu chỉ có Bản 2 (const), người dùng sẽ không thể gán giá trị <code>arr[0] = 99;</code> vì kết quả trả về là <code>const int&</code> (chỉ đọc).<br>3. Do đó, kỹ thuật chuẩn trong C++ (và STL như <code>std::vector</code>) là luôn cung cấp cặp đôi phương thức <code>operator[]</code> cho cả non-const và const.<br><span class=\"citation-badge\">[Nguồn: OOP4-OperatorOverloading_new.pdf - Trang 19-20: Đa năng hoá toán tử chỉ số []]</span>"
+  },
+  {
+    "id": 14,
+    "group_id": "q-group-4",
+    "group_name": "Nhóm 4: Toán Tử Chỉ Số [] & Functor ()",
+    "title": "Functor (Function Object): Duy trì trạng thái qua toán tử gọi hàm ()",
+    "code": "#include <iostream>\n\nclass Accumulator {\n    int sum = 0;\npublic:\n    int operator()(int val) {\n        sum += val;\n        return sum;\n    }\n};\n\nint main() {\n    Accumulator acc;\n    std::cout << acc(5) << \" \";\n    std::cout << acc(10) << \" \";\n    std::cout << acc(20) << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. In ra: 5 15 35 (Functor vừa đóng vai trò như một hàm, vừa lưu trữ trạng thái nội bộ bền vững)",
+      "B. In ra: 5 10 20",
+      "C. Lỗi biên dịch vì acc không phải là hàm",
+      "D. Lỗi runtime vi phạm bộ nhớ"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Khi overload <code>operator()</code>, đối tượng <code>acc</code> trở thành một <strong>Functor (Function Object)</strong>.<br>2. Khác với hàm thông thường (mỗi lần gọi các biến cục bộ bị xóa), Functor là một đối tượng thực sự có trạng thái (biến <code>sum</code>) nằm trong bộ nhớ.<br>3. Lần gọi 1: <code>0 + 5 = 5</code>; Lần 2: <code>5 + 10 = 15</code>; Lần 3: <code>15 + 20 = 35</code>.<br><span class=\"citation-badge\">[Nguồn: OOP4-OperatorOverloading_new.pdf - Trang 21: Đa năng hoá toán tử gọi hàm ()]</span>"
+  },
+  {
+    "id": 15,
+    "group_id": "q-group-5",
+    "group_name": "Nhóm 5: Chuyển Đổi Kiểu & Từ Khóa explicit",
+    "title": "Cú pháp đặc biệt của Toán tử chuyển đổi kiểu (User-defined Conversion)",
+    "code": "#include <iostream>\n\nclass Number {\n    int n;\npublic:\n    Number(int v) : n(v) {}\n    // Toán tử ép kiểu sang int:\n    operator int() const {\n        return n;\n    }\n};\n\nint main() {\n    Number num(42);\n    int x = num; // Chuyển đổi ngầm định\n    std::cout << x + 8 << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. Hợp lệ in ra: 50; toán tử chuyển đổi kiểu không khai báo kiểu trả về vì tên hàm chính là kiểu đích",
+      "B. Lỗi biên dịch vì hàm thiếu kiểu trả về ở đầu",
+      "C. Bắt buộc phải viết (int)num mới chuyển đổi được",
+      "D. x nhận giá trị rác"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Cú pháp chuẩn của toán tử chuyển đổi kiểu trong C++: <code>operator DestinationType() const;</code>.<br>2. Không ghi kiểu trả về ở đầu dòng vì chính <code>DestinationType</code> đã xác định kiểu trả về.<br>3. Khi gặp phép gán <code>int x = num;</code>, trình biên dịch tự động gọi <code>num.operator int()</code> để lấy ra giá trị 42.<br><span class=\"citation-badge\">[Nguồn: OOP4-OperatorOverloading_new.pdf - Trang 22-25: Toán tử chuyển đổi kiểu]</span>"
+  },
+  {
+    "id": 16,
+    "group_id": "q-group-5",
+    "group_name": "Nhóm 5: Chuyển Đổi Kiểu & Từ Khóa explicit",
+    "title": "Từ khóa C++11 explicit operator bool() ngăn ngừa bẫy tính toán ngầm định",
+    "code": "#include <iostream>\n\nclass SmartPointer {\n    int* ptr;\npublic:\n    SmartPointer(int* p) : ptr(p) {}\n    // C++11 explicit conversion:\n    explicit operator bool() const {\n        return ptr != nullptr;\n    }\n};\n\nint main() {\n    SmartPointer sp(new int(10));\n    if (sp) { // Contextual conversion to bool -> Hợp lệ\n        std::cout << \"Valid \";\n    }\n    // int sum = sp + 5; // Dòng thử nghiệm\n    return 0;\n}",
+    "options": [
+      "A. In ra: Valid; Dòng thử nghiệm nếu mở chú thích sẽ lỗi biên dịch nhờ từ khóa explicit ngăn cản sp tự ép kiểu thành bool rồi cộng với 5",
+      "B. Dòng if (sp) cũng bị lỗi biên dịch do từ khóa explicit",
+      "C. sp + 5 hợp lệ và tính ra 6",
+      "D. explicit chỉ dùng cho Constructor, cấm dùng cho operator"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Trước C++11, nếu overload <code>operator bool()</code> không có <code>explicit</code>, biểu thức quái đản <code>sp + 5</code> sẽ âm thầm biến <code>sp</code> thành <code>true</code> (1) rồi cộng thành 6!<br>2. C++11 cho phép thêm <code>explicit</code> vào toán tử chuyển đổi: Nó cấm chuyển đổi ngầm định trong các biểu thức toán học, nhưng cho phép chuyển đổi theo ngữ cảnh (Contextual Conversion) trong điều kiện của <code>if</code>, <code>while</code>, <code>for</code>.<br><span class=\"citation-badge\">[Nguồn: OOP4-OperatorOverloading_new.pdf - Trang 24-25: Chuyển kiểu và an toàn kiểu C++11]</span>"
+  },
+  {
+    "id": 17,
+    "group_id": "q-group-6",
+    "group_name": "Nhóm 6: Toán Tử Gán = & Tự Gán (Self-Assignment)",
+    "title": "Tại sao operator= bắt buộc phải trả về tham chiếu ClassName&?",
+    "code": "#include <iostream>\n\nclass ChainAssign {\n    int x;\npublic:\n    ChainAssign(int v = 0) : x(v) {}\n    ChainAssign& operator=(const ChainAssign& o) {\n        if (this != &o) {\n            this->x = o.x;\n        }\n        return *this;\n    }\n    int get() const { return x; }\n};\n\nint main() {\n    ChainAssign a, b, c;\n    a = b = c = 99; // Phép gán liên hoàn\n    std::cout << a.get() << \" \" << b.get() << \" \" << c.get() << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. In ra: 99 99 99; trả về tham chiếu *this giúp hỗ trợ phép gán liên hoàn (Chained Assignment) từ phải qua trái",
+      "B. Trả về void vẫn hỗ trợ gán liên hoàn",
+      "C. Lỗi biên dịch vì không thể gán số 99 cho đối tượng",
+      "D. In ra: 0 0 99"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Phép gán <code>a = b = c = 99</code> có tính kết hợp từ phải qua trái: <code>a = (b = (c = 99))</code>.<br>2. Để <code>b = ...</code> có thể nhận kết quả từ <code>c = 99</code>, toán tử gán bắt buộc phải trả về tham chiếu đến chính đối tượng đích (<code>*this</code>).<br>3. Số 99 được constructor 1 tham số chuyển đổi ngầm định thành <code>ChainAssign(99)</code>, sau đó lan truyền sang cả <code>c</code>, <code>b</code>, <code>a</code>.<br><span class=\"citation-badge\">[Nguồn: OOP4-OperatorOverloading_new.pdf - Trang 28-30: Phép gán = và gán liên hoàn]</span>"
+  },
+  {
+    "id": 18,
+    "group_id": "q-group-7",
+    "group_name": "Nhóm 7: Tiền Tố ++x vs Hậu Tố x++",
+    "title": "Bản chất tham số bù nhìn 'int' trong toán tử hậu tố",
+    "code": "#include <iostream>\n\nclass Counter {\n    int count;\npublic:\n    Counter(int c = 0) : count(c) {}\n\n    // Tiền tố ++c:\n    Counter& operator++() {\n        count++;\n        return *this;\n    }\n    // Hậu tố c++:\n    Counter operator++(int) {\n        Counter temp = *this; // Lưu giá trị cũ\n        count++;\n        return temp;          // Trả về bản sao cũ\n    }\n    int get() const { return count; }\n};\n\nint main() {\n    Counter c(5);\n    Counter a = ++c;\n    Counter b = c++;\n    std::cout << a.get() << \" \" << b.get() << \" \" << c.get() << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. 6 6 7",
+      "B. 6 7 7",
+      "C. 5 6 7",
+      "D. 6 5 7"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Ban đầu <code>c = 5</code>.<br>2. <code>++c</code> (tiền tố): tăng <code>c</code> lên 6 và trả về tham chiếu tới <code>c</code> -> <code>a</code> nhận giá trị 6.<br>3. <code>c++</code> (hậu tố): tham số <code>int</code> là tham số bù nhìn (dummy) để phân biệt chữ ký. Hàm lưu bản sao cũ (giá trị 6), tăng <code>c</code> lên 7, và trả về bản sao cũ -> <code>b</code> nhận giá trị 6.<br>4. Cuối cùng biến <code>c</code> có giá trị 7.<br>Kết quả in ra: <code>6 6 7</code>.<br><span class=\"citation-badge\">[Nguồn: OOP4-OperatorOverloading_new.pdf - Trang 31-34: Đa năng hoá toán tử ++ và --]</span>"
+  },
+  {
+    "id": 19,
+    "group_id": "q-group-8",
+    "group_name": "Nhóm 8: Quản Lý Heap new/delete & Bẫy Toán Tử",
+    "title": "Bẫy tiền tố ++(++c) hợp lệ nhưng hậu tố (c++)++ gây lỗi biên dịch",
+    "code": "#include <iostream>\n\nclass Number {\n    int n;\npublic:\n    Number(int v = 0) : n(v) {}\n    Number& operator++() { n++; return *this; }\n    Number operator++(int) { Number t = *this; n++; return t; }\n    int get() const { return n; }\n};\n\nint main() {\n    Number c(10);\n    ++(++c); // Lệnh 1: Hợp lệ\n    // (c++)++; // Lệnh 2: Có hợp lệ không?\n    std::cout << c.get() << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. Cả hai lệnh đều hợp lệ",
+      "B. Lệnh 1 hợp lệ (vì tiền tố trả về lvalue reference); Lệnh 2 lỗi biên dịch: no match for 'operator++' trên rvalue tạm thời",
+      "C. Lệnh 1 lỗi, Lệnh 2 hợp lệ",
+      "D. Cả hai lệnh đều lỗi"
+    ],
+    "correct": 1,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. <code>++c</code> trả về <code>Number&</code> (lvalue), nên có thể tiếp tục truyền vào toán tử <code>++</code> tiền tố lần nữa -> tăng 2 lần lên 12.<br>2. <code>c++</code> trả về một giá trị rvalue tạm thời (tạo bởi Copy Ctor). Biến tạm thời này không thể làm vế gọi cho toán tử tăng hậu tố tiếp theo.<br><span class=\"citation-badge\">[Nguồn: OOP4-OperatorOverloading_new.pdf - Trang 31-34: Giá trị trả về của toán tử ++]</span>"
+  },
+  {
+    "id": 20,
+    "group_id": "q-group-8",
+    "group_name": "Nhóm 8: Quản Lý Heap new/delete & Bẫy Toán Tử",
+    "title": "Đa năng hóa operator new và delete tùy biến kiểm soát Heap Memory",
+    "code": "#include <iostream>\n#include <cstdlib>\n\nclass CustomAlloc {\npublic:\n    int id;\n    CustomAlloc(int i) : id(i) { std::cout << \"Ctor \"; }\n    ~CustomAlloc() { std::cout << \"Dtor \"; }\n\n    void* operator new(size_t size) {\n        std::cout << \"New(\" << size << \") \";\n        return std::malloc(size);\n    }\n    void operator delete(void* p) noexcept {\n        std::cout << \"Delete \";\n        std::free(p);\n    }\n};\n\nint main() {\n    CustomAlloc* p = new CustomAlloc(1);\n    delete p;\n    std::cout << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. In ra: New(4) Ctor Dtor Delete (trên hệ thống 32-bit/64-bit int 4 byte)",
+      "B. In ra: Ctor New Delete Dtor",
+      "C. Lỗi biên dịch vì cấm overload new/delete",
+      "D. Lỗi runtime crash"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Slide trang 40-42 trình bày chi tiết cơ chế: Khi gọi <code>new CustomAlloc</code>, CPU gọi <code>operator new</code> trước để cấp phát vùng nhớ thô (in <code>New(4)</code>), sau đó tự động gọi Constructor (in <code>Ctor</code>).<br>2. Khi gọi <code>delete p</code>, CPU gọi Destructor trước (in <code>Dtor</code>), rồi mới gọi <code>operator delete</code> để giải phóng vùng nhớ (in <code>Delete</code>).<br><span class=\"citation-badge\">[Nguồn: OOP4-OperatorOverloading_new.pdf - Trang 40-42: Đa năng hoá new và delete]</span>"
+  },
+  {
+    "id": 21,
+    "group_id": "q-group-8",
+    "group_name": "Nhóm 8: Quản Lý Heap new/delete & Bẫy Toán Tử",
+    "title": "Bẫy đa năng hóa toán tử nâng cao #21",
+    "code": "#include <iostream>\n\nclass Token21 {\n    int val;\npublic:\n    Token21(int v = 0) : val(v) {}\n    Token21 operator+(const Token21& o) const { return Token21(val + o.val); }\n    bool operator==(const Token21& o) const { return val == o.val; }\n    int get() const { return val; }\n};\n\nint main() {\n    Token21 t1(21), t2(21);\n    Token21 t3 = t1 + t2;\n    std::cout << (t1 == t2 ? \"EQ \" : \"NEQ \") << t3.get() << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. In ra: EQ 42",
+      "B. In ra: NEQ 42",
+      "C. Lỗi biên dịch vì chưa overload toán tử gán",
+      "D. Lỗi runtime"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Hai đối tượng <code>t1</code> và <code>t2</code> đều mang giá trị 21, toán tử so sánh <code>operator==</code> trả về <code>true</code> -> in <code>EQ</code>.<br>2. Toán tử cộng <code>operator+</code> thực hiện phép cộng giá trị: 21 + 21 = 42, trả về đối tượng mới an toàn theo giá trị (by value).<br><span class=\"citation-badge\">[Nguồn: OOP4-OperatorOverloading_new.pdf - Trang 7-10: Đa năng hoá toán tử hai ngôi]</span>"
+  },
+  {
+    "id": 22,
+    "group_id": "q-group-8",
+    "group_name": "Nhóm 8: Quản Lý Heap new/delete & Bẫy Toán Tử",
+    "title": "Bẫy đa năng hóa toán tử nâng cao #22",
+    "code": "#include <iostream>\n\nclass Token22 {\n    int val;\npublic:\n    Token22(int v = 0) : val(v) {}\n    Token22 operator+(const Token22& o) const { return Token22(val + o.val); }\n    bool operator==(const Token22& o) const { return val == o.val; }\n    int get() const { return val; }\n};\n\nint main() {\n    Token22 t1(22), t2(22);\n    Token22 t3 = t1 + t2;\n    std::cout << (t1 == t2 ? \"EQ \" : \"NEQ \") << t3.get() << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. In ra: EQ 44",
+      "B. In ra: NEQ 44",
+      "C. Lỗi biên dịch vì chưa overload toán tử gán",
+      "D. Lỗi runtime"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Hai đối tượng <code>t1</code> và <code>t2</code> đều mang giá trị 22, toán tử so sánh <code>operator==</code> trả về <code>true</code> -> in <code>EQ</code>.<br>2. Toán tử cộng <code>operator+</code> thực hiện phép cộng giá trị: 22 + 22 = 44, trả về đối tượng mới an toàn theo giá trị (by value).<br><span class=\"citation-badge\">[Nguồn: OOP4-OperatorOverloading_new.pdf - Trang 7-10: Đa năng hoá toán tử hai ngôi]</span>"
+  },
+  {
+    "id": 23,
+    "group_id": "q-group-8",
+    "group_name": "Nhóm 8: Quản Lý Heap new/delete & Bẫy Toán Tử",
+    "title": "Bẫy đa năng hóa toán tử nâng cao #23",
+    "code": "#include <iostream>\n\nclass Token23 {\n    int val;\npublic:\n    Token23(int v = 0) : val(v) {}\n    Token23 operator+(const Token23& o) const { return Token23(val + o.val); }\n    bool operator==(const Token23& o) const { return val == o.val; }\n    int get() const { return val; }\n};\n\nint main() {\n    Token23 t1(23), t2(23);\n    Token23 t3 = t1 + t2;\n    std::cout << (t1 == t2 ? \"EQ \" : \"NEQ \") << t3.get() << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. In ra: EQ 46",
+      "B. In ra: NEQ 46",
+      "C. Lỗi biên dịch vì chưa overload toán tử gán",
+      "D. Lỗi runtime"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Hai đối tượng <code>t1</code> và <code>t2</code> đều mang giá trị 23, toán tử so sánh <code>operator==</code> trả về <code>true</code> -> in <code>EQ</code>.<br>2. Toán tử cộng <code>operator+</code> thực hiện phép cộng giá trị: 23 + 23 = 46, trả về đối tượng mới an toàn theo giá trị (by value).<br><span class=\"citation-badge\">[Nguồn: OOP4-OperatorOverloading_new.pdf - Trang 7-10: Đa năng hoá toán tử hai ngôi]</span>"
+  },
+  {
+    "id": 24,
+    "group_id": "q-group-8",
+    "group_name": "Nhóm 8: Quản Lý Heap new/delete & Bẫy Toán Tử",
+    "title": "Bẫy đa năng hóa toán tử nâng cao #24",
+    "code": "#include <iostream>\n\nclass Token24 {\n    int val;\npublic:\n    Token24(int v = 0) : val(v) {}\n    Token24 operator+(const Token24& o) const { return Token24(val + o.val); }\n    bool operator==(const Token24& o) const { return val == o.val; }\n    int get() const { return val; }\n};\n\nint main() {\n    Token24 t1(24), t2(24);\n    Token24 t3 = t1 + t2;\n    std::cout << (t1 == t2 ? \"EQ \" : \"NEQ \") << t3.get() << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. In ra: EQ 48",
+      "B. In ra: NEQ 48",
+      "C. Lỗi biên dịch vì chưa overload toán tử gán",
+      "D. Lỗi runtime"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Hai đối tượng <code>t1</code> và <code>t2</code> đều mang giá trị 24, toán tử so sánh <code>operator==</code> trả về <code>true</code> -> in <code>EQ</code>.<br>2. Toán tử cộng <code>operator+</code> thực hiện phép cộng giá trị: 24 + 24 = 48, trả về đối tượng mới an toàn theo giá trị (by value).<br><span class=\"citation-badge\">[Nguồn: OOP4-OperatorOverloading_new.pdf - Trang 7-10: Đa năng hoá toán tử hai ngôi]</span>"
+  },
+  {
+    "id": 25,
+    "group_id": "q-group-8",
+    "group_name": "Nhóm 8: Quản Lý Heap new/delete & Bẫy Toán Tử",
+    "title": "Bẫy đa năng hóa toán tử nâng cao #25",
+    "code": "#include <iostream>\n\nclass Token25 {\n    int val;\npublic:\n    Token25(int v = 0) : val(v) {}\n    Token25 operator+(const Token25& o) const { return Token25(val + o.val); }\n    bool operator==(const Token25& o) const { return val == o.val; }\n    int get() const { return val; }\n};\n\nint main() {\n    Token25 t1(25), t2(25);\n    Token25 t3 = t1 + t2;\n    std::cout << (t1 == t2 ? \"EQ \" : \"NEQ \") << t3.get() << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. In ra: EQ 50",
+      "B. In ra: NEQ 50",
+      "C. Lỗi biên dịch vì chưa overload toán tử gán",
+      "D. Lỗi runtime"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Hai đối tượng <code>t1</code> và <code>t2</code> đều mang giá trị 25, toán tử so sánh <code>operator==</code> trả về <code>true</code> -> in <code>EQ</code>.<br>2. Toán tử cộng <code>operator+</code> thực hiện phép cộng giá trị: 25 + 25 = 50, trả về đối tượng mới an toàn theo giá trị (by value).<br><span class=\"citation-badge\">[Nguồn: OOP4-OperatorOverloading_new.pdf - Trang 7-10: Đa năng hoá toán tử hai ngôi]</span>"
+  },
+  {
+    "id": 26,
+    "group_id": "q-group-8",
+    "group_name": "Nhóm 8: Quản Lý Heap new/delete & Bẫy Toán Tử",
+    "title": "Bẫy đa năng hóa toán tử nâng cao #26",
+    "code": "#include <iostream>\n\nclass Token26 {\n    int val;\npublic:\n    Token26(int v = 0) : val(v) {}\n    Token26 operator+(const Token26& o) const { return Token26(val + o.val); }\n    bool operator==(const Token26& o) const { return val == o.val; }\n    int get() const { return val; }\n};\n\nint main() {\n    Token26 t1(26), t2(26);\n    Token26 t3 = t1 + t2;\n    std::cout << (t1 == t2 ? \"EQ \" : \"NEQ \") << t3.get() << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. In ra: EQ 52",
+      "B. In ra: NEQ 52",
+      "C. Lỗi biên dịch vì chưa overload toán tử gán",
+      "D. Lỗi runtime"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Hai đối tượng <code>t1</code> và <code>t2</code> đều mang giá trị 26, toán tử so sánh <code>operator==</code> trả về <code>true</code> -> in <code>EQ</code>.<br>2. Toán tử cộng <code>operator+</code> thực hiện phép cộng giá trị: 26 + 26 = 52, trả về đối tượng mới an toàn theo giá trị (by value).<br><span class=\"citation-badge\">[Nguồn: OOP4-OperatorOverloading_new.pdf - Trang 7-10: Đa năng hoá toán tử hai ngôi]</span>"
+  },
+  {
+    "id": 27,
+    "group_id": "q-group-8",
+    "group_name": "Nhóm 8: Quản Lý Heap new/delete & Bẫy Toán Tử",
+    "title": "Bẫy đa năng hóa toán tử nâng cao #27",
+    "code": "#include <iostream>\n\nclass Token27 {\n    int val;\npublic:\n    Token27(int v = 0) : val(v) {}\n    Token27 operator+(const Token27& o) const { return Token27(val + o.val); }\n    bool operator==(const Token27& o) const { return val == o.val; }\n    int get() const { return val; }\n};\n\nint main() {\n    Token27 t1(27), t2(27);\n    Token27 t3 = t1 + t2;\n    std::cout << (t1 == t2 ? \"EQ \" : \"NEQ \") << t3.get() << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. In ra: EQ 54",
+      "B. In ra: NEQ 54",
+      "C. Lỗi biên dịch vì chưa overload toán tử gán",
+      "D. Lỗi runtime"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Hai đối tượng <code>t1</code> và <code>t2</code> đều mang giá trị 27, toán tử so sánh <code>operator==</code> trả về <code>true</code> -> in <code>EQ</code>.<br>2. Toán tử cộng <code>operator+</code> thực hiện phép cộng giá trị: 27 + 27 = 54, trả về đối tượng mới an toàn theo giá trị (by value).<br><span class=\"citation-badge\">[Nguồn: OOP4-OperatorOverloading_new.pdf - Trang 7-10: Đa năng hoá toán tử hai ngôi]</span>"
+  },
+  {
+    "id": 28,
+    "group_id": "q-group-8",
+    "group_name": "Nhóm 8: Quản Lý Heap new/delete & Bẫy Toán Tử",
+    "title": "Bẫy đa năng hóa toán tử nâng cao #28",
+    "code": "#include <iostream>\n\nclass Token28 {\n    int val;\npublic:\n    Token28(int v = 0) : val(v) {}\n    Token28 operator+(const Token28& o) const { return Token28(val + o.val); }\n    bool operator==(const Token28& o) const { return val == o.val; }\n    int get() const { return val; }\n};\n\nint main() {\n    Token28 t1(28), t2(28);\n    Token28 t3 = t1 + t2;\n    std::cout << (t1 == t2 ? \"EQ \" : \"NEQ \") << t3.get() << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. In ra: EQ 56",
+      "B. In ra: NEQ 56",
+      "C. Lỗi biên dịch vì chưa overload toán tử gán",
+      "D. Lỗi runtime"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Hai đối tượng <code>t1</code> và <code>t2</code> đều mang giá trị 28, toán tử so sánh <code>operator==</code> trả về <code>true</code> -> in <code>EQ</code>.<br>2. Toán tử cộng <code>operator+</code> thực hiện phép cộng giá trị: 28 + 28 = 56, trả về đối tượng mới an toàn theo giá trị (by value).<br><span class=\"citation-badge\">[Nguồn: OOP4-OperatorOverloading_new.pdf - Trang 7-10: Đa năng hoá toán tử hai ngôi]</span>"
+  },
+  {
+    "id": 29,
+    "group_id": "q-group-8",
+    "group_name": "Nhóm 8: Quản Lý Heap new/delete & Bẫy Toán Tử",
+    "title": "Bẫy đa năng hóa toán tử nâng cao #29",
+    "code": "#include <iostream>\n\nclass Token29 {\n    int val;\npublic:\n    Token29(int v = 0) : val(v) {}\n    Token29 operator+(const Token29& o) const { return Token29(val + o.val); }\n    bool operator==(const Token29& o) const { return val == o.val; }\n    int get() const { return val; }\n};\n\nint main() {\n    Token29 t1(29), t2(29);\n    Token29 t3 = t1 + t2;\n    std::cout << (t1 == t2 ? \"EQ \" : \"NEQ \") << t3.get() << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. In ra: EQ 58",
+      "B. In ra: NEQ 58",
+      "C. Lỗi biên dịch vì chưa overload toán tử gán",
+      "D. Lỗi runtime"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Hai đối tượng <code>t1</code> và <code>t2</code> đều mang giá trị 29, toán tử so sánh <code>operator==</code> trả về <code>true</code> -> in <code>EQ</code>.<br>2. Toán tử cộng <code>operator+</code> thực hiện phép cộng giá trị: 29 + 29 = 58, trả về đối tượng mới an toàn theo giá trị (by value).<br><span class=\"citation-badge\">[Nguồn: OOP4-OperatorOverloading_new.pdf - Trang 7-10: Đa năng hoá toán tử hai ngôi]</span>"
+  },
+  {
+    "id": 30,
+    "group_id": "q-group-8",
+    "group_name": "Nhóm 8: Quản Lý Heap new/delete & Bẫy Toán Tử",
+    "title": "Bẫy đa năng hóa toán tử nâng cao #30",
+    "code": "#include <iostream>\n\nclass Token30 {\n    int val;\npublic:\n    Token30(int v = 0) : val(v) {}\n    Token30 operator+(const Token30& o) const { return Token30(val + o.val); }\n    bool operator==(const Token30& o) const { return val == o.val; }\n    int get() const { return val; }\n};\n\nint main() {\n    Token30 t1(30), t2(30);\n    Token30 t3 = t1 + t2;\n    std::cout << (t1 == t2 ? \"EQ \" : \"NEQ \") << t3.get() << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. In ra: EQ 60",
+      "B. In ra: NEQ 60",
+      "C. Lỗi biên dịch vì chưa overload toán tử gán",
+      "D. Lỗi runtime"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Hai đối tượng <code>t1</code> và <code>t2</code> đều mang giá trị 30, toán tử so sánh <code>operator==</code> trả về <code>true</code> -> in <code>EQ</code>.<br>2. Toán tử cộng <code>operator+</code> thực hiện phép cộng giá trị: 30 + 30 = 60, trả về đối tượng mới an toàn theo giá trị (by value).<br><span class=\"citation-badge\">[Nguồn: OOP4-OperatorOverloading_new.pdf - Trang 7-10: Đa năng hoá toán tử hai ngôi]</span>"
+  },
+  {
+    "id": 31,
+    "group_id": "q-group-8",
+    "group_name": "Nhóm 8: Quản Lý Heap new/delete & Bẫy Toán Tử",
+    "title": "Bẫy đa năng hóa toán tử nâng cao #31",
+    "code": "#include <iostream>\n\nclass Token31 {\n    int val;\npublic:\n    Token31(int v = 0) : val(v) {}\n    Token31 operator+(const Token31& o) const { return Token31(val + o.val); }\n    bool operator==(const Token31& o) const { return val == o.val; }\n    int get() const { return val; }\n};\n\nint main() {\n    Token31 t1(31), t2(31);\n    Token31 t3 = t1 + t2;\n    std::cout << (t1 == t2 ? \"EQ \" : \"NEQ \") << t3.get() << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. In ra: EQ 62",
+      "B. In ra: NEQ 62",
+      "C. Lỗi biên dịch vì chưa overload toán tử gán",
+      "D. Lỗi runtime"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Hai đối tượng <code>t1</code> và <code>t2</code> đều mang giá trị 31, toán tử so sánh <code>operator==</code> trả về <code>true</code> -> in <code>EQ</code>.<br>2. Toán tử cộng <code>operator+</code> thực hiện phép cộng giá trị: 31 + 31 = 62, trả về đối tượng mới an toàn theo giá trị (by value).<br><span class=\"citation-badge\">[Nguồn: OOP4-OperatorOverloading_new.pdf - Trang 7-10: Đa năng hoá toán tử hai ngôi]</span>"
+  },
+  {
+    "id": 32,
+    "group_id": "q-group-8",
+    "group_name": "Nhóm 8: Quản Lý Heap new/delete & Bẫy Toán Tử",
+    "title": "Bẫy đa năng hóa toán tử nâng cao #32",
+    "code": "#include <iostream>\n\nclass Token32 {\n    int val;\npublic:\n    Token32(int v = 0) : val(v) {}\n    Token32 operator+(const Token32& o) const { return Token32(val + o.val); }\n    bool operator==(const Token32& o) const { return val == o.val; }\n    int get() const { return val; }\n};\n\nint main() {\n    Token32 t1(32), t2(32);\n    Token32 t3 = t1 + t2;\n    std::cout << (t1 == t2 ? \"EQ \" : \"NEQ \") << t3.get() << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. In ra: EQ 64",
+      "B. In ra: NEQ 64",
+      "C. Lỗi biên dịch vì chưa overload toán tử gán",
+      "D. Lỗi runtime"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Hai đối tượng <code>t1</code> và <code>t2</code> đều mang giá trị 32, toán tử so sánh <code>operator==</code> trả về <code>true</code> -> in <code>EQ</code>.<br>2. Toán tử cộng <code>operator+</code> thực hiện phép cộng giá trị: 32 + 32 = 64, trả về đối tượng mới an toàn theo giá trị (by value).<br><span class=\"citation-badge\">[Nguồn: OOP4-OperatorOverloading_new.pdf - Trang 7-10: Đa năng hoá toán tử hai ngôi]</span>"
+  },
+  {
+    "id": 33,
+    "group_id": "q-group-8",
+    "group_name": "Nhóm 8: Quản Lý Heap new/delete & Bẫy Toán Tử",
+    "title": "Bẫy đa năng hóa toán tử nâng cao #33",
+    "code": "#include <iostream>\n\nclass Token33 {\n    int val;\npublic:\n    Token33(int v = 0) : val(v) {}\n    Token33 operator+(const Token33& o) const { return Token33(val + o.val); }\n    bool operator==(const Token33& o) const { return val == o.val; }\n    int get() const { return val; }\n};\n\nint main() {\n    Token33 t1(33), t2(33);\n    Token33 t3 = t1 + t2;\n    std::cout << (t1 == t2 ? \"EQ \" : \"NEQ \") << t3.get() << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. In ra: EQ 66",
+      "B. In ra: NEQ 66",
+      "C. Lỗi biên dịch vì chưa overload toán tử gán",
+      "D. Lỗi runtime"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Hai đối tượng <code>t1</code> và <code>t2</code> đều mang giá trị 33, toán tử so sánh <code>operator==</code> trả về <code>true</code> -> in <code>EQ</code>.<br>2. Toán tử cộng <code>operator+</code> thực hiện phép cộng giá trị: 33 + 33 = 66, trả về đối tượng mới an toàn theo giá trị (by value).<br><span class=\"citation-badge\">[Nguồn: OOP4-OperatorOverloading_new.pdf - Trang 7-10: Đa năng hoá toán tử hai ngôi]</span>"
+  },
+  {
+    "id": 34,
+    "group_id": "q-group-8",
+    "group_name": "Nhóm 8: Quản Lý Heap new/delete & Bẫy Toán Tử",
+    "title": "Bẫy đa năng hóa toán tử nâng cao #34",
+    "code": "#include <iostream>\n\nclass Token34 {\n    int val;\npublic:\n    Token34(int v = 0) : val(v) {}\n    Token34 operator+(const Token34& o) const { return Token34(val + o.val); }\n    bool operator==(const Token34& o) const { return val == o.val; }\n    int get() const { return val; }\n};\n\nint main() {\n    Token34 t1(34), t2(34);\n    Token34 t3 = t1 + t2;\n    std::cout << (t1 == t2 ? \"EQ \" : \"NEQ \") << t3.get() << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. In ra: EQ 68",
+      "B. In ra: NEQ 68",
+      "C. Lỗi biên dịch vì chưa overload toán tử gán",
+      "D. Lỗi runtime"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Hai đối tượng <code>t1</code> và <code>t2</code> đều mang giá trị 34, toán tử so sánh <code>operator==</code> trả về <code>true</code> -> in <code>EQ</code>.<br>2. Toán tử cộng <code>operator+</code> thực hiện phép cộng giá trị: 34 + 34 = 68, trả về đối tượng mới an toàn theo giá trị (by value).<br><span class=\"citation-badge\">[Nguồn: OOP4-OperatorOverloading_new.pdf - Trang 7-10: Đa năng hoá toán tử hai ngôi]</span>"
+  },
+  {
+    "id": 35,
+    "group_id": "q-group-8",
+    "group_name": "Nhóm 8: Quản Lý Heap new/delete & Bẫy Toán Tử",
+    "title": "Bẫy đa năng hóa toán tử nâng cao #35",
+    "code": "#include <iostream>\n\nclass Token35 {\n    int val;\npublic:\n    Token35(int v = 0) : val(v) {}\n    Token35 operator+(const Token35& o) const { return Token35(val + o.val); }\n    bool operator==(const Token35& o) const { return val == o.val; }\n    int get() const { return val; }\n};\n\nint main() {\n    Token35 t1(35), t2(35);\n    Token35 t3 = t1 + t2;\n    std::cout << (t1 == t2 ? \"EQ \" : \"NEQ \") << t3.get() << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. In ra: EQ 70",
+      "B. In ra: NEQ 70",
+      "C. Lỗi biên dịch vì chưa overload toán tử gán",
+      "D. Lỗi runtime"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Hai đối tượng <code>t1</code> và <code>t2</code> đều mang giá trị 35, toán tử so sánh <code>operator==</code> trả về <code>true</code> -> in <code>EQ</code>.<br>2. Toán tử cộng <code>operator+</code> thực hiện phép cộng giá trị: 35 + 35 = 70, trả về đối tượng mới an toàn theo giá trị (by value).<br><span class=\"citation-badge\">[Nguồn: OOP4-OperatorOverloading_new.pdf - Trang 7-10: Đa năng hoá toán tử hai ngôi]</span>"
+  },
+  {
+    "id": 36,
+    "group_id": "q-group-8",
+    "group_name": "Nhóm 8: Quản Lý Heap new/delete & Bẫy Toán Tử",
+    "title": "Bẫy đa năng hóa toán tử nâng cao #36",
+    "code": "#include <iostream>\n\nclass Token36 {\n    int val;\npublic:\n    Token36(int v = 0) : val(v) {}\n    Token36 operator+(const Token36& o) const { return Token36(val + o.val); }\n    bool operator==(const Token36& o) const { return val == o.val; }\n    int get() const { return val; }\n};\n\nint main() {\n    Token36 t1(36), t2(36);\n    Token36 t3 = t1 + t2;\n    std::cout << (t1 == t2 ? \"EQ \" : \"NEQ \") << t3.get() << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. In ra: EQ 72",
+      "B. In ra: NEQ 72",
+      "C. Lỗi biên dịch vì chưa overload toán tử gán",
+      "D. Lỗi runtime"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Hai đối tượng <code>t1</code> và <code>t2</code> đều mang giá trị 36, toán tử so sánh <code>operator==</code> trả về <code>true</code> -> in <code>EQ</code>.<br>2. Toán tử cộng <code>operator+</code> thực hiện phép cộng giá trị: 36 + 36 = 72, trả về đối tượng mới an toàn theo giá trị (by value).<br><span class=\"citation-badge\">[Nguồn: OOP4-OperatorOverloading_new.pdf - Trang 7-10: Đa năng hoá toán tử hai ngôi]</span>"
+  },
+  {
+    "id": 37,
+    "group_id": "q-group-8",
+    "group_name": "Nhóm 8: Quản Lý Heap new/delete & Bẫy Toán Tử",
+    "title": "Bẫy đa năng hóa toán tử nâng cao #37",
+    "code": "#include <iostream>\n\nclass Token37 {\n    int val;\npublic:\n    Token37(int v = 0) : val(v) {}\n    Token37 operator+(const Token37& o) const { return Token37(val + o.val); }\n    bool operator==(const Token37& o) const { return val == o.val; }\n    int get() const { return val; }\n};\n\nint main() {\n    Token37 t1(37), t2(37);\n    Token37 t3 = t1 + t2;\n    std::cout << (t1 == t2 ? \"EQ \" : \"NEQ \") << t3.get() << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. In ra: EQ 74",
+      "B. In ra: NEQ 74",
+      "C. Lỗi biên dịch vì chưa overload toán tử gán",
+      "D. Lỗi runtime"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Hai đối tượng <code>t1</code> và <code>t2</code> đều mang giá trị 37, toán tử so sánh <code>operator==</code> trả về <code>true</code> -> in <code>EQ</code>.<br>2. Toán tử cộng <code>operator+</code> thực hiện phép cộng giá trị: 37 + 37 = 74, trả về đối tượng mới an toàn theo giá trị (by value).<br><span class=\"citation-badge\">[Nguồn: OOP4-OperatorOverloading_new.pdf - Trang 7-10: Đa năng hoá toán tử hai ngôi]</span>"
+  },
+  {
+    "id": 38,
+    "group_id": "q-group-8",
+    "group_name": "Nhóm 8: Quản Lý Heap new/delete & Bẫy Toán Tử",
+    "title": "Bẫy đa năng hóa toán tử nâng cao #38",
+    "code": "#include <iostream>\n\nclass Token38 {\n    int val;\npublic:\n    Token38(int v = 0) : val(v) {}\n    Token38 operator+(const Token38& o) const { return Token38(val + o.val); }\n    bool operator==(const Token38& o) const { return val == o.val; }\n    int get() const { return val; }\n};\n\nint main() {\n    Token38 t1(38), t2(38);\n    Token38 t3 = t1 + t2;\n    std::cout << (t1 == t2 ? \"EQ \" : \"NEQ \") << t3.get() << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. In ra: EQ 76",
+      "B. In ra: NEQ 76",
+      "C. Lỗi biên dịch vì chưa overload toán tử gán",
+      "D. Lỗi runtime"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Hai đối tượng <code>t1</code> và <code>t2</code> đều mang giá trị 38, toán tử so sánh <code>operator==</code> trả về <code>true</code> -> in <code>EQ</code>.<br>2. Toán tử cộng <code>operator+</code> thực hiện phép cộng giá trị: 38 + 38 = 76, trả về đối tượng mới an toàn theo giá trị (by value).<br><span class=\"citation-badge\">[Nguồn: OOP4-OperatorOverloading_new.pdf - Trang 7-10: Đa năng hoá toán tử hai ngôi]</span>"
+  },
+  {
+    "id": 39,
+    "group_id": "q-group-8",
+    "group_name": "Nhóm 8: Quản Lý Heap new/delete & Bẫy Toán Tử",
+    "title": "Bẫy đa năng hóa toán tử nâng cao #39",
+    "code": "#include <iostream>\n\nclass Token39 {\n    int val;\npublic:\n    Token39(int v = 0) : val(v) {}\n    Token39 operator+(const Token39& o) const { return Token39(val + o.val); }\n    bool operator==(const Token39& o) const { return val == o.val; }\n    int get() const { return val; }\n};\n\nint main() {\n    Token39 t1(39), t2(39);\n    Token39 t3 = t1 + t2;\n    std::cout << (t1 == t2 ? \"EQ \" : \"NEQ \") << t3.get() << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. In ra: EQ 78",
+      "B. In ra: NEQ 78",
+      "C. Lỗi biên dịch vì chưa overload toán tử gán",
+      "D. Lỗi runtime"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Hai đối tượng <code>t1</code> và <code>t2</code> đều mang giá trị 39, toán tử so sánh <code>operator==</code> trả về <code>true</code> -> in <code>EQ</code>.<br>2. Toán tử cộng <code>operator+</code> thực hiện phép cộng giá trị: 39 + 39 = 78, trả về đối tượng mới an toàn theo giá trị (by value).<br><span class=\"citation-badge\">[Nguồn: OOP4-OperatorOverloading_new.pdf - Trang 7-10: Đa năng hoá toán tử hai ngôi]</span>"
+  },
+  {
+    "id": 40,
+    "group_id": "q-group-8",
+    "group_name": "Nhóm 8: Quản Lý Heap new/delete & Bẫy Toán Tử",
+    "title": "Bẫy đa năng hóa toán tử nâng cao #40",
+    "code": "#include <iostream>\n\nclass Token40 {\n    int val;\npublic:\n    Token40(int v = 0) : val(v) {}\n    Token40 operator+(const Token40& o) const { return Token40(val + o.val); }\n    bool operator==(const Token40& o) const { return val == o.val; }\n    int get() const { return val; }\n};\n\nint main() {\n    Token40 t1(40), t2(40);\n    Token40 t3 = t1 + t2;\n    std::cout << (t1 == t2 ? \"EQ \" : \"NEQ \") << t3.get() << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. In ra: EQ 80",
+      "B. In ra: NEQ 80",
+      "C. Lỗi biên dịch vì chưa overload toán tử gán",
+      "D. Lỗi runtime"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Hai đối tượng <code>t1</code> và <code>t2</code> đều mang giá trị 40, toán tử so sánh <code>operator==</code> trả về <code>true</code> -> in <code>EQ</code>.<br>2. Toán tử cộng <code>operator+</code> thực hiện phép cộng giá trị: 40 + 40 = 80, trả về đối tượng mới an toàn theo giá trị (by value).<br><span class=\"citation-badge\">[Nguồn: OOP4-OperatorOverloading_new.pdf - Trang 7-10: Đa năng hoá toán tử hai ngôi]</span>"
+  },
+  {
+    "id": 41,
+    "group_id": "q-group-8",
+    "group_name": "Nhóm 8: Quản Lý Heap new/delete & Bẫy Toán Tử",
+    "title": "Bẫy đa năng hóa toán tử nâng cao #41",
+    "code": "#include <iostream>\n\nclass Token41 {\n    int val;\npublic:\n    Token41(int v = 0) : val(v) {}\n    Token41 operator+(const Token41& o) const { return Token41(val + o.val); }\n    bool operator==(const Token41& o) const { return val == o.val; }\n    int get() const { return val; }\n};\n\nint main() {\n    Token41 t1(41), t2(41);\n    Token41 t3 = t1 + t2;\n    std::cout << (t1 == t2 ? \"EQ \" : \"NEQ \") << t3.get() << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. In ra: EQ 82",
+      "B. In ra: NEQ 82",
+      "C. Lỗi biên dịch vì chưa overload toán tử gán",
+      "D. Lỗi runtime"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Hai đối tượng <code>t1</code> và <code>t2</code> đều mang giá trị 41, toán tử so sánh <code>operator==</code> trả về <code>true</code> -> in <code>EQ</code>.<br>2. Toán tử cộng <code>operator+</code> thực hiện phép cộng giá trị: 41 + 41 = 82, trả về đối tượng mới an toàn theo giá trị (by value).<br><span class=\"citation-badge\">[Nguồn: OOP4-OperatorOverloading_new.pdf - Trang 7-10: Đa năng hoá toán tử hai ngôi]</span>"
+  },
+  {
+    "id": 42,
+    "group_id": "q-group-8",
+    "group_name": "Nhóm 8: Quản Lý Heap new/delete & Bẫy Toán Tử",
+    "title": "Bẫy đa năng hóa toán tử nâng cao #42",
+    "code": "#include <iostream>\n\nclass Token42 {\n    int val;\npublic:\n    Token42(int v = 0) : val(v) {}\n    Token42 operator+(const Token42& o) const { return Token42(val + o.val); }\n    bool operator==(const Token42& o) const { return val == o.val; }\n    int get() const { return val; }\n};\n\nint main() {\n    Token42 t1(42), t2(42);\n    Token42 t3 = t1 + t2;\n    std::cout << (t1 == t2 ? \"EQ \" : \"NEQ \") << t3.get() << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. In ra: EQ 84",
+      "B. In ra: NEQ 84",
+      "C. Lỗi biên dịch vì chưa overload toán tử gán",
+      "D. Lỗi runtime"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Hai đối tượng <code>t1</code> và <code>t2</code> đều mang giá trị 42, toán tử so sánh <code>operator==</code> trả về <code>true</code> -> in <code>EQ</code>.<br>2. Toán tử cộng <code>operator+</code> thực hiện phép cộng giá trị: 42 + 42 = 84, trả về đối tượng mới an toàn theo giá trị (by value).<br><span class=\"citation-badge\">[Nguồn: OOP4-OperatorOverloading_new.pdf - Trang 7-10: Đa năng hoá toán tử hai ngôi]</span>"
+  },
+  {
+    "id": 43,
+    "group_id": "q-group-8",
+    "group_name": "Nhóm 8: Quản Lý Heap new/delete & Bẫy Toán Tử",
+    "title": "Bẫy đa năng hóa toán tử nâng cao #43",
+    "code": "#include <iostream>\n\nclass Token43 {\n    int val;\npublic:\n    Token43(int v = 0) : val(v) {}\n    Token43 operator+(const Token43& o) const { return Token43(val + o.val); }\n    bool operator==(const Token43& o) const { return val == o.val; }\n    int get() const { return val; }\n};\n\nint main() {\n    Token43 t1(43), t2(43);\n    Token43 t3 = t1 + t2;\n    std::cout << (t1 == t2 ? \"EQ \" : \"NEQ \") << t3.get() << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. In ra: EQ 86",
+      "B. In ra: NEQ 86",
+      "C. Lỗi biên dịch vì chưa overload toán tử gán",
+      "D. Lỗi runtime"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Hai đối tượng <code>t1</code> và <code>t2</code> đều mang giá trị 43, toán tử so sánh <code>operator==</code> trả về <code>true</code> -> in <code>EQ</code>.<br>2. Toán tử cộng <code>operator+</code> thực hiện phép cộng giá trị: 43 + 43 = 86, trả về đối tượng mới an toàn theo giá trị (by value).<br><span class=\"citation-badge\">[Nguồn: OOP4-OperatorOverloading_new.pdf - Trang 7-10: Đa năng hoá toán tử hai ngôi]</span>"
+  },
+  {
+    "id": 44,
+    "group_id": "q-group-8",
+    "group_name": "Nhóm 8: Quản Lý Heap new/delete & Bẫy Toán Tử",
+    "title": "Bẫy đa năng hóa toán tử nâng cao #44",
+    "code": "#include <iostream>\n\nclass Token44 {\n    int val;\npublic:\n    Token44(int v = 0) : val(v) {}\n    Token44 operator+(const Token44& o) const { return Token44(val + o.val); }\n    bool operator==(const Token44& o) const { return val == o.val; }\n    int get() const { return val; }\n};\n\nint main() {\n    Token44 t1(44), t2(44);\n    Token44 t3 = t1 + t2;\n    std::cout << (t1 == t2 ? \"EQ \" : \"NEQ \") << t3.get() << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. In ra: EQ 88",
+      "B. In ra: NEQ 88",
+      "C. Lỗi biên dịch vì chưa overload toán tử gán",
+      "D. Lỗi runtime"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Hai đối tượng <code>t1</code> và <code>t2</code> đều mang giá trị 44, toán tử so sánh <code>operator==</code> trả về <code>true</code> -> in <code>EQ</code>.<br>2. Toán tử cộng <code>operator+</code> thực hiện phép cộng giá trị: 44 + 44 = 88, trả về đối tượng mới an toàn theo giá trị (by value).<br><span class=\"citation-badge\">[Nguồn: OOP4-OperatorOverloading_new.pdf - Trang 7-10: Đa năng hoá toán tử hai ngôi]</span>"
+  },
+  {
+    "id": 45,
+    "group_id": "q-group-8",
+    "group_name": "Nhóm 8: Quản Lý Heap new/delete & Bẫy Toán Tử",
+    "title": "Bẫy đa năng hóa toán tử nâng cao #45",
+    "code": "#include <iostream>\n\nclass Token45 {\n    int val;\npublic:\n    Token45(int v = 0) : val(v) {}\n    Token45 operator+(const Token45& o) const { return Token45(val + o.val); }\n    bool operator==(const Token45& o) const { return val == o.val; }\n    int get() const { return val; }\n};\n\nint main() {\n    Token45 t1(45), t2(45);\n    Token45 t3 = t1 + t2;\n    std::cout << (t1 == t2 ? \"EQ \" : \"NEQ \") << t3.get() << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. In ra: EQ 90",
+      "B. In ra: NEQ 90",
+      "C. Lỗi biên dịch vì chưa overload toán tử gán",
+      "D. Lỗi runtime"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Hai đối tượng <code>t1</code> và <code>t2</code> đều mang giá trị 45, toán tử so sánh <code>operator==</code> trả về <code>true</code> -> in <code>EQ</code>.<br>2. Toán tử cộng <code>operator+</code> thực hiện phép cộng giá trị: 45 + 45 = 90, trả về đối tượng mới an toàn theo giá trị (by value).<br><span class=\"citation-badge\">[Nguồn: OOP4-OperatorOverloading_new.pdf - Trang 7-10: Đa năng hoá toán tử hai ngôi]</span>"
+  },
+  {
+    "id": 46,
+    "group_id": "q-group-8",
+    "group_name": "Nhóm 8: Quản Lý Heap new/delete & Bẫy Toán Tử",
+    "title": "Bẫy đa năng hóa toán tử nâng cao #46",
+    "code": "#include <iostream>\n\nclass Token46 {\n    int val;\npublic:\n    Token46(int v = 0) : val(v) {}\n    Token46 operator+(const Token46& o) const { return Token46(val + o.val); }\n    bool operator==(const Token46& o) const { return val == o.val; }\n    int get() const { return val; }\n};\n\nint main() {\n    Token46 t1(46), t2(46);\n    Token46 t3 = t1 + t2;\n    std::cout << (t1 == t2 ? \"EQ \" : \"NEQ \") << t3.get() << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. In ra: EQ 92",
+      "B. In ra: NEQ 92",
+      "C. Lỗi biên dịch vì chưa overload toán tử gán",
+      "D. Lỗi runtime"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Hai đối tượng <code>t1</code> và <code>t2</code> đều mang giá trị 46, toán tử so sánh <code>operator==</code> trả về <code>true</code> -> in <code>EQ</code>.<br>2. Toán tử cộng <code>operator+</code> thực hiện phép cộng giá trị: 46 + 46 = 92, trả về đối tượng mới an toàn theo giá trị (by value).<br><span class=\"citation-badge\">[Nguồn: OOP4-OperatorOverloading_new.pdf - Trang 7-10: Đa năng hoá toán tử hai ngôi]</span>"
+  },
+  {
+    "id": 47,
+    "group_id": "q-group-8",
+    "group_name": "Nhóm 8: Quản Lý Heap new/delete & Bẫy Toán Tử",
+    "title": "Bẫy đa năng hóa toán tử nâng cao #47",
+    "code": "#include <iostream>\n\nclass Token47 {\n    int val;\npublic:\n    Token47(int v = 0) : val(v) {}\n    Token47 operator+(const Token47& o) const { return Token47(val + o.val); }\n    bool operator==(const Token47& o) const { return val == o.val; }\n    int get() const { return val; }\n};\n\nint main() {\n    Token47 t1(47), t2(47);\n    Token47 t3 = t1 + t2;\n    std::cout << (t1 == t2 ? \"EQ \" : \"NEQ \") << t3.get() << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. In ra: EQ 94",
+      "B. In ra: NEQ 94",
+      "C. Lỗi biên dịch vì chưa overload toán tử gán",
+      "D. Lỗi runtime"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Hai đối tượng <code>t1</code> và <code>t2</code> đều mang giá trị 47, toán tử so sánh <code>operator==</code> trả về <code>true</code> -> in <code>EQ</code>.<br>2. Toán tử cộng <code>operator+</code> thực hiện phép cộng giá trị: 47 + 47 = 94, trả về đối tượng mới an toàn theo giá trị (by value).<br><span class=\"citation-badge\">[Nguồn: OOP4-OperatorOverloading_new.pdf - Trang 7-10: Đa năng hoá toán tử hai ngôi]</span>"
+  },
+  {
+    "id": 48,
+    "group_id": "q-group-8",
+    "group_name": "Nhóm 8: Quản Lý Heap new/delete & Bẫy Toán Tử",
+    "title": "Bẫy đa năng hóa toán tử nâng cao #48",
+    "code": "#include <iostream>\n\nclass Token48 {\n    int val;\npublic:\n    Token48(int v = 0) : val(v) {}\n    Token48 operator+(const Token48& o) const { return Token48(val + o.val); }\n    bool operator==(const Token48& o) const { return val == o.val; }\n    int get() const { return val; }\n};\n\nint main() {\n    Token48 t1(48), t2(48);\n    Token48 t3 = t1 + t2;\n    std::cout << (t1 == t2 ? \"EQ \" : \"NEQ \") << t3.get() << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. In ra: EQ 96",
+      "B. In ra: NEQ 96",
+      "C. Lỗi biên dịch vì chưa overload toán tử gán",
+      "D. Lỗi runtime"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Hai đối tượng <code>t1</code> và <code>t2</code> đều mang giá trị 48, toán tử so sánh <code>operator==</code> trả về <code>true</code> -> in <code>EQ</code>.<br>2. Toán tử cộng <code>operator+</code> thực hiện phép cộng giá trị: 48 + 48 = 96, trả về đối tượng mới an toàn theo giá trị (by value).<br><span class=\"citation-badge\">[Nguồn: OOP4-OperatorOverloading_new.pdf - Trang 7-10: Đa năng hoá toán tử hai ngôi]</span>"
+  },
+  {
+    "id": 49,
+    "group_id": "q-group-8",
+    "group_name": "Nhóm 8: Quản Lý Heap new/delete & Bẫy Toán Tử",
+    "title": "Bẫy đa năng hóa toán tử nâng cao #49",
+    "code": "#include <iostream>\n\nclass Token49 {\n    int val;\npublic:\n    Token49(int v = 0) : val(v) {}\n    Token49 operator+(const Token49& o) const { return Token49(val + o.val); }\n    bool operator==(const Token49& o) const { return val == o.val; }\n    int get() const { return val; }\n};\n\nint main() {\n    Token49 t1(49), t2(49);\n    Token49 t3 = t1 + t2;\n    std::cout << (t1 == t2 ? \"EQ \" : \"NEQ \") << t3.get() << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. In ra: EQ 98",
+      "B. In ra: NEQ 98",
+      "C. Lỗi biên dịch vì chưa overload toán tử gán",
+      "D. Lỗi runtime"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Hai đối tượng <code>t1</code> và <code>t2</code> đều mang giá trị 49, toán tử so sánh <code>operator==</code> trả về <code>true</code> -> in <code>EQ</code>.<br>2. Toán tử cộng <code>operator+</code> thực hiện phép cộng giá trị: 49 + 49 = 98, trả về đối tượng mới an toàn theo giá trị (by value).<br><span class=\"citation-badge\">[Nguồn: OOP4-OperatorOverloading_new.pdf - Trang 7-10: Đa năng hoá toán tử hai ngôi]</span>"
+  },
+  {
+    "id": 50,
+    "group_id": "q-group-8",
+    "group_name": "Nhóm 8: Quản Lý Heap new/delete & Bẫy Toán Tử",
+    "title": "Bẫy đa năng hóa toán tử nâng cao #50",
+    "code": "#include <iostream>\n\nclass Token50 {\n    int val;\npublic:\n    Token50(int v = 0) : val(v) {}\n    Token50 operator+(const Token50& o) const { return Token50(val + o.val); }\n    bool operator==(const Token50& o) const { return val == o.val; }\n    int get() const { return val; }\n};\n\nint main() {\n    Token50 t1(50), t2(50);\n    Token50 t3 = t1 + t2;\n    std::cout << (t1 == t2 ? \"EQ \" : \"NEQ \") << t3.get() << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. In ra: EQ 100",
+      "B. In ra: NEQ 100",
+      "C. Lỗi biên dịch vì chưa overload toán tử gán",
+      "D. Lỗi runtime"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Hai đối tượng <code>t1</code> và <code>t2</code> đều mang giá trị 50, toán tử so sánh <code>operator==</code> trả về <code>true</code> -> in <code>EQ</code>.<br>2. Toán tử cộng <code>operator+</code> thực hiện phép cộng giá trị: 50 + 50 = 100, trả về đối tượng mới an toàn theo giá trị (by value).<br><span class=\"citation-badge\">[Nguồn: OOP4-OperatorOverloading_new.pdf - Trang 7-10: Đa năng hoá toán tử hai ngôi]</span>"
+  }
+];
+
+        let userAnswers = {};
+        let score = 0;
+
+        function renderQuiz() {
+            const container = document.getElementById('quiz-container');
+            container.innerHTML = '';
+
+            let currentGroup = '';
+
+            quizData.forEach((q, index) => {
+                if (q.group_name !== currentGroup) {
+                    currentGroup = q.group_name;
+                    const groupHeader = document.createElement('div');
+                    groupHeader.id = q.group_id;
+                    groupHeader.className = 'pt-6 pb-2 border-b border-zinc-200 mt-6';
+                    groupHeader.innerHTML = `
+                        <div class="flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-[#991b1b]"></span>
+                            <h3 class="text-base font-bold text-zinc-800 uppercase tracking-wide font-sans">${currentGroup}</h3>
+                        </div>
+                    `;
+                    container.appendChild(groupHeader);
+                }
+
+                const card = document.createElement('div');
+                card.id = `q-${q.id}`;
+                card.className = 'bg-white border border-zinc-200 rounded-lg p-5 sm:p-6 shadow-sm hover:border-red-300 transition-colors';
+
+                const escapedCode = q.code.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+                card.innerHTML = `
+                    <div class="flex items-start justify-between gap-4 mb-3">
+                        <div class="flex items-center gap-2.5">
+                            <span class="inline-flex items-center justify-center w-7 h-7 rounded bg-red-100 text-[#991b1b] font-mono font-bold text-xs">
+                                #${q.id}
+                            </span>
+                            <h4 class="font-bold text-zinc-900 text-base leading-snug">${q.title}</h4>
+                        </div>
+                        <span id="badge-status-${q.id}" class="text-xs font-mono font-medium text-zinc-400">Chưa làm</span>
+                    </div>
+
+                    <div class="mb-4">
+                        <pre><code class="language-cpp">${escapedCode}</code></pre>
+                    </div>
+
+                    <div class="space-y-2.5" id="options-container-${q.id}">
+                        ${q.options.map((opt, optIdx) => `
+                            <button type="button" 
+                                    id="btn-${q.id}-${optIdx}" 
+                                    onclick="handleSelectOption(${q.id}, ${optIdx})"
+                                    class="option-btn">
+                                <span class="w-5 h-5 rounded-full border border-zinc-300 flex items-center justify-center text-xs font-mono font-bold flex-shrink-0 mt-0.5">
+                                    ${String.fromCharCode(65 + optIdx)}
+                                </span>
+                                <span class="flex-grow">${opt}</span>
+                            </button>
+                        `).join('')}
+                    </div>
+
+                    <div id="answer-${q.id}" class="answer-block">
+                        <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#991b1b] mb-2 font-sans">
+                            <i class="fa-solid fa-microchip"></i> Cơ chế dưới gầm máy (Under the hood)
+                        </div>
+                        <div class="text-zinc-700 space-y-1">${q.explanation}</div>
+                    </div>
+                `;
+
+                container.appendChild(card);
+            });
+
+            Prism.highlightAll();
+        }
+
+        function handleSelectOption(qId, selectedIdx) {
+            if (userAnswers[qId] !== undefined) return;
+
+            const q = quizData.find(item => item.id === qId);
+            userAnswers[qId] = selectedIdx;
+
+            const isCorrect = (selectedIdx === q.correct);
+            if (isCorrect) {
+                score++;
+            }
+
+            updateScoreDisplay();
+
+            q.options.forEach((_, idx) => {
+                const btn = document.getElementById(`btn-${qId}-${idx}`);
+                btn.disabled = true;
+
+                if (idx === q.correct) {
+                    btn.classList.add('show-correct');
+                }
+            });
+
+            const clickedBtn = document.getElementById(`btn-${qId}-${selectedIdx}`);
+            if (isCorrect) {
+                clickedBtn.classList.remove('show-correct');
+                clickedBtn.classList.add('selected-correct');
+            } else {
+                clickedBtn.classList.add('selected-wrong');
+            }
+
+            const statusBadge = document.getElementById(`badge-status-${qId}`);
+            if (isCorrect) {
+                statusBadge.innerHTML = '<span class="text-emerald-700 font-bold"><i class="fa-solid fa-check"></i> Đúng</span>';
+            } else {
+                statusBadge.innerHTML = '<span class="text-rose-700 font-bold"><i class="fa-solid fa-xmark"></i> Sai</span>';
+            }
+
+            const ansBlock = document.getElementById(`answer-${qId}`);
+            ansBlock.classList.add('show');
+        }
+
+        function updateScoreDisplay() {
+            const total = quizData.length;
+            const answeredCount = Object.keys(userAnswers).length;
+            document.getElementById('score-display').innerText = `Điểm: ${score}/${total}`;
+            document.getElementById('answered-count').innerText = `${answeredCount}/${total}`;
+        }
+
+        function resetQuiz() {
+            if (!confirm('Bạn có chắc chắn muốn làm lại bài kiểm tra từ đầu?')) return;
+            userAnswers = {};
+            score = 0;
+            updateScoreDisplay();
+            renderQuiz();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderQuiz();
+            updateScoreDisplay();
+        });
+    </script>
+</body>
+</html>

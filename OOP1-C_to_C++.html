@@ -1,0 +1,1422 @@
+<!DOCTYPE html>
+<html lang="vi" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chương 1: Mở Rộng C++ (C to C++11 Deep Dive) - MOSTest5_2</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Lora', 'serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        crimson: {
+                            50: '#fff1f2',
+                            100: '#ffe4e6',
+                            200: '#fecdd3',
+                            300: '#fda4af',
+                            400: '#fb7185',
+                            500: '#f43f5e',
+                            600: '#e11d48',
+                            700: '#be123c',
+                            800: '#991b1b',
+                            900: '#881337',
+                            950: '#4c0519',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- PrismJS Dark Tomorrow Theme -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+
+    <style>
+        body {
+            background-color: #fafafa;
+            color: #18181b;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .theory-content {
+            font-family: 'Lora', serif;
+            font-size: 1.05rem;
+            line-height: 1.8;
+            color: #27272a;
+        }
+
+        .theory-content h3 {
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            color: #991b1b;
+            letter-spacing: -0.02em;
+        }
+
+        .theory-content h4 {
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            color: #18181b;
+        }
+
+        .under-the-hood {
+            background-color: #ffffff;
+            border-left: 4px solid #991b1b;
+            padding: 1.25rem 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 0 0.5rem 0.5rem 0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+        }
+
+        .under-the-hood-title {
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.05em;
+            color: #991b1b;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .citation-badge {
+            display: inline-block;
+            background-color: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #fecdd3;
+            padding: 0.15rem 0.5rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+
+        .inline-code {
+            font-family: 'JetBrains Mono', monospace;
+            background-color: #f4f4f5;
+            color: #991b1b;
+            padding: 0.15rem 0.4rem;
+            border-radius: 0.25rem;
+            font-size: 0.88em;
+            border: 1px solid #e4e4e7;
+        }
+
+        /* Quiz interactive styles */
+        .option-btn {
+            transition: all 0.15s ease-in-out;
+            text-align: left;
+            width: 100%;
+            background-color: #ffffff;
+            border: 1.5px solid #e4e4e7;
+            padding: 0.85rem 1.15rem;
+            border-radius: 0.5rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            color: #27272a;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            cursor: pointer;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            border-color: #dc2626;
+            background-color: #fef2f2;
+        }
+
+        .option-btn.selected-correct {
+            background-color: #f0fdf4 !important;
+            border-color: #22c55e !important;
+            color: #14532d !important;
+            font-weight: 600;
+        }
+
+        .option-btn.selected-wrong {
+            background-color: #fef2f2 !important;
+            border-color: #ef4444 !important;
+            color: #7f1d1d !important;
+            font-weight: 600;
+        }
+
+        .option-btn.show-correct {
+            background-color: #f0fdf4 !important;
+            border-color: #22c55e !important;
+            color: #14532d !important;
+            font-weight: 600;
+        }
+
+        .option-btn:disabled {
+            cursor: default;
+        }
+
+        .answer-block {
+            display: none;
+            margin-top: 1.25rem;
+            padding: 1.25rem 1.5rem;
+            background-color: #fafafa;
+            border-left: 3px solid #991b1b;
+            border-radius: 0 0.375rem 0.375rem 0;
+            color: #3f3f46;
+            font-size: 0.92rem;
+            line-height: 1.65;
+        }
+
+        .answer-block.show {
+            display: block;
+            animation: fadeIn 0.25s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Prism Code Container */
+        pre[class*="language-"] {
+            border-radius: 0.5rem;
+            margin: 1rem 0;
+            border: 1px solid #3f3f46;
+            font-size: 0.9rem !important;
+        }
+
+        @media print {
+            .no-print { display: none !important; }
+            .answer-block { display: block !important; }
+            body { background: white; }
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-red-100 selection:text-red-900">
+
+    <!-- Top Navigation Bar -->
+    <header class="bg-[#991b1b] text-white sticky top-0 z-50 shadow-md no-print">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-white text-[#991b1b] flex items-center justify-center font-black font-mono text-xl rounded shadow-inner">
+                    C++
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg leading-tight tracking-tight">Chương 1: Mở Rộng của C++ (C to C++11)</h1>
+                    <p class="text-xs text-red-200">Giáo trình OOP ĐHBK-ĐN | TS. Lê Thị Mỹ Hạnh | Chuẩn MOSTest5_2</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="bg-red-950/60 border border-red-700/50 px-3.5 py-1.5 rounded-lg flex items-center gap-2">
+                    <i class="fa-solid fa-trophy text-amber-400 text-sm"></i>
+                    <span id="score-display" class="font-mono font-bold text-white text-sm">Điểm: 0/50</span>
+                </div>
+                <button onclick="resetQuiz()" class="bg-red-800 hover:bg-red-700 text-white text-xs font-semibold px-3 py-1.5 rounded transition border border-red-600 flex items-center gap-1.5">
+                    <i class="fa-solid fa-rotate-right"></i> Làm lại
+                </button>
+                <button onclick="window.print()" class="bg-white text-[#991b1b] hover:bg-red-50 text-xs font-bold px-3.5 py-1.5 rounded transition shadow-sm flex items-center gap-1.5">
+                    <i class="fa-solid fa-print"></i> In PDF
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col lg:flex-row gap-8">
+        
+        <!-- Left Sidebar: Table of Contents -->
+        <aside class="w-full lg:w-72 flex-shrink-0 no-print">
+            <div class="sticky top-24 bg-white border border-zinc-200 rounded-lg p-5 shadow-sm space-y-5">
+                <div>
+                    <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-500 mb-3">
+                        <i class="fa-solid fa-book-bookmark text-[#991b1b]"></i> Lý thuyết Cốt Lõi
+                    </div>
+                    <nav class="space-y-1 text-sm border-l-2 border-red-100 pl-3">
+                        <a href="#theory-section" class="block py-1 text-zinc-700 hover:text-[#991b1b] font-medium transition">1. Tổng quan & Lịch sử</a>
+                        <a href="#theory-casting" class="block py-1 text-zinc-700 hover:text-[#991b1b] font-medium transition">2. Hệ thống Ép kiểu Casts</a>
+                        <a href="#theory-const-io" class="block py-1 text-zinc-700 hover:text-[#991b1b] font-medium transition">3. Hằng & Nhập Xuất Chuẩn</a>
+                        <a href="#theory-reference" class="block py-1 text-zinc-700 hover:text-[#991b1b] font-medium transition">4. Biến Tham Chiếu (&)</a>
+                        <a href="#theory-func-inline" class="block py-1 text-zinc-700 hover:text-[#991b1b] font-medium transition">5. Hàm Mặc Định & Inline</a>
+                        <a href="#theory-pointer-mem" class="block py-1 text-zinc-700 hover:text-[#991b1b] font-medium transition">6. Con trỏ, Mảng & Cấp phát</a>
+                        <a href="#theory-overloading" class="block py-1 text-zinc-700 hover:text-[#991b1b] font-medium transition">7. Đa năng hóa Hàm & Toán tử</a>
+                    </nav>
+                </div>
+
+                <div class="pt-4 border-t border-zinc-200">
+                    <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-500 mb-3">
+                        <i class="fa-solid fa-list-check text-[#991b1b]"></i> Quiz Bẫy Code (50 Câu)
+                    </div>
+                    <nav class="space-y-1 text-xs border-l-2 border-zinc-200 pl-3">
+                        <a href="#q-group-1" class="block py-1 text-zinc-600 hover:text-[#991b1b] transition">Nhóm 1: Scope & Từ khóa (1-5)</a>
+                        <a href="#q-group-2" class="block py-1 text-zinc-600 hover:text-[#991b1b] transition">Nhóm 2: Ép kiểu & const_cast (6-10)</a>
+                        <a href="#q-group-3" class="block py-1 text-zinc-600 hover:text-[#991b1b] transition">Nhóm 3: Macro vs const (11-15)</a>
+                        <a href="#q-group-4" class="block py-1 text-zinc-600 hover:text-[#991b1b] transition">Nhóm 4: Streams & iomanip (16-20)</a>
+                        <a href="#q-group-5" class="block py-1 text-zinc-600 hover:text-[#991b1b] transition">Nhóm 5: Tham chiếu & Rvalue (21-27)</a>
+                        <a href="#q-group-6" class="block py-1 text-zinc-600 hover:text-[#991b1b] transition">Nhóm 6: Default args & Inline (28-32)</a>
+                        <a href="#q-group-7" class="block py-1 text-zinc-600 hover:text-[#991b1b] transition">Nhóm 7: Con trỏ hằng & Toán tử (33-36)</a>
+                        <a href="#q-group-8" class="block py-1 text-zinc-600 hover:text-[#991b1b] transition">Nhóm 8: Con trỏ mảng 1D & 2D (37-41)</a>
+                        <a href="#q-group-9" class="block py-1 text-zinc-600 hover:text-[#991b1b] transition">Nhóm 9: Con trỏ Hàm (42-45)</a>
+                        <a href="#q-group-10" class="block py-1 text-zinc-600 hover:text-[#991b1b] transition">Nhóm 10: new/delete & Leaks (46-48)</a>
+                        <a href="#q-group-11" class="block py-1 text-zinc-600 hover:text-[#991b1b] transition">Nhóm 11: Đa năng hóa (49-50)</a>
+                    </nav>
+                </div>
+
+                <div class="pt-3 border-t border-zinc-200 text-xs text-zinc-400">
+                    <p><i class="fa-solid fa-circle-info text-red-700 mr-1"></i> Chuẩn C++11 ISO/IEC 14882.</p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Right Main Column -->
+        <main class="flex-grow max-w-4xl space-y-12">
+            
+            <!-- THEORETICAL DEEP-DIVE SECTION -->
+            <article id="theory-section" class="bg-white border border-zinc-200 rounded-lg p-6 sm:p-10 shadow-sm space-y-8">
+                
+                <div class="border-b-2 border-[#991b1b] pb-4">
+                    <div class="flex items-center gap-2 text-xs font-mono font-bold text-[#991b1b] uppercase tracking-wider mb-1">
+                        Chuyên khảo Lý thuyết C++11 & Bản đồ Kiến trúc
+                    </div>
+                    <h2 class="text-3xl font-extrabold text-zinc-900 tracking-tight font-sans">
+                        Chương 1: Mở Rộng của C++ (C to C++ Extension)
+                    </h2>
+                    <p class="text-sm text-zinc-500 mt-1">
+                        Trích xuất toàn diện từ giáo trình <code class="inline-code">OOP1-C to C++-New.pdf</code> | Bổ sung cơ chế trình biên dịch & bộ nhớ RAM
+                    </p>
+                </div>
+
+                <!-- Theory Part 1 -->
+                <section class="theory-content space-y-4">
+                    <h3 class="text-xl">1. Bối Cảnh Lịch Sử, Từ Khóa Mới & Toán Tử Định Phạm Vi (::)</h3>
+                    <p>
+                        Ngôn ngữ C được Dennis Ritchie phát minh năm 1972 tại Bell Labs. Đến năm 1983, Bjarne Stroustrup chính thức đổi tên "C with Classes" thành <strong>C++</strong> với triết lý không làm tổn hại đến hiệu năng (Zero-overhead principle) đồng thời trang bị khả năng lập trình hướng đối tượng, kiểm soát kiểu tĩnh mạnh mẽ và cơ chế trừu tượng hóa bậc cao.
+                    </p>
+                    <p>
+                        Để mở rộng C, C++ bổ sung một loạt các từ khóa mới: <code class="inline-code">class</code>, <code class="inline-code">public</code>, <code class="inline-code">private</code>, <code class="inline-code">protected</code>, <code class="inline-code">virtual</code>, <code class="inline-code">friend</code>, <code class="inline-code">inline</code>, <code class="inline-code">new</code>, <code class="inline-code">delete</code>, <code class="inline-code">operator</code>, <code class="inline-code">template</code>, <code class="inline-code">this</code>, <code class="inline-code">throw</code>, <code class="inline-code">catch</code>, <code class="inline-code">bool</code>, <code class="inline-code">true</code>, <code class="inline-code">false</code>, và các toán tử ép kiểu mới.
+                    </p>
+                    
+                    <div class="under-the-hood">
+                        <div class="under-the-hood-title"><i class="fa-solid fa-microchip"></i> Cơ chế dưới gầm máy: Khai báo biến linh hoạt & Toán tử ::</div>
+                        <p class="text-zinc-700">
+                            <strong>Khác biệt với chuẩn C89:</strong> Chuẩn C cũ bắt buộc toàn bộ biến cục bộ phải được khai báo tại đầu khối lệnh (block head). C++ loại bỏ rào cản này, cho phép khai báo biến ngay tại vị trí cần sử dụng (ngay trong điều kiện <code class="inline-code">if</code>, khởi tạo vòng lặp <code class="inline-code">for (int i = 0; ...)</code>). Điều này giúp trình biên dịch tối ưu hóa vòng đời (lifetime), thu hẹp phạm vi biến (scope), và giảm thiểu việc cấp phát ô nhớ stack khi chưa cần thiết.
+                        </p>
+                        <p class="text-zinc-700 mt-2">
+                            <strong>Toán tử định phạm vi đơn nguyên (Unary Scope Resolution Operator <code class="inline-code">::</code>):</strong> Khi một biến cục bộ trùng tên (shadowing) với một biến toàn cục, trình biên dịch mặc định phân giải tên biến theo phạm vi hẹp nhất (inner-most scope). Toán tử <code class="inline-code">::x</code> chỉ định cho bộ phân tích ngữ nghĩa (semantic analyzer) bỏ qua symbol table cục bộ và tra cứu trực tiếp định danh <code class="inline-code">x</code> trong bảng ký hiệu phạm vi toàn cục (global namespace symbol table).
+                        </p>
+                    </div>
+                    <span class="citation-badge">[Nguồn: OOP1-C to C++-New.pdf - Trang 2-7: Từ khóa, Chú thích, Biến & Toán tử định phạm vi]</span>
+                </section>
+
+                <!-- Theory Part 2 -->
+                <section id="theory-casting" class="theory-content space-y-4 pt-6 border-t border-zinc-200">
+                    <h3 class="text-xl">2. Hệ Thống Ép Kiểu: C-Style vs Modern C++ Casts</h3>
+                    <p>
+                        Trong C, ép kiểu sử dụng cú pháp <code class="inline-code">(new_type)expression</code>. C++ hỗ trợ thêm dạng cú pháp hàm <code class="inline-code">new_type(expression)</code>. Tuy nhiên, kiểu ép kiểu C-style này cực kỳ nguy hiểm vì nó có thể ép mọi con trỏ bất kể quan hệ kế thừa hay tính hằng, bỏ qua hoàn toàn sự kiểm tra của compiler. C++ giới thiệu 4 toán tử ép kiểu tường minh:
+                    </p>
+                    <ul class="list-disc pl-6 space-y-2 text-zinc-700">
+                        <li><strong><code class="inline-code">static_cast&lt;T&gt;(v)</code>:</strong> Ép kiểu an toàn tại thời điểm biên dịch (compile-time). Dùng cho các kiểu cơ bản (int sang double), con trỏ trong cây kế thừa (upcast/downcast không kiểm tra runtime), hoặc gọi hàm tạo chuyển đổi tường minh.</li>
+                        <li><strong><code class="inline-code">const_cast&lt;T&gt;(v)</code>:</strong> Thêm hoặc loại bỏ thuộc tính <code class="inline-code">const</code> hoặc <code class="inline-code">volatile</code> của con trỏ hoặc tham chiếu. Đây là toán tử duy nhất trong C++ có thể thay đổi tính hằng. Nếu ô nhớ gốc thực chất là hằng số nằm trong phân vùng nhớ Read-Only (RODATA) mà bị ghi đè thông qua <code class="inline-code">const_cast</code>, chương trình sẽ rơi vào <strong>Undefined Behavior (UB)</strong> (thường dẫn đến lỗi Access Violation / SIGSEGV).</li>
+                        <li><strong><code class="inline-code">reinterpret_cast&lt;T&gt;(v)</code>:</strong> Ép kiểu thô ở mức bit (low-level reinterpretation). Bắt trình biên dịch diễn giải mẫu nhị phân của ô nhớ sang một kiểu hoàn toàn khác (ví dụ: con trỏ sang số nguyên hoặc giữa các con trỏ kiểu không liên quan). Không sinh mã máy chuyển đổi giá trị.</li>
+                        <li><strong><code class="inline-code">dynamic_cast&lt;T&gt;(v)</code>:</strong> Ép kiểu an toàn trong cây kế thừa tại thời điểm thực thi (run-time) dựa trên bảng RTTI (Run-Time Type Information). Yêu cầu lớp cơ sở phải có ít nhất 1 hàm ảo (<code class="inline-code">virtual</code>).</li>
+                    </ul>
+                    <span class="citation-badge">[Nguồn: OOP1-C to C++-New.pdf - Trang 8 & 35: Casting & const_cast]</span>
+                </section>
+
+                <!-- Theory Part 3 -->
+                <section id="theory-const-io" class="theory-content space-y-4 pt-6 border-t border-zinc-200">
+                    <h3 class="text-xl">3. Hằng Số (#define vs const) & Thư Viện I/O Stream (<iostream>, <iomanip>)</h3>
+                    <p>
+                        Trong C, hằng số thường được định nghĩa bằng macro tiền xử lý <code class="inline-code">#define PI 3.14159</code>. Trong C++, chuẩn khuyến nghị sử dụng từ khóa <code class="inline-code">const</code>: <code class="inline-code">const double PI = 3.14159;</code> hoặc <code class="inline-code">double const PI = 3.14159;</code>.
+                    </p>
+                    <div class="under-the-hood">
+                        <div class="under-the-hood-title"><i class="fa-solid fa-memory"></i> Cơ chế biên dịch: Symbol Table & Internal Linkage của const</div>
+                        <p class="text-zinc-700">
+                            <strong>1. #define vs const:</strong> Bộ tiền xử lý (preprocessor) chỉ thực hiện thay thế chuỗi văn bản (textual substitution) một cách mù quáng, không có kiểm tra kiểu dữ liệu, không có phạm vi biến (scope), và không xuất hiện trong bảng ký hiệu của debugger. Ngược lại, biến <code class="inline-code">const</code> trong C++ được quản lý chặt chẽ theo hệ thống kiểu tĩnh và phạm vi khối lệnh.
+                        </p>
+                        <p class="text-zinc-700 mt-2">
+                            <strong>2. Internal Linkage:</strong> Trong C, biến <code class="inline-code">const</code> ở phạm vi toàn cục mặc định có External Linkage. Nhưng trong C++, biến <code class="inline-code">const</code> toàn cục mặc định có <strong>Internal Linkage</strong> (tương đương với việc có từ khóa <code class="inline-code">static</code>). Trình biên dịch có thể thực hiện gập hằng số (Constant Folding) và không cần cấp phát ô nhớ trên RAM trừ khi ta cố tình lấy địa chỉ của nó (<code class="inline-code">&x</code>).
+                        </p>
+                        <p class="text-zinc-700 mt-2">
+                            <strong>3. Thư viện <iomanip>:</strong> Khác với <code class="inline-code">printf</code>/<code class="inline-code">scanf</code> của C, C++ sử dụng các đối tượng luồng <code class="inline-code">std::cin</code>, <code class="inline-code">std::cout</code>, <code class="inline-code">std::cerr</code>. Các hàm định dạng luồng chia làm hai loại:
+                            <br>- <em>Sticky Manipulators (Duy trì trạng thái):</em> <code class="inline-code">setprecision(p)</code>, <code class="inline-code">fixed</code>, <code class="inline-code">showpoint</code> duy trì hiệu lực cho toàn bộ các phép xuất tiếp theo cho đến khi bị ghi đè.
+                            <br>- <em>Non-sticky Manipulators (Một lần):</em> <code class="inline-code">setw(k)</code> chỉ áp dụng hiệu lực cho duy nhất một giá trị in ra ngay sau nó, sau đó độ rộng trường tự động reset về 0.
+                        </p>
+                    </div>
+                    <span class="citation-badge">[Nguồn: OOP1-C to C++-New.pdf - Trang 9-14: Khai báo hằng, cout, cin, setw, setiosflags]</span>
+                </section>
+
+                <!-- Theory Part 4 -->
+                <section id="theory-reference" class="theory-content space-y-4 pt-6 border-t border-zinc-200">
+                    <h3 class="text-xl">4. Bản Chất Dưới Gầm Máy Của Biến Tham Chiếu (References &)</h3>
+                    <p>
+                        Biến tham chiếu (Reference) là một bí danh (alias) đại diện cho một ô nhớ đã tồn tại. Cú pháp: <code class="inline-code">Type &ref = var;</code>.
+                    </p>
+                    <div class="under-the-hood">
+                        <div class="under-the-hood-title"><i class="fa-solid fa-diagram-project"></i> Cơ chế Trình biên dịch hiện thực Reference</div>
+                        <ul class="list-disc pl-5 space-y-1.5 text-zinc-700">
+                            <li><strong>Bản chất con trỏ hằng (Const Pointer):</strong> Ở mức mã máy assembly, trình biên dịch thực tế cài đặt biến tham chiếu dưới dạng một <strong>con trỏ hằng tự động giải con trỏ</strong> (<code class="inline-code">Type * const p</code>). Khi truy xuất <code class="inline-code">ref</code>, CPU tự động dereference <code class="inline-code">*p</code>.</li>
+                            <li><strong>Không thể Re-bind:</strong> Tham chiếu bắt buộc phải được khởi tạo ngay khi khai báo. Khi đã liên kết với một ô nhớ, tham chiếu không bao giờ có thể liên kết sang ô nhớ khác. Phép gán <code class="inline-code">ref = other;</code> chỉ đơn thuần là gán giá trị của <code class="inline-code">other</code> vào ô nhớ mà <code class="inline-code">ref</code> đang trỏ tới.</li>
+                            <li><strong>Không có mảng tham chiếu:</strong> Mảng trong C++ đòi hỏi các phần tử phải có ô nhớ độc lập liên tiếp nhau. Do tham chiếu không phải là một đối tượng có địa chỉ độc lập (lấy địa chỉ tham chiếu ra địa chỉ biến gốc), chuẩn C++ cấm hoàn toàn khai báo mảng tham chiếu (<code class="inline-code">int& arr[5];</code> là lỗi biên dịch).</li>
+                            <li><strong>Hằng tham chiếu & Kéo dài vòng đời (Lifetime Extension):</strong> Tham chiếu không hằng (<code class="inline-code">int&</code>) không thể bind vào rvalue (giá trị tạm thời như hằng số <code class="inline-code">5</code> hoặc kết quả biểu thức <code class="inline-code">a + b</code>). Tuy nhiên, <strong>Hằng tham chiếu (<code class="inline-code">const int&</code>)</strong> có khả năng bind vào rvalue. Khi đó, trình biên dịch tạo ra một đối tượng tạm thời trên stack và kéo dài vòng đời của nó bằng với vòng đời của hằng tham chiếu!</li>
+                            <li><strong>Bẫy Trả Về Tham Chiếu (Dangling Reference):</strong> Một hàm trả về tham chiếu (<code class="inline-code">Type& func()</code>) tuyệt đối không được trả về biến cục bộ tự động trên stack. Khi hàm kết thúc, stack frame bị hủy, vùng nhớ bị giải phóng, tham chiếu trả về trở thành con trỏ rác (Dangling reference). Biến trả về phải là biến toàn cục, biến <code class="inline-code">static</code>, hoặc thuộc tính của đối tượng tồn tại lâu hơn lời gọi hàm.</li>
+                        </ul>
+                    </div>
+                    <span class="citation-badge">[Nguồn: OOP1-C to C++-New.pdf - Trang 15-26: Biến tham chiếu, Hằng tham chiếu, Hàm trả về tham chiếu]</span>
+                </section>
+
+                <!-- Theory Part 5 -->
+                <section id="theory-func-inline" class="theory-content space-y-4 pt-6 border-t border-zinc-200">
+                    <h3 class="text-xl">5. Tham Số Mặc Định (Default Arguments) & Hàm Nội Tuyến (Inline)</h3>
+                    <p>
+                        C++ cho phép gán giá trị mặc định cho tham số hàm: <code class="inline-code">void display(int x, int y = 10, int z = 20);</code>.
+                    </p>
+                    <ul class="list-disc pl-6 space-y-2 text-zinc-700">
+                        <li><strong>Quy tắc từ phải qua trái:</strong> Các đối số mặc định bắt buộc phải nằm liên tục ở cuối danh sách tham số (tính từ phải qua trái). Không được phép khai báo tham số không mặc định nằm sau tham số mặc định (ví dụ: <code class="inline-code">void f(int x = 1, int y);</code> là lỗi biên dịch).</li>
+                        <li><strong>Vị trí khai báo:</strong> Giá trị mặc định chỉ được phép khai báo một lần duy nhất, thường là trong nguyên mẫu hàm (function prototype trong header file). Tuyệt đối không lặp lại giá trị mặc định trong định nghĩa hàm (function definition) nếu đã khai báo ở prototype.</li>
+                    </ul>
+
+                    <div class="under-the-hood">
+                        <div class="under-the-hood-title"><i class="fa-solid fa-bolt"></i> Cơ chế Dưới Gầm Máy của Hàm Inline</div>
+                        <p class="text-zinc-700">
+                            <strong>Chi phí gọi hàm thông thường:</strong> Khi gọi một hàm chuẩn, CPU phải thực hiện các thủ tục: đẩy thanh ghi và tham số lên Stack (push stack), nhảy lệnh con trỏ chỉ lệnh <code class="inline-code">EIP/RIP</code> sang địa chỉ hàm, khởi tạo Stack Frame, thực thi thân hàm, dọn dẹp frame (pop stack) và nhảy ngược trở về địa chỉ gọi (<code class="inline-code">RET</code>). Đối với các hàm cực ngắn (1-2 dòng) được gọi hàng triệu lần trong vòng lặp, overhead này chiếm tỷ trọng thời gian đáng kể.
+                        </p>
+                        <p class="text-zinc-700 mt-2">
+                            <strong>Hàm <code class="inline-code">inline</code>:</strong> Báo hiệu cho trình biên dịch thay thế trực tiếp mã máy của thân hàm ngay tại vị trí gọi hàm (Code expansion). Từ khóa <code class="inline-code">inline</code> chỉ là một <em>gợi ý (compiler hint)</em>, trình biên dịch có quyền từ chối inline nếu hàm chứa vòng lặp phức tạp, đệ quy, hoặc kích thước quá lớn để tránh hiện tượng phình to kích thước file thực thi (<strong>Code Bloat</strong>) gây tràn Instruction Cache (I-Cache).
+                        </p>
+                    </div>
+                    <span class="citation-badge">[Nguồn: OOP1-C to C++-New.pdf - Trang 22-28: Đối số mặc định, Hàm nội tuyến inline]</span>
+                </section>
+
+                <!-- Theory Part 6 -->
+                <section id="theory-pointer-mem" class="theory-content space-y-4 pt-6 border-t border-zinc-200">
+                    <h3 class="text-xl">6. Con Trỏ, Mảng Đa Chiều, Con Trỏ Hàm & Cấp Phát Động</h3>
+                    <p>
+                        Con trỏ lưu địa chỉ ô nhớ. Phân biệt rõ ràng 3 vị trí của từ khóa <code class="inline-code">const</code>:
+                    </p>
+                    <div class="overflow-x-auto my-3">
+                        <table class="w-full text-sm border-collapse border border-zinc-300">
+                            <thead class="bg-zinc-100 font-sans">
+                                <tr>
+                                    <th class="border border-zinc-300 p-2 text-left">Cú pháp</th>
+                                    <th class="border border-zinc-300 p-2 text-left">Tên gọi</th>
+                                    <th class="border border-zinc-300 p-2 text-center">Thay đổi *p (giá trị)</th>
+                                    <th class="border border-zinc-300 p-2 text-center">Thay đổi p (địa chỉ)</th>
+                                </tr>
+                            </thead>
+                            <tbody class="font-mono text-xs">
+                                <tr>
+                                    <td class="border p-2">const int *p;</td>
+                                    <td class="border p-2 font-sans">Con trỏ tới hằng (Pointer to const)</td>
+                                    <td class="border p-2 text-center text-red-600 font-bold">KHÔNG</td>
+                                    <td class="border p-2 text-center text-green-600 font-bold">CÓ</td>
+                                </tr>
+                                <tr>
+                                    <td class="border p-2">int* const p;</td>
+                                    <td class="border p-2 font-sans">Hằng con trỏ (Const pointer)</td>
+                                    <td class="border p-2 text-center text-green-600 font-bold">CÓ</td>
+                                    <td class="border p-2 text-center text-red-600 font-bold">KHÔNG</td>
+                                </tr>
+                                <tr>
+                                    <td class="border p-2">const int* const p;</td>
+                                    <td class="border p-2 font-sans">Hằng con trỏ tới hằng</td>
+                                    <td class="border p-2 text-center text-red-600 font-bold">KHÔNG</td>
+                                    <td class="border p-2 text-center text-red-600 font-bold">KHÔNG</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="under-the-hood">
+                        <div class="under-the-hood-title"><i class="fa-solid fa-cubes-stacked"></i> Mảng 2 Chiều & Bố Cục Bộ Nhớ RAM</div>
+                        <p class="text-zinc-700">
+                            Cho khai báo mảng 2 chiều tĩnh <code class="inline-code">int A[3][4];</code>:
+                            <br>- Về mặt vật lý trên RAM, toàn bộ 12 phần tử được xếp liên tục trong bộ nhớ theo thứ tự hàng ưu tiên (Row-Major Order).
+                            <br>- Kiểu dữ liệu của <code class="inline-code">A</code> khi decay là con trỏ trỏ tới mảng 4 phần tử: <code class="inline-code">int (*)[4]</code>.
+                            <br>- Biểu thức địa chỉ: <code class="inline-code">&A[i][j] == (*(A + i)) + j</code>.
+                            <br>- Biểu thức giá trị: <code class="inline-code">A[i][j] == *(*(A + i) + j)</code>.
+                            <br>- Khi tăng <code class="inline-code">A + 1</code>, địa chỉ nhảy một đoạn bằng <code class="inline-code">4 * sizeof(int) = 16</code> bytes. Khi tăng <code class="inline-code">*A + 1</code>, địa chỉ chỉ nhảy <code class="inline-code">1 * sizeof(int) = 4</code> bytes.
+                        </p>
+                        <p class="text-zinc-700 mt-2">
+                            <strong>Cấp Phát Động (Heap Memory Management):</strong>
+                            <br>- <code class="inline-code">new</code> vs <code class="inline-code">malloc</code>: <code class="inline-code">new</code> tự động tính toán kích thước kiểu, gọi Constructor của lớp, và ném ngoại lệ <code class="inline-code">std::bad_alloc</code> nếu hết bộ nhớ (thay vì trả về <code class="inline-code">NULL</code> như <code class="inline-code">malloc</code>).
+                            <br>- <code class="inline-code">delete[]</code> vs <code class="inline-code">delete</code>: Khi cấp phát mảng bằng <code class="inline-code">new T[N]</code>, bộ quản lý heap ghi thêm một giá trị header ẩn (gọi là <em>cookie / overhead metadata</em>) ngay trước địa chỉ con trỏ trả về để lưu kích thước <code class="inline-code">N</code>. Toán tử <code class="inline-code">delete[]</code> đọc cookie này để gọi đúng <code class="inline-code">N</code> lần Destructor rồi giải phóng toàn bộ block. Dùng <code class="inline-code">delete</code> trần cho con trỏ mảng dẫn đến Undefined Behavior và rò rỉ bộ nhớ (Memory Leak).
+                        </p>
+                    </div>
+                    <span class="citation-badge">[Nguồn: OOP1-C to C++-New.pdf - Trang 29-57: Con trỏ, Mảng 1D, 2D, Con trỏ hàm, Cấp phát động, Rò rỉ bộ nhớ]</span>
+                </section>
+
+                <!-- Theory Part 7 -->
+                <section id="theory-overloading" class="theory-content space-y-4 pt-6 border-t border-zinc-200">
+                    <h3 class="text-xl">7. Cơ Chế Đa Năng Hóa (Overloading) Hàm & Toán Tử</h3>
+                    <p>
+                        Trong ngôn ngữ C, mỗi hàm phải có một tên duy nhất (ví dụ hàm lấy trị tuyệt đối phải tách thành <code class="inline-code">abs</code>, <code class="inline-code">labs</code>, <code class="inline-code">fabs</code>). Trong C++, kỹ thuật <strong>Function Overloading</strong> cho phép nhiều hàm có cùng tên trong cùng một phạm vi scope.
+                    </p>
+                    <div class="under-the-hood">
+                        <div class="under-the-hood-title"><i class="fa-solid fa-gears"></i> Name Mangling & Giới hạn Toán Tử</div>
+                        <p class="text-zinc-700">
+                            <strong>Name Mangling:</strong> Trình biên dịch C++ mã hóa tên hàm và danh sách kiểu tham số thành một chuỗi duy nhất trong bảng ký hiệu (ví dụ <code class="inline-code">_Z5MyAbsi</code> cho <code class="inline-code">MyAbs(int)</code>, <code class="inline-code">_Z5MyAbsd</code> cho <code class="inline-code">MyAbs(double)</code>). Do đó:
+                            <br>- Việc đa năng hóa hàm <strong>CHỈ</strong> dựa vào số lượng, thứ tự và kiểu của tham số.
+                            <br>- <strong>KHÔNG THỂ</strong> đa năng hóa nếu hai hàm chỉ khác nhau về kiểu trả về (Return Type)!
+                        </p>
+                        <p class="text-zinc-700 mt-2">
+                            <strong>Giới hạn của Đa năng hóa toán tử (Operator Overloading):</strong>
+                            <br>1. Không thể tự tạo toán tử mới (như <code class="inline-code">**</code> hoặc <code class="inline-code">&lt;&gt;</code>).
+                            <br>2. Không thay đổi được độ ưu tiên và số ngôi (arity) của toán tử gốc.
+                            <br>3. <strong>5 toán tử KHÔNG ĐƯỢC PHÉP overload trong C++:</strong>
+                            <br>&nbsp;&nbsp;&nbsp;&bull; Toán tử định phạm vi: <code class="inline-code">::</code>
+                            <br>&nbsp;&nbsp;&nbsp;&bull; Toán tử truy cập thành viên trực tiếp: <code class="inline-code">.</code>
+                            <br>&nbsp;&nbsp;&nbsp;&bull; Toán tử con trỏ tới thành viên: <code class="inline-code">.*</code>
+                            <br>&nbsp;&nbsp;&nbsp;&bull; Toán tử điều kiện ba ngôi: <code class="inline-code">?:</code>
+                            <br>&nbsp;&nbsp;&nbsp;&bull; Toán tử kích thước và kiểu: <code class="inline-code">sizeof</code>, <code class="inline-code">typeid</code>
+                        </p>
+                    </div>
+                    <span class="citation-badge">[Nguồn: OOP1-C to C++-New.pdf - Trang 58-64: Đa năng hóa hàm & Đa năng hóa toán tử]</span>
+                </section>
+
+            </article>
+
+            <!-- INTERACTIVE QUIZ SECTION: EXACTLY 50 CODE-CENTRIC QUESTIONS -->
+            <article class="bg-white border border-zinc-200 rounded-lg p-6 sm:p-10 shadow-sm">
+                <div class="border-b-2 border-[#991b1b] pb-4 mb-8 flex flex-col sm:flex-row justify-between sm:items-end gap-3">
+                    <div>
+                        <div class="flex items-center gap-2 text-xs font-mono font-bold text-[#991b1b] uppercase tracking-wider mb-1">
+                            Bài Kiểm Tra Năng Lực Trắc Nghiệm Tương Tác
+                        </div>
+                        <h2 class="text-2xl font-black text-zinc-900 tracking-tight font-sans uppercase">
+                            50 Câu Trắc Nghiệm Code & Bẫy C++11 Chuyên Sâu
+                        </h2>
+                        <p class="text-xs text-zinc-500 mt-1">
+                            100% dựa trên các đoạn code thực tế, bẫy rò rỉ bộ nhớ, UB, con trỏ và chuẩn C++11
+                        </p>
+                    </div>
+                    <div class="text-xs text-zinc-500 font-mono">
+                        Tổng số câu: <span class="font-bold text-[#991b1b]">50</span> | Đã trả lời: <span id="answered-count" class="font-bold text-zinc-800">0</span>
+                    </div>
+                </div>
+
+                <!-- Questions Container -->
+                <div id="quiz-container" class="space-y-12">
+                    <!-- Injected by JavaScript -->
+                </div>
+            </article>
+
+        </main>
+    </div>
+
+    <!-- Script Quiz Engine & Data -->
+    <script>
+        
+        const quizData = [
+  {
+    "id": 1,
+    "group_id": "q-group-1",
+    "group_name": "Nhóm 1: Từ khóa C++11, Phạm vi biến (Scope) & Toán tử ::",
+    "title": "Bẫy Shadowing biến cục bộ nhiều cấp và toán tử phân giải phạm vi đơn nguyên ::",
+    "code": "#include <iostream>\nint x = 100;\n\nint main() {\n    int x = 50;\n    {\n        int x = 20;\n        std::cout << x << \" \" << ::x << \" \";\n    }\n    std::cout << x << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. In ra: 20 100 50",
+      "B. In ra: 20 50 50",
+      "C. In ra: 20 100 100",
+      "D. Lỗi biên dịch vì khai báo trùng tên x trong cùng một hàm"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Trong khối lệnh lồng bên trong (inner block), biến <code>int x = 20</code> che khuất (shadowing) cả biến <code>x = 50</code> của <code>main</code> và biến toàn cục <code>x = 100</code>.<br>2. Khi gọi <code>x</code> trần, trình biên dịch tra cứu bảng ký hiệu (Symbol Table) từ phạm vi hẹp nhất ra ngoài, nên tìm thấy <code>x = 20</code>.<br>3. Toán tử phạm vi đơn nguyên <code>::x</code> (Unary Scope Resolution Operator) bắt buộc trình biên dịch bỏ qua mọi phạm vi cục bộ để truy cập trực tiếp vào Global Namespace, do đó in ra <code>100</code>.<br>4. Ra khỏi inner block, <code>x = 20</code> bị hủy khỏi stack. Lệnh <code>std::cout << x</code> tiếp theo truy cập biến cục bộ của hàm <code>main</code> là <code>50</code>.<br><span class=\"citation-badge\">[Nguồn: OOP1-C to C++-New.pdf - Trang 6-7: Biến cục bộ, toàn cục & Toán tử ::]</span>"
+  },
+  {
+    "id": 2,
+    "group_id": "q-group-1",
+    "group_name": "Nhóm 1: Từ khóa C++11, Phạm vi biến (Scope) & Toán tử ::",
+    "title": "Phạm vi biến khai báo bên trong điều kiện của lệnh if (C++ Condition Scope)",
+    "code": "#include <iostream>\n\nint check() { return 5; }\n\nint main() {\n    if (int val = check()) {\n        int val = 10; // Dòng A\n        std::cout << val << \" \";\n    }\n    std::cout << val << std::endl; // Dòng B\n    return 0;\n}",
+    "options": [
+      "A. Chương trình in ra: 10 5",
+      "B. Lỗi biên dịch tại Dòng A vì biến val đã được khai báo trong scope của if",
+      "C. Lỗi biên dịch tại Dòng B vì biến val chỉ có phạm vi bên trong khối lệnh if",
+      "D. Cả Dòng A và Dòng B đều gây lỗi biên dịch"
+    ],
+    "correct": 3,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Theo chuẩn C++ (và C++11), biến khai báo trong mệnh đề điều kiện của <code>if</code> (như <code>if (int val = check())</code>) có phạm vi bao trùm toàn bộ khối <code>then</code> và <code>else</code>.<br>2. Tại Dòng A: Trong cùng khối lệnh trực tiếp của <code>if</code>, việc tái khai báo <code>int val = 10;</code> là vi phạm quy tắc định danh trùng lặp trong cùng một scope (redefinition of 'val'), gây lỗi biên dịch.<br>3. Tại Dòng B: Biến <code>val</code> khai báo trong <code>if</code> có thời gian sống (lifetime) kết thúc ngay khi thoát khỏi cấu trúc <code>if</code>. Truy cập <code>val</code> ở Dòng B gây lỗi 'val was not declared in this scope'.<br>Do đó cả hai dòng đều gây lỗi biên dịch.<br><span class=\"citation-badge\">[Nguồn: OOP1-C to C++-New.pdf - Trang 6: Vị trí khai báo & phạm vi hoạt động của biến]</span>"
+  },
+  {
+    "id": 3,
+    "group_id": "q-group-1",
+    "group_name": "Nhóm 1: Từ khóa C++11, Phạm vi biến (Scope) & Toán tử ::",
+    "title": "Bẫy chú thích khối lồng nhau (Nested Multi-line Comments)",
+    "code": "#include <iostream>\n\nint main() {\n    int a = 10;\n    /*\n        int b = 20;\n        /* Chú thích bên trong */\n        a = a + b;\n    */\n    std::cout << a << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. Chương trình in ra 10 bình thường",
+      "B. Chương trình in ra 30",
+      "C. Lỗi biên dịch vì C/C++ không hỗ trợ chú thích /* ... */ lồng nhau",
+      "D. Chương trình gặp lỗi Undefined Behavior"
+    ],
+    "correct": 2,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Bộ phân tích từ vựng (Lexer) của trình biên dịch C/C++ xử lý khối chú thích <code>/*</code> theo nguyên tắc tham lam: nó sẽ tìm ký tự đóng <code>*/</code> ĐẦU TIÊN để kết thúc khối chú thích.<br>2. Ký tự <code>*/</code> sau chữ 'Chú thích bên trong' đã đóng ngay khối chú thích mở đầu. Do đó đoạn code <code>a = a + b;</code> và ký tự thừa <code>*/</code> tiếp theo bị coi là mã C++ thông thường.<br>3. Trình biên dịch báo lỗi cú pháp: biến <code>b</code> chưa được khai báo và ký tự <code>*/</code> đứng trơ trọi không có <code>/*</code> mở tương ứng.<br><span class=\"citation-badge\">[Nguồn: OOP1-C to C++-New.pdf - Trang 4: Chú thích trong C và C++]</span>"
+  },
+  {
+    "id": 4,
+    "group_id": "q-group-1",
+    "group_name": "Nhóm 1: Từ khóa C++11, Phạm vi biến (Scope) & Toán tử ::",
+    "title": "Xung đột từ khóa C++ mới so với mã nguồn viết bằng ngôn ngữ C thuần",
+    "code": "#include <iostream>\n\nint main() {\n    int class = 10;\n    int new = 20;\n    int template = 30;\n    std::cout << class + new + template << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. In ra 60 nếu biên dịch bằng g++",
+      "B. Lỗi biên dịch vì class, new, template là các từ khóa dành riêng (reserved keywords) của C++",
+      "C. Mã biên dịch được nếu dùng cờ -fpermissive",
+      "D. Chương trình bị tràn số"
+    ],
+    "correct": 1,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Trong ngôn ngữ C cũ, <code>class</code>, <code>new</code>, <code>template</code>, <code>friend</code>, <code>inline</code>, <code>operator</code>, <code>this</code> không phải là từ khóa, nên có thể dùng làm tên biến.<br>2. Khi dịch bằng trình biên dịch C++, toàn bộ các từ này trở thành từ khóa cốt lõi (keywords) của ngôn ngữ theo bộ ngữ pháp chính thức.<br>3. Slide nhấn mạnh: 'Các chương trình bằng C nào sử dụng các tên trùng với các từ khóa mới cần phải thay đổi trước khi chương trình được dịch lại bằng C++'.<br><span class=\"citation-badge\">[Nguồn: OOP1-C to C++-New.pdf - Trang 3: Từ khóa mới trong C++]</span>"
+  },
+  {
+    "id": 5,
+    "group_id": "q-group-1",
+    "group_name": "Nhóm 1: Từ khóa C++11, Phạm vi biến (Scope) & Toán tử ::",
+    "title": "Khối lệnh ẩn danh (Anonymous Scope) và thứ tự hủy biến tự động trên Stack",
+    "code": "#include <iostream>\n\nstruct Tracker {\n    int id;\n    Tracker(int i) : id(i) { std::cout << \"+\" << id; }\n    ~Tracker() { std::cout << \"-\" << id; }\n};\n\nint main() {\n    Tracker t1(1);\n    {\n        Tracker t2(2);\n        Tracker t3(3);\n    }\n    std::cout << \"M\";\n    return 0;\n}",
+    "options": [
+      "A. +1+2+3-3-2M-1",
+      "B. +1+2+3-2-3M-1",
+      "C. +1+2+3M-3-2-1",
+      "D. +1+2+3-1-2-3M"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Các đối tượng có thời gian lưu trữ tự động (automatic storage duration) được cấp phát trên Stack theo cấu trúc LIFO (Last-In, First-Out).<br>2. <code>t1(1)</code> được tạo trước -> in <code>+1</code>.<br>3. Đi vào inner scope: <code>t2(2)</code> tạo in <code>+2</code>, <code>t3(3)</code> tạo in <code>+3</code>.<br>4. Gặp dấu đóng ngoặc nhọn <code>}</code> của inner scope: các đối tượng bên trong scope bị hủy theo thứ tự ngược lại với thứ tự khởi tạo. Do đó <code>t3</code> bị hủy trước (in <code>-3</code>), rồi đến <code>t2</code> (in <code>-2</code>).<br>5. Gặp lệnh <code>std::cout << \"M\";</code> -> in <code>M</code>.<br>6. Hàm <code>main</code> kết thúc: <code>t1</code> bị hủy cuối cùng -> in <code>-1</code>. Chuỗi hoàn chỉnh: <code>+1+2+3-3-2M-1</code>.<br><span class=\"citation-badge\">[Nguồn: OOP1-C to C++-New.pdf - Trang 5-6: Vùng bộ nhớ & phạm vi biến]</span>"
+  },
+  {
+    "id": 6,
+    "group_id": "q-group-2",
+    "group_name": "Nhóm 2: Hệ Thống Ép Kiểu & Bẫy const_cast",
+    "title": "Bẫy thay đổi giá trị của biến thực sự là hằng số qua const_cast (Undefined Behavior)",
+    "code": "#include <iostream>\n\nint main() {\n    const int val = 100;\n    int* p = const_cast<int*>(&val);\n    *p = 200;\n    std::cout << val << \" \" << *p << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. In ra: 200 200",
+      "B. In ra: 100 200",
+      "C. Lỗi biên dịch tại dòng const_cast",
+      "D. Lỗi thực thi hoặc hành vi không xác định (Undefined Behavior) theo chuẩn C++"
+    ],
+    "correct": 3,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. <code>val</code> được định nghĩa ban đầu là hằng số <code>const int val = 100;</code>. Trình biên dịch có thể lưu <code>val</code> vào phân vùng bộ nhớ chỉ đọc (Read-Only Data Segment / RODATA) hoặc thực hiện gập hằng (Constant Folding) trực tiếp vào mã máy.<br>2. <code>const_cast</code> cho phép tước bỏ thuộc tính <code>const</code> về mặt kiểu dữ liệu để vượt qua kiểm tra của trình biên dịch.<br>3. Tuy nhiên, chuẩn C++11 (khoản §7.1.6.1) quy định rõ: Việc cố tình ghi đè (modify) một ô nhớ mà đối tượng ban đầu được khai báo là <code>const</code> là <strong>HÀNH VI KHÔNG XÁC ĐỊNH (Undefined Behavior)</strong>.<br>4. Trên thực tế với g++, lệnh <code>std::cout << val</code> bị compiler thay thế trực tiếp hằng số 100 tại compile-time, trong khi <code>*p</code> đọc từ ô nhớ stack bị ghi đè, cho kết quả dị thường <code>100 200</code> hoặc gây lỗi đổ vỡ (Crash/Access Violation) nếu lưu trong RODATA.<br><span class=\"citation-badge\">[Nguồn: OOP1-C to C++-New.pdf - Trang 35: const_cast thay đổi tính hằng của biến]</span>"
+  },
+  {
+    "id": 7,
+    "group_id": "q-group-2",
+    "group_name": "Nhóm 2: Hệ Thống Ép Kiểu & Bẫy const_cast",
+    "title": "Sự khác biệt bản chất giữa static_cast và reinterpret_cast trên con trỏ",
+    "code": "#include <iostream>\n\nint main() {\n    int a = 65;\n    // Dòng 1:\n    char* p1 = reinterpret_cast<char*>(&a);\n    // Dòng 2:\n    char* p2 = static_cast<char*>(&a);\n\n    std::cout << *p1 << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. Cả Dòng 1 và Dòng 2 đều hợp lệ và in ra 'A'",
+      "B. Dòng 1 lỗi biên dịch, Dòng 2 hợp lệ",
+      "C. Dòng 2 lỗi biên dịch: static_cast không cho phép ép kiểu giữa các con trỏ kiểu dữ liệu cơ bản không liên quan",
+      "D. Cả hai dòng đều gây lỗi biên dịch"
+    ],
+    "correct": 2,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. <code>static_cast</code> là toán tử ép kiểu có kiểm tra tính tương thích ngữ nghĩa tại thời điểm biên dịch. Nó chỉ cho phép chuyển đổi giữa các kiểu số, hoặc con trỏ giữa lớp cha và con, hoặc từ <code>void*</code> sang con trỏ kiểu cụ thể. Nó <strong>từ chối</strong> ép trực tiếp giữa <code>int*</code> và <code>char*</code> vì chúng là hai kiểu con trỏ không có quan hệ tương thích.<br>2. <code>reinterpret_cast</code> thực hiện ánh xạ lại dạng nhị phân thuần túy (bitwise reinterpretation). Nó cho phép ép kiểu giữa mọi loại con trỏ bất chấp kiểu trỏ tới. Do đó Dòng 1 biên dịch được và trên máy Little-Endian, byte đầu tiên của số nguyên 65 chính là mã ASCII 65 ('A').<br><span class=\"citation-badge\">[Nguồn: OOP1-C to C++-New.pdf - Trang 8 & 35: Phép chuyển kiểu mới trong C++]</span>"
+  },
+  {
+    "id": 8,
+    "group_id": "q-group-2",
+    "group_name": "Nhóm 2: Hệ Thống Ép Kiểu & Bẫy const_cast",
+    "title": "Functional Cast vs C-style Cast và độ ưu tiên toán tử",
+    "code": "#include <iostream>\n\nint main() {\n    double x = 3.7;\n    double y = 2.4;\n    int res1 = (int)x + y;\n    int res2 = int(x + y);\n    std::cout << res1 << \" \" << res2 << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. 5 6",
+      "B. 6 6",
+      "C. 5 5",
+      "D. Lỗi biên dịch vì int(x + y) không phải cú pháp hợp lệ trong C++"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Trong biểu thức <code>(int)x + y</code>: Toán tử ép kiểu tiền tố <code>(int)</code> có độ ưu tiên cao hơn phép cộng <code>+</code>. Do đó <code>x</code> (3.7) bị ép kiểu thành <code>3</code> trước, sau đó <code>3 + 2.4 = 5.4</code>. Khi gán vào <code>int res1</code>, giá trị bị cắt phần thập phân thành <code>5</code>.<br>2. Trong biểu thức <code>int(x + y)</code>: Đây là dạng Functional Cast đặc trưng của C++. Biểu thức trong ngoặc <code>x + y</code> được tính trước: <code>3.7 + 2.4 = 6.1</code>. Sau đó hàm ép kiểu <code>int(...)</code> chuyển 6.1 thành <code>6</code>. Khi gán vào <code>res2</code> nhận giá trị <code>6</code>.<br><span class=\"citation-badge\">[Nguồn: OOP1-C to C++-New.pdf - Trang 8: Phép chuyển kiểu mới dạng hàm new_type(expression)]</span>"
+  },
+  {
+    "id": 9,
+    "group_id": "q-group-2",
+    "group_name": "Nhóm 2: Hệ Thống Ép Kiểu & Bẫy const_cast",
+    "title": "const_cast trên biến thực tế không phải hằng (Valid Modification)",
+    "code": "#include <iostream>\n\nvoid modify(const int& r) {\n    int& non_const_r = const_cast<int&>(r);\n    non_const_r += 50;\n}\n\nint main() {\n    int original = 25;\n    modify(original);\n    std::cout << original << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. In ra: 75",
+      "B. In ra: 25",
+      "C. Lỗi biên dịch tại hàm const_cast",
+      "D. Gặp lỗi Undefined Behavior do vi phạm const"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Điểm mấu chốt: Biến gốc <code>original</code> được khai báo là biến bình thường (non-const), nằm trong vùng nhớ Stack có quyền đọc/ghi (read/write).<br>2. Hàm <code>modify</code> nhận tham chiếu hằng <code>const int& r</code> để cam kết không sửa đổi qua interface.<br>3. Khi dùng <code>const_cast<int&>(r)</code> để gỡ bỏ thuộc tính const, vì ô nhớ gốc thực chất là bộ nhớ ghi được, hành động này là <strong>HOÀN TOÀN HỢP LỆ VÀ ĐƯỢC CHUẨN C++ CHO PHÉP</strong> (Well-defined behavior).<br>4. Biến <code>original</code> được cộng thêm 50, in ra giá trị 75.<br><span class=\"citation-badge\">[Nguồn: OOP1-C to C++-New.pdf - Trang 35: const_cast thêm hoặc loại bỏ const]</span>"
+  },
+  {
+    "id": 10,
+    "group_id": "q-group-2",
+    "group_name": "Nhóm 2: Hệ Thống Ép Kiểu & Bẫy const_cast",
+    "title": "Bẫy thăng cấp số nguyên có dấu (Sign Extension Trap) khi ép kiểu",
+    "code": "#include <iostream>\n\nint main() {\n    signed char c = -1;\n    unsigned int u = (unsigned int)c;\n    std::cout << (u > 1000 ? \"LON\" : \"NHO\") << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. In ra: NHO",
+      "B. In ra: LON",
+      "C. Lỗi biên dịch vì không thể ép kiểu signed char sang unsigned int",
+      "D. Chương trình bị tràn bộ nhớ stack"
+    ],
+    "correct": 1,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. <code>signed char c = -1</code> có biểu diễn nhị phân bù 2 (8-bit) là <code>0xFF</code>.<br>2. Khi ép kiểu sang kiểu có kích thước lớn hơn (<code>unsigned int</code> 32-bit), trước hết phép mở rộng có dấu (Sign Extension) diễn ra: bit dấu (bit 1) được điền vào toàn bộ các bit cao, tạo thành <code>0xFFFFFFFF</code>.<br>3. Sau đó, <code>0xFFFFFFFF</code> được diễn giải theo kiểu không dấu là giá trị cực đại <code>UINT_MAX = 4,294,967,295</code>.<br>4. Rõ ràng <code>4,294,967,295 > 1000</code> nên in ra 'LON'. Đây là lỗi logic kinh điển khi trộn lẫn signed và unsigned trong C/C++.<br><span class=\"citation-badge\">[Nguồn: OOP1-C to C++-New.pdf - Trang 8: Ép kiểu dữ liệu trong C/C++]</span>"
+  },
+  {
+    "id": 11,
+    "group_id": "q-group-3",
+    "group_name": "Nhóm 3: Hằng Số (const vs #define), Linkage & Bảng Ký Hiệu",
+    "title": "Bẫy thay thế chuỗi của Macro #define và thứ tự ưu tiên toán tử",
+    "code": "#include <iostream>\n#define SQUARE(x) x * x\n\nint main() {\n    int res = SQUARE(2 + 3);\n    std::cout << res << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. In ra: 25",
+      "B. In ra: 11",
+      "C. In ra: 13",
+      "D. Lỗi biên dịch vì tham số macro không có dấu ngoặc tròn"
+    ],
+    "correct": 1,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Bộ tiền xử lý (Preprocessor) không hiểu cú pháp C++, nó chỉ thực hiện thay thế chuỗi thuần túy: <code>SQUARE(2 + 3)</code> được thế thành <code>2 + 3 * 2 + 3</code>.<br>2. Phép nhân <code>*</code> có độ ưu tiên cao hơn phép cộng <code>+</code>. Biểu thức được tính toán: <code>2 + (3 * 2) + 3 = 2 + 6 + 3 = 11</code>.<br>3. Để đúng toán học, macro phải viết là <code>#define SQUARE(x) ((x) * (x))</code>. Slide nhấn mạnh đây là lý do tại sao C++ khuyến nghị dùng <code>const</code> hoặc hàm <code>inline</code> thay vì <code>#define</code>.<br><span class=\"citation-badge\">[Nguồn: OOP1-C to C++-New.pdf - Trang 9 & 27: Hằng số #define vs const & hàm inline]</span>"
+  },
+  {
+    "id": 12,
+    "group_id": "q-group-3",
+    "group_name": "Nhóm 3: Hằng Số (const vs #define), Linkage & Bảng Ký Hiệu",
+    "title": "Bẫy hiệu ứng phụ (Side Effects) với toán tử tăng giảm trong Macro #define",
+    "code": "#include <iostream>\n#define MAX(a, b) ((a) > (b) ? (a) : (b))\n\nint main() {\n    int x = 5;\n    int y = 3;\n    int m = MAX(x++, y);\n    std::cout << \"m=\" << m << \" x=\" << x << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. m=5 x=6",
+      "B. m=6 x=7",
+      "C. m=5 x=7",
+      "D. m=6 x=6"
+    ],
+    "correct": 1,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Biểu thức sau khi tiền xử lý thay thế: <code>((x++) > (y) ? (x++) : (y))</code>.<br>2. Bước 1: Điều kiện <code>(x++) > y</code> được đánh giá. Giá trị cũ của <code>x</code> là 5, so sánh <code>5 > 3</code> là đúng. Sau đó hiệu ứng phụ tăng <code>x</code> lên 6.<br>3. Bước 2: Do điều kiện đúng, nhánh <code>(x++)</code> được thực thi. Lệnh này lấy giá trị hiện tại của <code>x</code> là 6 gán cho <code>m</code> (vậy <code>m = 6</code>), rồi ngay sau đó tiếp tục tăng <code>x</code> lên 7!<br>4. Kết quả: <code>m = 6</code> và <code>x = 7</code>. Toán tử <code>x++</code> bị chạy 2 lần ngoài ý muốn!<br><span class=\"citation-badge\">[Nguồn: OOP1-C to C++-New.pdf - Trang 9: Khai báo hằng bằng #define]</span>"
+  },
+  {
+    "id": 13,
+    "group_id": "q-group-3",
+    "group_name": "Nhóm 3: Hằng Số (const vs #define), Linkage & Bảng Ký Hiệu",
+    "title": "Bản chất Internal Linkage của const toàn cục trong C++ so với C",
+    "code": "// File: test.cpp\n#include <iostream>\n\nconst int GLOBAL_VAL = 42;\n\nint main() {\n    const int* p = &GLOBAL_VAL;\n    std::cout << *p << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. Biến GLOBAL_VAL có External Linkage và có thể extern sang file khác mà không cần từ khóa extern",
+      "B. Biến GLOBAL_VAL trong C++ mặc định có Internal Linkage (phạm vi chỉ trong Translation Unit hiện tại)",
+      "C. Lỗi biên dịch vì không được phép lấy địa chỉ của hằng số toàn cục",
+      "D. Trình biên dịch không cấp phát bộ nhớ cho GLOBAL_VAL trong mọi trường hợp"
+    ],
+    "correct": 1,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Trong ngôn ngữ C, biến <code>const</code> toàn cục mặc định có External Linkage.<br>2. Trong C++, biến <code>const</code> toàn cục mặc định có <strong>Internal Linkage</strong> (tương đương với việc có từ khóa <code>static</code> trong C). Điều này cho phép lập trình viên định nghĩa biến <code>const</code> trong header file mà không bị lỗi trùng ký hiệu (multiple definition error) khi include vào nhiều file .cpp.<br>3. Muốn biến const trong C++ có external linkage, bắt buộc phải khai báo tường minh: <code>extern const int GLOBAL_VAL = 42;</code>.<br><span class=\"citation-badge\">[Nguồn: OOP1-C to C++-New.pdf - Trang 9: Khai báo hằng bằng const]</span>"
+  },
+  {
+    "id": 14,
+    "group_id": "q-group-3",
+    "group_name": "Nhóm 3: Hằng Số (const vs #define), Linkage & Bảng Ký Hiệu",
+    "title": "Bảo vệ hệ thống kiểu: Cấm gán con trỏ hằng cho con trỏ thông thường",
+    "code": "#include <iostream>\n\nint main() {\n    const int num = 50;\n    int* ptr = &num; // Dòng kiểm tra\n    *ptr = 100;\n    std::cout << num << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. Chương trình in ra: 100",
+      "B. Lỗi biên dịch: invalid conversion from 'const int*' to 'int*'",
+      "C. Cảnh báo biên dịch nhưng vẫn chạy ra 50",
+      "D. Gây lỗi Segmentation Fault tại runtime"
+    ],
+    "correct": 1,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. <code>&num</code> có kiểu dữ liệu là <code>const int*</code> (con trỏ trỏ tới dữ liệu hằng chỉ đọc).<br>2. Biến <code>ptr</code> có kiểu là <code>int*</code> (con trỏ trỏ tới dữ liệu cho phép ghi đè).<br>3. Hệ thống kiểu của C++ thiết kế để bảo toàn tính an toàn bộ nhớ (Const-correctness). Nếu cho phép gán <code>int* ptr = &num</code>, trình biên dịch sẽ vô tình tạo ra một cửa sau (backdoor) để sửa đổi hằng số mà không hay biết.<br>4. Do đó, trình biên dịch C++ bắt buộc phải phát sinh lỗi biên dịch ngay tại dòng này.<br><span class=\"citation-badge\">[Nguồn: OOP1-C to C++-New.pdf - Trang 31-32: Con trỏ hằng và gán con trỏ]</span>"
+  },
+  {
+    "id": 15,
+    "group_id": "q-group-3",
+    "group_name": "Nhóm 3: Hằng Số (const vs #define), Linkage & Bảng Ký Hiệu",
+    "title": "Gập hằng số (Constant Folding) và hành vi khi lấy địa chỉ con trỏ",
+    "code": "#include <iostream>\n\nint main() {\n    const int N = 10;\n    int arr[N]; // Dòng 1\n    const int* p = &N; // Dòng 2\n    std::cout << sizeof(arr)/sizeof(arr[0]) << \" \" << *p << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. In ra: 10 10",
+      "B. Dòng 1 lỗi biên dịch vì N không phải là literal",
+      "C. Dòng 2 lỗi biên dịch vì hằng số không có địa chỉ",
+      "D. Dòng 1 chỉ hợp lệ trong C99 VLA, không hợp lệ trong C++11"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Trong C++, biến <code>const int N = 10;</code> khởi tạo với một hằng số được coi là một biểu thức hằng số tại thời điểm biên dịch (Compile-time constant expression / Constant folding). Vì thế, <code>arr[N]</code> hoàn toàn hợp lệ trong C++11 và kích thước mảng được ấn định là 10 ngay lúc biên dịch.<br>2. Khi chương trình thực hiện lấy địa chỉ <code>&N</code> ở Dòng 2, trình biên dịch bắt buộc phải cấp phát một ô nhớ thật trên phân vùng Stack để chứa giá trị 10, phục vụ cho con trỏ <code>p</code> trỏ tới.<br>3. Chương trình chạy hoàn hảo và in ra <code>10 10</code>.<br><span class=\"citation-badge\">[Nguồn: OOP1-C to C++-New.pdf - Trang 9 & 36: Khai báo hằng và kích thước mảng]</span>"
+  },
+  {
+    "id": 16,
+    "group_id": "q-group-4",
+    "group_name": "Nhóm 4: Nhập Xuất Chuẩn I/O Stream & Bộ Định Dạng <iomanip>",
+    "title": "Tính chất 'Sticky' của setprecision vs tính chất 'One-Shot' của setw",
+    "code": "#include <iostream>\n#include <iomanip>\n\nint main() {\n    std::cout << std::setw(6) << 12 << 34 << std::endl;\n    std::cout << std::setprecision(3) << std::fixed << 5.6789 << \" \" << 1.2345 << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. Dòng 1 in ra 12 và 34 đều có độ rộng 6. Dòng 2 in 5.679 và 1.2345",
+      "B. Dòng 1: '    1234'. Dòng 2: '5.679 1.235'",
+      "C. Dòng 1: '12    34'. Dòng 2: '5.68 1.23'",
+      "D. Lỗi biên dịch vì setw không áp dụng cho số nguyên"
+    ],
+    "correct": 1,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. <strong>Tính chất One-shot của <code class=\"inline-code\">setw(k)</code>:</strong> Slide trang 13 ghi rõ: 'Hàm này cần đặt trong toán tử xuất và nó CHỈ CÓ HIỆU LỰC CHO MỘT GIÁ TRỊ được in gần nhất. Các giá trị in ra tiếp theo sẽ có độ rộng tối thiểu mặc định là 0'. Do đó, số <code>12</code> chiếm 2 vị trí được đệm 4 khoảng trắng phía trước (tổng độ rộng 6: <code>'    12'</code>), còn số <code>34</code> in ngay sau không có đệm -> kết quả: <code>'    1234'</code>.<br>2. <strong>Tính chất Sticky của <code class=\"inline-code\">setprecision</code> & <code class=\"inline-code\">fixed</code>:</strong> Định dạng này duy trì hiệu lực liên tục cho toàn bộ các toán tử xuất tiếp theo. Cả 5.6789 và 1.2345 đều được làm tròn tới 3 chữ số thập phân: <code>5.679</code> và <code>1.235</code>.<br><span class=\"citation-badge\">[Nguồn: OOP1-C to C++-New.pdf - Trang 12-13: Định dạng xuất setw, setprecision, setiosflags]</span>"
+  },
+  {
+    "id": 17,
+    "group_id": "q-group-4",
+    "group_name": "Nhóm 4: Nhập Xuất Chuẩn I/O Stream & Bộ Định Dạng <iomanip>",
+    "title": "Bẫy ký tự xuống dòng dư thừa trong bộ đệm khi trộn toán tử >> và getline",
+    "code": "#include <iostream>\n#include <string>\n#include <sstream>\n\nint main() {\n    std::stringstream ss(\"42\\nLap Trinh C++\");\n    int age;\n    std::string name;\n    \n    ss >> age;\n    std::getline(ss, name);\n    \n    std::cout << \"age=\" << age << \", len=\" << name.length() << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. age=42, len=13",
+      "B. age=42, len=0",
+      "C. age=42, len=12",
+      "D. Lỗi runtime khi đọc getline"
+    ],
+    "correct": 1,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Toán tử trích luồng <code>ss >> age</code> đọc chuỗi ký tự số <code>42</code> và dừng lại ngay trước ký tự xuống dòng <code>\\n</code>. Ký tự <code>\\n</code> vẫn còn nằm nguyên vẹn trong Stream Buffer.<br>2. Lệnh <code>std::getline(ss, name)</code> bắt đầu đọc từ vị trí hiện tại của buffer cho đến khi gặp <code>\\n</code>. Nó lập tức gặp ngay ký tự <code>\\n</code> thừa đó, coi như đã đọc xong một dòng rỗng, và trích xuất chuỗi rỗng vào <code>name</code>!<br>3. Do đó, <code>name.length()</code> bằng 0 (chuỗi rỗng), chuỗi 'Lap Trinh C++' vẫn chưa được đọc.<br>Để khắc phục, cần dùng <code>cin.ignore()</code> để nuốt ký tự <code>\\n</code> trước khi gọi <code>getline</code>.<br><span class=\"citation-badge\">[Nguồn: OOP1-C to C++-New.pdf - Trang 14: Nhập dữ liệu với cin & toán tử >>]</span>"
+  },
+  {
+    "id": 18,
+    "group_id": "q-group-4",
+    "group_name": "Nhóm 4: Nhập Xuất Chuẩn I/O Stream & Bộ Định Dạng <iomanip>",
+    "title": "Bẫy thứ tự lượng giá biểu thức con trong chuỗi toán tử <<",
+    "code": "#include <iostream>\n\nint main() {\n    int i = 1;\n    // Xét biểu thức in có toán tử tăng:\n    std::cout << i++ << \" \" << i++ << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. Chắc chắn luôn in ra: 1 2",
+      "B. Chắc chắn luôn in ra: 2 1",
+      "C. Trong C++11, thứ tự lượng giá các đối số toán tử là Unspecified/Undefined Behavior",
+      "D. Lỗi biên dịch vì không được phép lặp lại toán tử ++ trong cùng một dòng cout"
+    ],
+    "correct": 2,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Trong chuẩn C++11 (trước chuẩn C++17), phép gọi <code>cout << i++ << ...</code> tương đương với các lời gọi hàm lồng nhau <code>operator<<(operator<<(cout, i++), ...)</code>.<br>2. C++11 không quy định thứ tự lượng giá (Order of Evaluation) giữa các tham số hàm hoặc các biểu thức con giữa các Sequence Points. Trình biên dịch có quyền lượng giá <code>i++</code> bên phải trước hoặc bên trái trước tùy thuộc vào kiến trúc thanh ghi.<br>3. Việc sửa đổi cùng một biến vô hướng nhiều lần mà không có sequence point dẫn tới <strong>Undefined Behavior</strong> (chỉ từ C++17 trở đi toán tử chèn luồng mới được chuẩn hóa lượng giá từ trái qua phải).<br><span class=\"citation-badge\">[Nguồn: OOP1-C to C++-New.pdf - Trang 11: Toán tử chèn luồng <<]</span>"
+  },
+  {
+    "id": 19,
+    "group_id": "q-group-4",
+    "group_name": "Nhóm 4: Nhập Xuất Chuẩn I/O Stream & Bộ Định Dạng <iomanip>",
+    "title": "Trạng thái lỗi của luồng nhập (Stream Fail State) khi nhập sai kiểu dữ liệu",
+    "code": "#include <iostream>\n#include <sstream>\n\nint main() {\n    std::stringstream ss(\"ABC 123\");\n    int x = 99;\n    int y = 88;\n    \n    ss >> x; // Nhập chuỗi \"ABC\" vào biến int\n    ss >> y;\n    \n    std::cout << \"x=\" << x << \" y=\" << y << \" fail=\" << ss.fail() << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. x=0 y=123 fail=0",
+      "B. x=0 y=88 fail=1 (trong C++11 x được gán 0 và luồng bật cờ failbit)",
+      "C. Chương trình bị crash ngoại lệ std::invalid_argument",
+      "D. x=99 y=123 fail=0"
+    ],
+    "correct": 1,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Khi toán tử trích xuất <code>>></code> cố gắng phân tích cú pháp số nguyên từ chuỗi 'ABC', việc trích xuất thất bại.<br>2. Trạng thái của stream bị chuyển sang <code>failbit</code> (<code>ss.fail() == true</code>). Theo chuẩn C++11, khi phép đọc số thất bại, giá trị của biến đích <code>x</code> được đặt thành 0.<br>3. Khi một stream đã rơi vào trạng thái <code>fail</code>, mọi thao tác đọc tiếp theo (như <code>ss >> y</code>) sẽ <strong>LẬP TỨC BỊ BỎ QUA</strong> mà không làm thay đổi giá trị của <code>y</code>.<br>4. Do đó <code>y</code> vẫn giữ nguyên giá trị khởi tạo ban đầu là <code>88</code>, và <code>ss.fail()</code> trả về 1.<br><span class=\"citation-badge\">[Nguồn: OOP1-C to C++-New.pdf - Trang 14: Nhập dữ liệu từ bàn phím bằng cin >>]</span>"
+  },
+  {
+    "id": 20,
+    "group_id": "q-group-4",
+    "group_name": "Nhóm 4: Nhập Xuất Chuẩn I/O Stream & Bộ Định Dạng <iomanip>",
+    "title": "Sự khác biệt bản chất giữa '\\n' và std::endl trong I/O Performance",
+    "code": "#include <iostream>\n\nint main() {\n    std::cout << \"A\\n\";\n    std::cout << \"B\" << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. '\\n' và std::endl hoàn toàn giống nhau về mặt mã máy và chi phí thực thi",
+      "B. std::endl vừa ghi ký tự xuống dòng '\\n' vừa gọi tường minh flush() để đẩy bộ đệm, gây suy giảm hiệu năng nếu dùng trong vòng lặp lớn",
+      "C. '\\n' không thể dùng được với std::cout trong C++11",
+      "D. std::endl tự động giải phóng bộ nhớ của đối tượng cout"
+    ],
+    "correct": 1,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Lệnh <code>std::cout << '\\n'</code> chỉ đơn thuần đẩy 1 byte ký tự ASCII 10 (newline) vào buffer trong không gian người dùng (User-space Stream Buffer). Hệ điều hành chưa cần thực hiện System Call.<br>2. <code>std::endl</code> được định nghĩa là một hàm manipulator: nó ghi <code>'\\n'</code> và ngay sau đó gọi <code>std::cout.flush()</code>. Lệnh flush ép buộc CPU thực hiện chuyển ngữ cảnh (context switch) gọi hàm hệ thống của OS (như <code>write()</code> trong POSIX) để xả đĩa hoặc terminal.<br>3. Sử dụng <code>std::endl</code> trong các vòng lặp hàng triệu lần sẽ làm giảm tốc độ thực thi hàng chục lần so với <code>'\\n'</code>.<br><span class=\"citation-badge\">[Nguồn: OOP1-C to C++-New.pdf - Trang 11: Sử dụng '\\n' hoặc endl để xuống dòng mới]</span>"
+  },
+  {
+    "id": 21,
+    "group_id": "q-group-5",
+    "group_name": "Nhóm 5: Biến Tham Chiếu (&), Hằng Tham Chiếu & Trả Về Tham Chiếu",
+    "title": "Bẫy trả về tham chiếu đến biến cục bộ trên Stack (Dangling Reference Trap)",
+    "code": "#include <iostream>\n\nint& getLocal() {\n    int temp = 50;\n    return temp;\n}\n\nint main() {\n    int& ref = getLocal();\n    std::cout << ref << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. Luôn luôn in ra 50 an toàn",
+      "B. Lỗi biên dịch: C++ cấm hàm trả về kiểu tham chiếu int&",
+      "C. Hành vi không xác định (Undefined Behavior): biến temp bị hủy khi thoát hàm, ref trở thành tham chiếu rác (dangling reference)",
+      "D. Giá trị của ref tự động chuyển thành biến toàn cục"
+    ],
+    "correct": 2,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Biến <code>temp</code> được cấp phát trên Stack Frame của hàm <code>getLocal()</code>.<br>2. Khi gặp lệnh <code>return temp;</code>, hàm trả về địa chỉ của biến <code>temp</code> dưới dạng tham chiếu.<br>3. Ngay khi hàm kết thúc, con trỏ Stack Pointer (ESP/RSP) được dọn dẹp, toàn bộ vùng nhớ của <code>temp</code> bị thu hồi (deallocated).<br>4. Biến <code>ref</code> trong <code>main</code> bây giờ trỏ vào một vùng nhớ chết (Dangling Reference). Khi thực thi <code>cout << ref</code>, nếu bộ nhớ bị một hàm khác ghi đè, chương trình sẽ in số rác hoặc gây lỗi đổ vỡ (Crash/Segmentation Fault).<br>Slide trang 24 nhấn mạnh rõ: 'Nếu trả về tham chiếu đến một biến cục bộ thì biến cục bộ này sẽ bị mất đi khi kết thúc hàm... nếu hàm trả về tham chiếu đến biến cục bộ thì biến cục bộ này NÊN khai báo static'.<br><span class=\"citation-badge\">[Nguồn: OOP1-C to C++-New.pdf - Trang 24-25: Hàm trả về là tham chiếu]</span>"
+  },
+  {
+    "id": 22,
+    "group_id": "q-group-5",
+    "group_name": "Nhóm 5: Biến Tham Chiếu (&), Hằng Tham Chiếu & Trả Về Tham Chiếu",
+    "title": "Cơ chế kéo dài vòng đời đối tượng tạm thời qua Hằng Tham Chiếu (Lifetime Extension)",
+    "code": "#include <iostream>\n\nint compute() {\n    return 10 + 20;\n}\n\nint main() {\n    // Dòng 1:\n    // int& r1 = compute(); \n    // Dòng 2:\n    const int& r2 = compute();\n    \n    std::cout << r2 << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. Cả Dòng 1 và Dòng 2 đều hợp lệ",
+      "B. Dòng 1 lỗi biên dịch (không thể bind lvalue ref vào rvalue), Dòng 2 hợp lệ và kéo dài vòng đời đối tượng tạm",
+      "C. Dòng 2 cũng bị lỗi biên dịch vì compute() trả về giá trị tạm không có địa chỉ",
+      "D. Chương trình crash tại Dòng 2"
+    ],
+    "correct": 1,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Hàm <code>compute()</code> trả về một giá trị theo giá trị (by value), đây là một <strong>rvalue (giá trị tạm thời)</strong> không có định danh bộ nhớ bền vững.<br>2. Dòng 1: Tham chiếu không hằng (<code class=\"inline-code\">int&</code>) chỉ được phép liên kết (bind) với một lvalue (biến có địa chỉ có thể gán). Cố tình bind vào rvalue gây lỗi biên dịch: 'cannot bind non-const lvalue reference of type int& to an rvalue of type int'.<br>3. Dòng 2: Theo chuẩn C++ (và slide trang 16, 21), <strong>Hằng tham chiếu (<code class=\"inline-code\">const int&</code>)</strong> có một đặc quyền tối cao: Trình biên dịch sẽ tạo ra một đối tượng tạm thời ẩn danh trên stack để chứa giá trị 30, và <strong>KÉO DÀI VÒNG ĐỜI (Lifetime Extension)</strong> của đối tượng tạm thời này bằng đúng phạm vi của biến tham chiếu <code>r2</code>!<br><span class=\"citation-badge\">[Nguồn: OOP1-C to C++-New.pdf - Trang 16 & 21: Hằng tham chiếu & Đối số hằng tham chiếu]</span>"
+  },
+  {
+    "id": 23,
+    "group_id": "q-group-5",
+    "group_name": "Nhóm 5: Biến Tham Chiếu (&), Hằng Tham Chiếu & Trả Về Tham Chiếu",
+    "title": "Hàm trả về tham chiếu được sử dụng làm Vế Trái (Lvalue) của phép gán",
+    "code": "#include <iostream>\n\nint global_arr[3] = {10, 20, 30};\n\nint& getElement(int index) {\n    return global_arr[index];\n}\n\nint main() {\n    getElement(1) = 99;\n    std::cout << global_arr[0] << \" \" << global_arr[1] << \" \" << global_arr[2] << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. In ra: 10 20 30",
+      "B. Lỗi biên dịch: không thể gán một giá trị cho một lời gọi hàm getElement(1)",
+      "C. In ra: 10 99 30",
+      "D. Lỗi runtime: vi phạm bảo vệ bộ nhớ mảng"
+    ],
+    "correct": 2,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Trong C truyền thống, lời gọi hàm luôn là một rvalue, không bao giờ được đứng ở vế trái phép gán.<br>2. Trong C++, khi một hàm có kiểu trả về là một tham chiếu lvalue (<code class=\"inline-code\">int&</code>), kết quả trả về của hàm chính là bản thân ô nhớ mà nó tham chiếu tới.<br>3. Ở đây, <code>global_arr</code> là mảng toàn cục, vùng nhớ hoàn toàn tồn tại ổn định trong Data Segment suốt thời gian chạy chương trình.<br>4. Lệnh <code>getElement(1) = 99;</code> tương đương trực tiếp với <code>global_arr[1] = 99;</code>. Mảng được sửa đổi và in ra: <code>10 99 30</code>.<br><span class=\"citation-badge\">[Nguồn: OOP1-C to C++-New.pdf - Trang 24-25: Hàm trả về là tham chiếu]</span>"
+  },
+  {
+    "id": 24,
+    "group_id": "q-group-5",
+    "group_name": "Nhóm 5: Biến Tham Chiếu (&), Hằng Tham Chiếu & Trả Về Tham Chiếu",
+    "title": "Bản chất không thể gán lại (Cannot Re-bind) của Biến Tham Chiếu",
+    "code": "#include <iostream>\n\nint main() {\n    int a = 10;\n    int b = 20;\n    int& ref = a; // ref là bí danh của a\n    \n    ref = b; // Lệnh này làm gì?\n    ref = 100;\n    \n    std::cout << a << \" \" << b << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. In ra: 10 100 (ref chuyển sang trỏ tới b)",
+      "B. In ra: 100 20 (ref mãi mãi liên kết với a, phép gán gán giá trị của b vào a)",
+      "C. In ra: 100 100",
+      "D. Lỗi biên dịch vì không được phép gán một biến cho biến tham chiếu"
+    ],
+    "correct": 1,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Biến tham chiếu trong C++ <strong>KHÔNG PHẢI LÀ CON TRỎ</strong>; nó là một bí danh vĩnh viễn gắn chặt với ô nhớ mà nó được khởi tạo.<br>2. Khi thực hiện <code>ref = b;</code>, lập trình viên không làm cho <code>ref</code> trỏ tới biến <code>b</code>. Thay vào đó, nó copy giá trị của <code>b</code> (20) ghi đè vào biến mà <code>ref</code> đang đại diện (tức là biến <code>a</code>). Lúc này <code>a = 20</code>.<br>3. Tiếp tục <code>ref = 100;</code> thì biến <code>a</code> nhận giá trị <code>100</code>.<br>4. Biến <code>b</code> hoàn toàn không bị ảnh hưởng và giữ nguyên giá trị <code>20</code>. Kết quả in ra: <code>100 20</code>.<br><span class=\"citation-badge\">[Nguồn: OOP1-C to C++-New.pdf - Trang 15: Biến tham chiếu dùng chung địa chỉ với biến được tham chiếu]</span>"
+  },
+  {
+    "id": 25,
+    "group_id": "q-group-5",
+    "group_name": "Nhóm 5: Biến Tham Chiếu (&), Hằng Tham Chiếu & Trả Về Tham Chiếu",
+    "title": "Lý do chuẩn C++ cấm khai báo Mảng các biến tham chiếu",
+    "code": "#include <iostream>\n\nint main() {\n    int x = 1, y = 2, z = 3;\n    int& arr[3] = {x, y, z}; // Khai báo mảng tham chiếu\n    std::cout << arr[0] << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. Hợp lệ và in ra: 1",
+      "B. Lỗi biên dịch: declaration of 'arr' as array of references is not allowed",
+      "C. Hợp lệ nếu thêm từ khóa const: const int& arr[3]",
+      "D. Chỉ cảnh báo biên dịch và chạy bình thường"
+    ],
+    "correct": 1,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Trong C++, một mảng yêu cầu các phần tử phải là các đối tượng độc lập có kích thước xác định và có địa chỉ bộ nhớ liên tiếp nhau (contiguous memory). Phép toán chỉ số mảng dựa trên số học con trỏ: <code>arr + i * sizeof(T)</code>.<br>2. Bản thân biến tham chiếu không phải là một đối tượng độc lập có địa chỉ riêng biệt (khi lấy <code>&ref</code> thì compiler trả về địa chỉ của biến gốc). Do đó không thể tồn tại con trỏ trỏ tới tham chiếu, và không thể xác định bước nhảy ô nhớ cho mảng tham chiếu.<br>3. Chuẩn C++ (ISO/IEC 14882) và slide trang 15 khẳng định dứt khoát: 'Biến tham chiếu có thể tham chiếu đến một phần tử mảng, nhưng KHÔNG CHO PHÉP khai báo mảng các biến tham chiếu'.<br><span class=\"citation-badge\">[Nguồn: OOP1-C to C++-New.pdf - Trang 15: Quy tắc khai báo biến tham chiếu]</span>"
+  },
+  {
+    "id": 26,
+    "group_id": "q-group-5",
+    "group_name": "Nhóm 5: Biến Tham Chiếu (&), Hằng Tham Chiếu & Trả Về Tham Chiếu",
+    "title": "Hàm trả về tham chiếu đến biến tĩnh (Static Local Reference) an toàn",
+    "code": "#include <iostream>\n\nint& counter() {\n    static int count = 0;\n    count++;\n    return count;\n}\n\nint main() {\n    counter();\n    counter() = 10;\n    std::cout << counter() << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. In ra: 1",
+      "B. In ra: 11",
+      "C. In ra: 10",
+      "D. Lỗi biên dịch vì không thể gán giá trị cho hàm counter()"
+    ],
+    "correct": 1,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Biến <code>static int count = 0</code> được cấp phát trong vùng nhớ Data/BSS Segment, có thời gian tồn tại vĩnh viễn suốt chu kỳ chạy của tiến trình (Program Lifetime), không bị hủy khi thoát hàm.<br>2. Lần gọi 1: <code>counter();</code> -> <code>count</code> tăng từ 0 lên 1.<br>3. Lần gọi 2: <code>counter() = 10;</code> -> hàm thực hiện <code>count++</code> (tăng từ 1 lên 2), sau đó trả về tham chiếu tới <code>count</code>. Phép gán <code>= 10</code> ghi đè giá trị 10 vào <code>count</code>.<br>4. Lần gọi 3: <code>counter()</code> trong <code>cout</code> -> thực hiện <code>count++</code> (từ 10 tăng lên 11) và trả về tham chiếu giá trị <code>11</code>.<br><span class=\"citation-badge\">[Nguồn: OOP1-C to C++-New.pdf - Trang 24: Tham chiếu đến biến static]</span>"
+  },
+  {
+    "id": 27,
+    "group_id": "q-group-5",
+    "group_name": "Nhóm 5: Biến Tham Chiếu (&), Hằng Tham Chiếu & Trả Về Tham Chiếu",
+    "title": "Hàm trả về Hằng Tham Chiếu (Const Reference Return Value)",
+    "code": "#include <iostream>\n\nint global_val = 100;\n\nconst int& getVal() {\n    return global_val;\n}\n\nint main() {\n    getVal() = 200; // Dòng này có hợp lệ không?\n    std::cout << global_val << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. Hợp lệ và in ra 200",
+      "B. Lỗi biên dịch: assignment of read-only location",
+      "C. Cảnh báo biên dịch và in ra 100",
+      "D. Gây lỗi runtime Undefined Behavior"
+    ],
+    "correct": 1,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Hàm <code>getVal()</code> trả về kiểu <code>const int&</code> (hằng tham chiếu).<br>2. Về mặt ngữ nghĩa, từ khóa <code>const</code> ở kiểu trả về thông báo cho trình biên dịch rằng đối tượng được trả về chỉ có quyền đọc (Read-only), tuyệt đối không được phép làm vế trái (lvalue) của phép gán.<br>3. Lệnh <code>getVal() = 200;</code> vi phạm quy tắc an toàn hằng số của C++, compiler báo lỗi ngay lập tức: <em>assignment of read-only location</em>.<br>Đây là kỹ thuật đóng gói thường dùng trong C++ để trả về thuộc tính lớp với hiệu năng cao (tránh sao chép) nhưng vẫn ngăn không cho bên ngoài sửa đổi bừa bãi.<br><span class=\"citation-badge\">[Nguồn: OOP1-C to C++-New.pdf - Trang 26: Hàm trả về hằng tham chiếu]</span>"
+  },
+  {
+    "id": 28,
+    "group_id": "q-group-6",
+    "group_name": "Nhóm 6: Tham Số Mặc Định & Hàm Nội Tuyến (Inline)",
+    "title": "Quy tắc thứ tự khai báo tham số mặc định (Right-to-Left Rule)",
+    "code": "#include <iostream>\n\n// Khai báo hàm:\nvoid display(int a = 10, int b, int c = 30) {\n    std::cout << a + b + c << std::endl;\n}\n\nint main() {\n    display(5, 5);\n    return 0;\n}",
+    "options": [
+      "A. Chương trình in ra: 40",
+      "B. Lỗi biên dịch: default argument missing for parameter 2 ('b')",
+      "C. In ra: 45",
+      "D. Hợp lệ nếu gọi display(5, 5, 5)"
+    ],
+    "correct": 1,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Khi gọi một hàm, các đối số truyền vào luôn được ánh xạ từ trái sang phải cho các tham số hình thức tương ứng.<br>2. Nếu cho phép tham số ở giữa không có giá trị mặc định trong khi tham số bên trái có mặc định, trình biên dịch sẽ không thể giải quyết được tính nhập nhằng khi người dùng truyền thiếu tham số (ví dụ: đối số thứ 2 truyền vào là của <code>a</code> hay của <code>b</code>?).<br>3. Chuẩn C++ và slide trang 22 quy định bắt buộc: 'Các đối số mặc định CẦN LÀ CÁC ĐỐI SỐ CUỐI CÙNG tính từ trái qua phải'. Do <code>b</code> không có giá trị mặc định mà <code>c</code> lại có, compiler phát sinh lỗi ngay lập tức.<br><span class=\"citation-badge\">[Nguồn: OOP1-C to C++-New.pdf - Trang 22: Quy tắc đối số mặc định]</span>"
+  },
+  {
+    "id": 29,
+    "group_id": "q-group-6",
+    "group_name": "Nhóm 6: Tham Số Mặc Định & Hàm Nội Tuyến (Inline)",
+    "title": "Bẫy lặp lại tham số mặc định giữa Nguyên mẫu (Prototype) và Định nghĩa (Definition)",
+    "code": "#include <iostream>\n\n// Nguyên mẫu hàm:\nvoid printSum(int x, int y = 20);\n\n// Định nghĩa hàm:\nvoid printSum(int x, int y = 20) {\n    std::cout << x + y << std::endl;\n}\n\nint main() {\n    printSum(10);\n    return 0;\n}",
+    "options": [
+      "A. In ra: 30 bình thường",
+      "B. Lỗi biên dịch: redefinition of default argument for parameter 'y'",
+      "C. Cảnh báo biên dịch nhưng vẫn chạy ra 30",
+      "D. In ra: 10"
+    ],
+    "correct": 1,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Slide trang 22 nêu rõ ràng quy tắc vàng: 'Nếu chương trình sử dụng khai báo nguyên mẫu hàm thì các đối số mặc định cần được khởi gán trong nguyên mẫu hàm, KHÔNG ĐƯỢC KHỞI GÁN LẠI cho các đối số mặc định trong dòng đầu của định nghĩa hàm'.<br>2. Trình biên dịch lưu trữ thông tin tham số mặc định trong bảng ký hiệu khi đọc prototype. Khi gặp lại định nghĩa hàm với tham số mặc định lặp lại, nó coi đây là hành vi tái định nghĩa tham số mặc định (redefinition of default argument) và báo lỗi biên dịch.<br><span class=\"citation-badge\">[Nguồn: OOP1-C to C++-New.pdf - Trang 22: Lưu ý về nguyên mẫu hàm và đối số mặc định]</span>"
+  },
+  {
+    "id": 30,
+    "group_id": "q-group-6",
+    "group_name": "Nhóm 6: Tham Số Mặc Định & Hàm Nội Tuyến (Inline)",
+    "title": "Bẫy nhập nhằng (Ambiguity) giữa Đa năng hóa hàm và Tham số mặc định",
+    "code": "#include <iostream>\n\nvoid calc(int a) {\n    std::cout << \"One: \" << a << std::endl;\n}\n\nvoid calc(int a, int b = 0) {\n    std::cout << \"Two: \" << a + b << std::endl;\n}\n\nint main() {\n    calc(10);\n    return 0;\n}",
+    "options": [
+      "A. In ra: One: 10 (vì ưu tiên hàm khớp chính xác số tham số)",
+      "B. In ra: Two: 10",
+      "C. Lỗi biên dịch: call of overloaded 'calc(int)' is ambiguous",
+      "D. Lỗi runtime tại thời điểm gọi hàm"
+    ],
+    "correct": 2,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Trong quá trình tìm kiếm hàm thích hợp (Overload Resolution), trình biên dịch lập danh sách các hàm ứng viên (Candidate functions) và hàm khả dĩ (Viable functions).<br>2. Khi gọi <code>calc(10)</code>: Hàm 1 <code>calc(int)</code> hoàn toàn thỏa mãn vì nhận 1 đối số. Nhưng Hàm 2 <code>calc(int, int = 0)</code> cũng hoàn toàn thỏa mãn vì tham số thứ 2 đã có giá trị mặc định.<br>3. Do cả hai phiên bản đều có mức độ chuyển đổi kiểu bằng nhau (Exact Match) và không có phiên bản nào chiếm ưu thế tuyệt đối theo quy tắc của chuẩn C++, trình biên dịch dừng lại và báo lỗi nhập nhằng (Ambiguity Error).<br><span class=\"citation-badge\">[Nguồn: OOP1-C to C++-New.pdf - Trang 22 & 60: Quá trình tìm kiếm hàm đa năng hóa]</span>"
+  },
+  {
+    "id": 31,
+    "group_id": "q-group-6",
+    "group_name": "Nhóm 6: Tham Số Mặc Định & Hàm Nội Tuyến (Inline)",
+    "title": "Bản chất từ khóa inline: Quyền quyết định thực sự thuộc về Compiler Hint",
+    "code": "#include <iostream>\n\ninline int recursiveFactorial(int n) {\n    if (n <= 1) return 1;\n    return n * recursiveFactorial(n - 1);\n}\n\nint main() {\n    std::cout << recursiveFactorial(5) << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. Lỗi biên dịch: C++ cấm dùng từ khóa inline cho các hàm đệ quy",
+      "B. Trình biên dịch bắt buộc phải nội tuyến hóa toàn bộ các bước đệ quy tại vị trí gọi",
+      "C. Từ khóa inline chỉ là một lời gợi ý (hint); trình biên dịch có toàn quyền từ chối inline và sinh mã như một hàm bình thường để tránh tràn stack/bloat",
+      "D. Chương trình bị lặp vô tận tại compile-time"
+    ],
+    "correct": 2,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Từ khóa <code>inline</code> KHÔNG PHẢI là một mệnh lệnh bắt buộc đối với trình biên dịch; nó chỉ là một lời gợi ý tối ưu hóa (Compiler Hint / Request).<br>2. Đối với các hàm có cấu trúc phức tạp như đệ quy không giới hạn, vòng lặp phức tạp, hoặc kích thước mã quá lớn, trình biên dịch sẽ từ chối mở rộng mã (inlining) và tự động phát sinh mã máy gọi hàm thông thường (dùng lệnh CALL / RET) để tránh hiện tượng phình to mã nguồn (Code Bloat).<br>3. Chương trình vẫn biên dịch và chạy hoàn hảo, tính ra 120.<br><span class=\"citation-badge\">[Nguồn: OOP1-C to C++-New.pdf - Trang 27-28: Hàm nội tuyến inline]</span>"
+  },
+  {
+    "id": 32,
+    "group_id": "q-group-6",
+    "group_name": "Nhóm 6: Tham Số Mặc Định & Hàm Nội Tuyến (Inline)",
+    "title": "Biến tĩnh cục bộ (Static Local) bên trong Hàm Inline tuân thủ One Definition Rule (ODR)",
+    "code": "#include <iostream>\n\ninline void tick() {\n    static int count = 0;\n    count++;\n    std::cout << count << \" \";\n}\n\nint main() {\n    tick();\n    tick();\n    tick();\n    std::cout << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. In ra: 1 1 1 (vì mỗi lần inline mã được nhân bản độc lập)",
+      "B. In ra: 1 2 3 (biến static chỉ có duy nhất 1 bản sao trong toàn bộ chương trình theo luật ODR)",
+      "C. Lỗi biên dịch: không được dùng biến static trong hàm inline",
+      "D. In ra giá trị ngẫu nhiên do xung đột bộ nhớ"
+    ],
+    "correct": 1,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Theo quy tắc định nghĩa duy nhất (One Definition Rule - ODR) của C++11, dù một hàm <code>inline</code> được sao chép mở rộng mã ở nhiều vị trí hoặc trên nhiều đơn vị dịch (Translation Units) khác nhau, thì mọi lời gọi hàm đó vẫn phải dùng chung <strong>DUY NHẤT MỘT THỂ HIỆN</strong> của biến cục bộ tĩnh <code>static int count</code>.<br>2. Trình liên kết (Linker) chịu trách nhiệm hợp nhất các biểu tượng biến static này vào một địa chỉ duy nhất trong phân vùng dữ liệu tĩnh (BSS/Data Segment).<br>3. Do đó mỗi lần <code>tick()</code> được gọi, biến tĩnh tăng tuần tự: 1, rồi 2, rồi 3.<br><span class=\"citation-badge\">[Nguồn: OOP1-C to C++-New.pdf - Trang 27-28: Cơ chế hàm inline]</span>"
+  },
+  {
+    "id": 33,
+    "group_id": "q-group-7",
+    "group_name": "Nhóm 7: Con Trỏ Cơ Bản, Con Trỏ Hằng & Hằng Con Trỏ",
+    "title": "Phân biệt Con trỏ hằng (Pointer to Const) và Hằng con trỏ (Const Pointer)",
+    "code": "#include <iostream>\n\nint main() {\n    int a = 10, b = 20;\n    const int* p1 = &a; // Con trỏ hằng\n    int* const p2 = &a; // Hằng con trỏ\n\n    // Thử 4 thao tác:\n    p1 = &b;   // Thao tác 1\n    // *p1 = 30; // Thao tác 2\n    *p2 = 40;  // Thao tác 3\n    // p2 = &b;  // Thao tác 4\n\n    std::cout << a << \" \" << *p1 << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. Cả Thao tác 1 và 3 đều hợp lệ; in ra: 40 20",
+      "B. Thao tác 1 lỗi, Thao tác 3 hợp lệ",
+      "C. Thao tác 1 hợp lệ, Thao tác 3 lỗi",
+      "D. Cả hai thao tác đều gây lỗi biên dịch"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. <code>const int* p1</code> (từ khóa <code>const</code> đứng trước <code>int</code>): <strong>Con trỏ tới hằng (Pointer to const)</strong>. Nó bảo vệ giá trị vùng nhớ không bị sửa thông qua <code>*p1</code>, nhưng bản thân địa chỉ của con trỏ <code>p1</code> là tự do thay đổi. Do đó <code>p1 = &b;</code> hoàn toàn hợp lệ! Khi đó <code>*p1</code> trỏ tới <code>b</code> (giá trị 20).<br>2. <code>int* const p2</code> (từ khóa <code>const</code> đứng sau dấu <code>*</code>): <strong>Hằng con trỏ (Const pointer)</strong>. Bản thân con trỏ bị đóng băng địa chỉ (không thể trỏ sang biến khác như <code>p2 = &b</code>), nhưng vùng nhớ mà nó trỏ tới được phép chỉnh sửa tự do. Do đó <code>*p2 = 40;</code> sửa đổi biến <code>a</code> thành 40 hoàn toàn hợp lệ!<br>3. Kết quả in ra: <code>40 20</code>.<br><span class=\"citation-badge\">[Nguồn: OOP1-C to C++-New.pdf - Trang 31: Con trỏ hằng và hằng con trỏ]</span>"
+  },
+  {
+    "id": 34,
+    "group_id": "q-group-7",
+    "group_name": "Nhóm 7: Con Trỏ Cơ Bản, Con Trỏ Hằng & Hằng Con Trỏ",
+    "title": "Hằng con trỏ trỏ tới hằng (Const Pointer to Const)",
+    "code": "#include <iostream>\n\nint main() {\n    int x = 100, y = 200;\n    const int* const p = &x;\n\n    // Dòng A:\n    // *p = 150;\n    // Dòng B:\n    // p = &y;\n\n    std::cout << *p << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. Dòng A hợp lệ, Dòng B lỗi biên dịch",
+      "B. Dòng A lỗi biên dịch, Dòng B hợp lệ",
+      "C. Cả Dòng A và Dòng B đều bị cấm và gây lỗi biên dịch nếu mở chú thích",
+      "D. Cho phép sửa nếu ép kiểu tường minh qua static_cast"
+    ],
+    "correct": 2,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Cú pháp <code>const int* const p = &x;</code> có hai từ khóa <code>const</code>.<br>2. Từ khóa <code>const</code> thứ nhất khóa giá trị ô nhớ: Cấm lệnh <code>*p = ...</code>.<br>3. Từ khóa <code>const</code> thứ hai khóa bản thân biến con trỏ: Cấm lệnh thay đổi địa chỉ <code>p = &y</code>.<br>4. Đây là mức độ bảo vệ nghiêm ngặt nhất (Read-only Pointer & Read-only Target). Mọi thao tác ghi đè đều bị trình biên dịch chặn lại ngay từ bước phân tích ngữ nghĩa.<br><span class=\"citation-badge\">[Nguồn: OOP1-C to C++-New.pdf - Trang 31: Khai báo con trỏ kết hợp const]</span>"
+  },
+  {
+    "id": 35,
+    "group_id": "q-group-7",
+    "group_name": "Nhóm 7: Con Trỏ Cơ Bản, Con Trỏ Hằng & Hằng Con Trỏ",
+    "title": "Bẫy con trỏ hoang (Wild Pointer) chưa được khởi tạo",
+    "code": "#include <iostream>\n\nint main() {\n    int* ptr; // Con trỏ cục bộ chưa khởi tạo\n    if (ptr != nullptr) { // Dòng kiểm tra\n        *ptr = 10;\n        std::cout << *ptr << std::endl;\n    }\n    return 0;\n}",
+    "options": [
+      "A. Chương trình luôn in ra 10 an toàn",
+      "B. Khối if không bao giờ chạy vì con trỏ tự động bằng nullptr trong C++11",
+      "C. Nguy hiểm cực độ: ptr chứa giá trị rác ngẫu nhiên trên stack, kiểm tra ptr != nullptr vẫn đúng nhưng ghi *ptr = 10 gây Crash hoặc ghi đè ô nhớ hệ thống",
+      "D. Lỗi biên dịch vì biến ptr chưa được gán giá trị"
+    ],
+    "correct": 2,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Trong C++, các biến cục bộ có thời gian lưu trữ tự động trên Stack <strong>KHÔNG ĐƯỢC TỰ ĐỘNG KHỞI TẠO VỀ 0</strong> (trừ khi có từ khóa <code>static</code> hoặc là biến toàn cục).<br>2. Biến <code>ptr</code> chứa bất kỳ bit rác nào đang tồn tại sẵn tại vị trí stack đó. Do đó giá trị của <code>ptr</code> gần như chắc chắn khác <code>0</code> (khác <code>nullptr</code>).<br>3. Điều kiện <code>if (ptr != nullptr)</code> bị đánh lừa là đúng. Khi CPU thực hiện lệnh ghi <code>*ptr = 10</code>, nó ghi vào một địa chỉ tùy ý trong không gian địa chỉ ảo, gây ra lỗi vi phạm quyền truy cập bộ nhớ (Access Violation / SIGSEGV) hoặc phá hủy dữ liệu của biến khác.<br><span class=\"citation-badge\">[Nguồn: OOP1-C to C++-New.pdf - Trang 29 & 56: Khái niệm con trỏ & con trỏ lạc]</span>"
+  },
+  {
+    "id": 36,
+    "group_id": "q-group-7",
+    "group_name": "Nhóm 7: Con Trỏ Cơ Bản, Con Trỏ Hằng & Hằng Con Trỏ",
+    "title": "Phép toán số học trừ hai con trỏ (Pointer Subtraction & ptrdiff_t)",
+    "code": "#include <iostream>\n\nint main() {\n    int arr[5] = {10, 20, 30, 40, 50};\n    int* p1 = &arr[1];\n    int* p2 = &arr[4];\n    \n    std::cout << (p2 - p1) << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. In ra: 12 (vì khoảng cách là 3 số nguyên * 4 byte = 12 byte)",
+      "B. In ra: 3 (số lượng phần tử kiểu int nằm giữa hai con trỏ)",
+      "C. In ra địa chỉ hexa của ô nhớ",
+      "D. Lỗi biên dịch vì C++ cấm trừ hai con trỏ cho nhau"
+    ],
+    "correct": 1,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Khi thực hiện phép trừ giữa hai con trỏ cùng trỏ vào một mảng (<code>p2 - p1</code>), kết quả trả về không phải là độ chênh lệch số byte vật lý thô.<br>2. Trình biên dịch tự động lấy khoảng cách byte thực tế chia cho kích thước của kiểu dữ liệu mà con trỏ trỏ tới: <code>(Byte_Address(p2) - Byte_Address(p1)) / sizeof(int)</code>.<br>3. Khoảng cách giữa phần tử index 4 và index 1 là <code>4 - 1 = 3</code> phần tử. Kiểu trả về là số nguyên có dấu <code>ptrdiff_t</code>.<br><span class=\"citation-badge\">[Nguồn: OOP1-C to C++-New.pdf - Trang 38: Phép toán trên con trỏ và mảng 1 chiều]</span>"
+  },
+  {
+    "id": 37,
+    "group_id": "q-group-8",
+    "group_name": "Nhóm 8: Con Trỏ Và Mảng (1D, 2D Decay & Pointer Arithmetic)",
+    "title": "Sự khác biệt bản chất giữa Tên Mảng (A), &A[0] và Địa Chỉ Toàn Mảng (&A)",
+    "code": "#include <iostream>\n\nint main() {\n    int A[5] = {1, 2, 3, 4, 5};\n    std::cout << sizeof(A) << \" \";\n    std::cout << sizeof(&A[0]) << \" \";\n    std::cout << sizeof(&A) << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. Trên hệ thống 64-bit in ra: 20 8 8",
+      "B. Trên hệ thống 64-bit in ra: 20 20 20",
+      "C. Trên hệ thống 64-bit in ra: 8 8 8",
+      "D. Lỗi biên dịch vì &A là cú pháp không hợp lệ"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. <code>sizeof(A)</code>: Khi đứng độc lập trong toán tử <code>sizeof</code>, <code>A</code> không bị phân rã (decay) thành con trỏ; nó đại diện cho toàn bộ đối tượng mảng 5 phần tử -> <code>5 * sizeof(int) = 20</code> bytes.<br>2. <code>sizeof(&A[0])</code>: <code>&A[0]</code> là con trỏ trỏ tới phần tử đầu tiên, kiểu dữ liệu là <code>int*</code>. Trên hệ điều hành 64-bit, con trỏ có kích thước 8 bytes.<br>3. <code>sizeof(&A)</code>: <code>&A</code> là con trỏ trỏ tới TOÀN BỘ MẢNG 5 phần tử, kiểu dữ liệu là <code>int(*)[5]</code>. Dù trỏ tới cả mảng nhưng bản chất nó vẫn là một con trỏ địa chỉ, do đó trên kiến trúc 64-bit kích thước của nó là 8 bytes.<br><span class=\"citation-badge\">[Nguồn: OOP1-C to C++-New.pdf - Trang 36-37: Con trỏ và mảng 1 chiều]</span>"
+  },
+  {
+    "id": 38,
+    "group_id": "q-group-8",
+    "group_name": "Nhóm 8: Con Trỏ Và Mảng (1D, 2D Decay & Pointer Arithmetic)",
+    "title": "Bẫy độ ưu tiên toán tử trong biểu thức *p++ so với (*p)++",
+    "code": "#include <iostream>\n\nint main() {\n    int arr[] = {10, 20, 30};\n    int* p = arr;\n\n    int v1 = *p++;\n    int v2 = (*p)++;\n\n    std::cout << \"v1=\" << v1 << \" v2=\" << v2 << \" arr[1]=\" << arr[1] << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. v1=10 v2=20 arr[1]=21",
+      "B. v1=11 v2=20 arr[1]=20",
+      "C. v1=10 v2=21 arr[1]=21",
+      "D. v1=20 v2=20 arr[1]=21"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Xét <code>*p++</code>: Toán tử hậu tố <code>++</code> có độ ưu tiên cao hơn toán tử giải tham chiếu <code>*</code>. Tuy nhiên vì là hậu tố, giá trị cũ của con trỏ <code>p</code> (địa chỉ <code>arr[0]</code>) được đưa vào toán tử <code>*</code>, lấy ra giá trị <code>10</code> gán cho <code>v1</code>. Sau đó con trỏ <code>p</code> mới dịch chuyển sang trỏ vào <code>arr[1]</code>.<br>2. Xét <code>(*p)++</code>: Dấu ngoặc đơn ép buộc thực hiện <code>*p</code> trước (đang trỏ vào <code>arr[1]</code> có giá trị 20). Toán tử hậu tố <code>++</code> trả về giá trị cũ là 20 gán cho <code>v2</code>, sau đó giá trị trong ô nhớ <code>arr[1]</code> được tăng lên thành 21!<br>3. Kết quả in ra: <code>v1=10 v2=20 arr[1]=21</code>.<br>Slide trang 38 ghi chú đặc biệt: 'Nếu int* p = A thì p++ và *p++ là khác nhau: p++ thao tác trên con trỏ dịch đến phần tử tiếp theo, *p++ thao tác trên giá trị...'.<br><span class=\"citation-badge\">[Nguồn: OOP1-C to C++-New.pdf - Trang 38: Phép toán trên con trỏ và mảng]</span>"
+  },
+  {
+    "id": 39,
+    "group_id": "q-group-8",
+    "group_name": "Nhóm 8: Con Trỏ Và Mảng (1D, 2D Decay & Pointer Arithmetic)",
+    "title": "Công thức truy xuất con trỏ mảng 2 chiều *(*(A + i) + j)",
+    "code": "#include <iostream>\n\nint main() {\n    int A[2][3] = {{1, 2, 3}, {4, 5, 6}};\n    \n    // Đọc giá trị phần tử A[1][2] qua con trỏ:\n    int val = *(*(A + 1) + 2);\n    \n    std::cout << val << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. In ra: 6",
+      "B. In ra: 5",
+      "C. In ra: 4",
+      "D. Lỗi biên dịch vì A là mảng 2 chiều không thể cộng số nguyên trực tiếp"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Trong mảng 2 chiều <code>A[2][3]</code>, <code>A</code> phân rã thành con trỏ trỏ tới hàng: <code>int (*)[3]</code>.<br>2. <code>A + 1</code> dịch chuyển con trỏ đi 1 hàng (bước nhảy = <code>3 * sizeof(int) = 12</code> bytes), trỏ tới hàng thứ 1 <code>{4, 5, 6}</code>.<br>3. <code>*(A + 1)</code> giải tham chiếu hàng, phân rã thành con trỏ trỏ tới phần tử đầu tiên của hàng 1 (kiểu <code>int*</code> trỏ tới số 4).<br>4. <code>*(A + 1) + 2</code> dịch tiếp 2 phần tử kiểu int (bước nhảy = <code>2 * 4 = 8</code> bytes), trỏ tới số 6.<br>5. Cuối cùng, <code>*(*(A + 1) + 2)</code> giải tham chiếu lấy giá trị tại ô nhớ, trả về chính xác <code>6</code>.<br><span class=\"citation-badge\">[Nguồn: OOP1-C to C++-New.pdf - Trang 40: Địa chỉ và giá trị phần tử mảng 2 chiều]</span>"
+  },
+  {
+    "id": 40,
+    "group_id": "q-group-8",
+    "group_name": "Nhóm 8: Con Trỏ Và Mảng (1D, 2D Decay & Pointer Arithmetic)",
+    "title": "Bẫy truyền Mảng 2 chiều tĩnh vào hàm nhận con trỏ kép int**",
+    "code": "#include <iostream>\n\nvoid printMatrix(int** matrix, int rows, int cols) {\n    std::cout << matrix[0][0] << std::endl;\n}\n\nint main() {\n    int A[3][3] = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};\n    printMatrix(A, 3, 3); // Lời gọi hàm này có hợp lệ?\n    return 0;\n}",
+    "options": [
+      "A. Hợp lệ và in ra 1",
+      "B. Lỗi biên dịch: cannot convert 'int (*)[3]' to 'int**'",
+      "C. Chạy được nhưng in ra giá trị rác",
+      "D. Bị lỗi crash Segfault khi truy cập matrix[0][0]"
+    ],
+    "correct": 1,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Một quan niệm sai lầm rất phổ biến là coi mảng 2 chiều tương đương với con trỏ kép <code>int**</code>.<br>2. <code>int A[3][3]</code> là một khối 9 số nguyên liên tục trên Stack. Khi truyền vào hàm, nó phân rã thành con trỏ trỏ tới mảng 3 phần tử: <code>int (*)[3]</code>.<br>3. Ngược lại, <code>int**</code> đòi hỏi một con trỏ trỏ tới một mảng các con trỏ (mỗi con trỏ mới lại trỏ tới một dòng rời rạc trên Heap). Hai kiểu dữ liệu này có bố cục bộ nhớ hoàn toàn khác nhau.<br>4. Trình biên dịch C++ phát hiện sự không tương thích kiểu và chặn ngay lập tức tại compile-time.<br><span class=\"citation-badge\">[Nguồn: OOP1-C to C++-New.pdf - Trang 40-41: Con trỏ tới con trỏ và mảng 2 chiều]</span>"
+  },
+  {
+    "id": 41,
+    "group_id": "q-group-8",
+    "group_name": "Nhóm 8: Con Trỏ Và Mảng (1D, 2D Decay & Pointer Arithmetic)",
+    "title": "Bước nhảy con trỏ khi tăng (A + 1) so với (*A + 1) trong mảng 2 chiều",
+    "code": "#include <iostream>\n\nint main() {\n    int A[3][4];\n    uintptr_t addrA = (uintptr_t)A;\n    uintptr_t stepRow = (uintptr_t)(A + 1) - addrA;\n    uintptr_t stepElem = (uintptr_t)(*A + 1) - addrA;\n\n    std::cout << stepRow << \" \" << stepElem << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. In ra: 16 4 (trên hệ thống sizeof(int) == 4)",
+      "B. In ra: 4 4",
+      "C. In ra: 12 4",
+      "D. In ra: 48 4"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. <code>A</code> có kiểu là <code>int (*)[4]</code> (con trỏ trỏ tới mảng 4 số nguyên). Khi tăng <code>A + 1</code>, con trỏ nhảy nguyên 1 hàng gồm 4 phần tử <code>int</code> -> độ lệch byte là <code>4 * sizeof(int) = 4 * 4 = 16</code> bytes.<br>2. <code>*A</code> có kiểu là <code>int*</code> (con trỏ trỏ tới phần tử đơn lẻ đầu tiên của hàng 0). Khi tăng <code>*A + 1</code>, con trỏ chỉ nhảy 1 phần tử <code>int</code> -> độ lệch byte là <code>1 * sizeof(int) = 4</code> bytes.<br>3. Kết quả in ra chính xác là <code>16 4</code>.<br><span class=\"citation-badge\">[Nguồn: OOP1-C to C++-New.pdf - Trang 40: Địa chỉ con trỏ và mảng 2 chiều]</span>"
+  },
+  {
+    "id": 42,
+    "group_id": "q-group-9",
+    "group_name": "Nhóm 9: Con Trỏ Hàm (Function Pointers)",
+    "title": "Phân biệt cú pháp: Con trỏ hàm vs Hàm trả về con trỏ",
+    "code": "#include <iostream>\n\nint* func1(int a, int b);\nint (*func2)(int a, int b);\n\nint add(int a, int b) { return a + b; }\n\nint main() {\n    func2 = add;\n    std::cout << func2(10, 20) << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. func1 là con trỏ hàm, func2 là hàm trả về con trỏ int*",
+      "B. func1 là hàm trả về con trỏ int*, func2 là con trỏ hàm; chương trình in ra 30",
+      "C. Cả hai khai báo đều là con trỏ hàm tương đương nhau",
+      "D. Lỗi biên dịch vì không dùng toán tử & khi gán func2 = &add"
+    ],
+    "correct": 1,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Slide trang 43 lưu ý rất rõ: 'Dấu () bao bọc tên hàm để thông báo đó là con trỏ hàm; nếu không có dấu () thì trình biên dịch sẽ hiểu ta đang khai báo một hàm có giá trị trả về là một con trỏ'.<br>2. Do đó <code>int* func1(...)</code> là nguyên mẫu hàm trả về con trỏ <code>int*</code>.<br>3. Còn <code>int (*func2)(...)</code> có cặp ngoặc tròn kết hợp dấu sao <code>(*func2)</code> báo hiệu đây là một biến con trỏ chứa địa chỉ của một hàm.<br>4. Trong C++, tên hàm <code>add</code> tự động phân rã thành địa chỉ của hàm đó, nên gán <code>func2 = add;</code> và gọi <code>func2(10, 20)</code> in ra 30 hoàn toàn chuẩn xác.<br><span class=\"citation-badge\">[Nguồn: OOP1-C to C++-New.pdf - Trang 43: Khai báo con trỏ hàm]</span>"
+  },
+  {
+    "id": 43,
+    "group_id": "q-group-9",
+    "group_name": "Nhóm 9: Con Trỏ Hàm (Function Pointers)",
+    "title": "Cơ chế Callback: Sử dụng con trỏ hàm làm đối số truyền cho thuật toán sắp xếp",
+    "code": "#include <iostream>\n\nbool ascending(int a, int b) { return a > b; }\nbool descending(int a, int b) { return a < b; }\n\nvoid customSort(int arr[], int n, bool (*cmp)(int, int)) {\n    for (int i = 0; i < n - 1; i++) {\n        for (int j = i + 1; j < n; j++) {\n            if (cmp(arr[i], arr[j])) {\n                int temp = arr[i];\n                arr[i] = arr[j];\n                arr[j] = temp;\n            }\n        }\n    }\n}\n\nint main() {\n    int a[] = {4, 1, 3};\n    customSort(a, 3, descending);\n    std::cout << a[0] << a[1] << a[2] << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. 134",
+      "B. 431",
+      "C. 314",
+      "D. Lỗi biên dịch khi truyền tên hàm descending vào tham số con trỏ hàm"
+    ],
+    "correct": 1,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Hàm <code>customSort</code> áp dụng mẫu thiết kế hàm gọi lại (Callback Pattern) thông qua con trỏ hàm <code>bool (*cmp)(int, int)</code>.<br>2. Khi truyền hàm <code>descending</code> (so sánh <code>a < b</code>), mỗi khi phần tử đứng trước nhỏ hơn phần tử đứng sau (<code>arr[i] < arr[j]</code>), điều kiện đúng và hai phần tử tráo đổi vị trí.<br>3. Thuật toán đưa các phần tử lớn nhất về phía đầu mảng, tức là sắp xếp giảm dần: <code>{4, 3, 1}</code>.<br>Slide trang 48-49 lấy ví dụ kinh điển về việc dùng con trỏ hàm làm tiêu chí so sánh tăng dần/giảm dần.<br><span class=\"citation-badge\">[Nguồn: OOP1-C to C++-New.pdf - Trang 48-49: Sử dụng con trỏ hàm làm đối số]</span>"
+  },
+  {
+    "id": 44,
+    "group_id": "q-group-9",
+    "group_name": "Nhóm 9: Con Trỏ Hàm (Function Pointers)",
+    "title": "Con trỏ hàm làm tham số mặc định (Default Argument Function Pointer)",
+    "code": "#include <iostream>\n\nint opAdd(int a, int b) { return a + b; }\nint opMul(int a, int b) { return a * b; }\n\n// Hàm nhận con trỏ hàm làm tham số mặc định:\nint execute(int x, int y, int (*op)(int, int) = opAdd) {\n    return op(x, y);\n}\n\nint main() {\n    std::cout << execute(3, 4) << \" \";\n    std::cout << execute(3, 4, opMul) << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. In ra: 7 12",
+      "B. In ra: 12 12",
+      "C. In ra: 7 7",
+      "D. Lỗi biên dịch vì C++ không cho phép con trỏ hàm làm giá trị mặc định"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Slide trang 50 nhấn mạnh điểm chú ý: 'Con trỏ hàm là đối số mặc định'. Trong C++, con trỏ hàm cũng là một biến con trỏ thông thường chứa địa chỉ mã lệnh của hàm, nên hoàn toàn có thể gán giá trị mặc định bằng địa chỉ của một hàm đã biết (như <code>opAdd</code>).<br>2. Khi gọi <code>execute(3, 4)</code> thiếu đối số thứ ba, compiler tự động điền địa chỉ của hàm <code>opAdd</code>, trả về <code>3 + 4 = 7</code>.<br>3. Khi gọi <code>execute(3, 4, opMul)</code>, con trỏ <code>op</code> nhận địa chỉ hàm <code>opMul</code>, trả về <code>3 * 4 = 12</code>.<br><span class=\"citation-badge\">[Nguồn: OOP1-C to C++-New.pdf - Trang 50: Con trỏ hàm là đối số mặc định]</span>"
+  },
+  {
+    "id": 45,
+    "group_id": "q-group-9",
+    "group_name": "Nhóm 9: Con Trỏ Hàm (Function Pointers)",
+    "title": "Bảo vệ hệ thống kiểu đối với Con trỏ hàm (Type Safety Trap)",
+    "code": "#include <iostream>\n\nint compute(int a, int b) { return a + b; }\ndouble computeDouble(double a, int b) { return a + b; }\n\nint main() {\n    int (*fp)(int, int) = compute; // Hợp lệ\n    fp = computeDouble; // Dòng này có hợp lệ không?\n    std::cout << fp(5, 5) << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. Hợp lệ vì trình biên dịch tự ép kiểu ngầm định tham số double thành int",
+      "B. Lỗi biên dịch: không thể gán con trỏ hàm có kiểu chữ ký khác nhau",
+      "C. Cảnh báo biên dịch và chạy bình thường",
+      "D. Lỗi runtime tại thời điểm gọi fp(5, 5)"
+    ],
+    "correct": 1,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Kiểu của con trỏ hàm trong C++ bao gồm toàn bộ chữ ký: Kiểu trả về và danh sách kiểu của toàn bộ các tham số.<br>2. <code>fp</code> có kiểu chính xác là: <code>int (*)(int, int)</code>.<br>3. Hàm <code>computeDouble</code> có kiểu: <code>double (*)(double, int)</code>.<br>4. Slide trang 45 nêu rõ: Con trỏ hàm chỉ có thể trỏ tới các hàm có cùng kiểu tham số và kiểu trả về, KHÔNG ĐƯỢC trỏ tới các hàm khác kiểu tham số hoặc kiểu trả về. Compiler sẽ từ chối biên dịch ngay lập tức.<br><span class=\"citation-badge\">[Nguồn: OOP1-C to C++-New.pdf - Trang 45: Ví dụ về tính tương thích kiểu của con trỏ hàm]</span>"
+  },
+  {
+    "id": 46,
+    "group_id": "q-group-10",
+    "group_name": "Nhóm 10: Cấp Phát Động (new/delete, Memory Leaks & Dangling)",
+    "title": "Bẫy hủy mảng cấp phát động sai cách: new[] đi với delete thường thay vì delete[]",
+    "code": "#include <iostream>\n\nstruct Sample {\n    Sample() { std::cout << \"C\"; }\n    ~Sample() { std::cout << \"D\"; }\n};\n\nint main() {\n    Sample* p = new Sample[3];\n    delete p; // Bẫy: dùng delete thay vì delete[]\n    std::cout << \"X\";\n    return 0;\n}",
+    "options": [
+      "A. In ra: CCCDDDX (hoạt động bình thường)",
+      "B. In ra: CCCDX (chỉ phần tử đầu tiên được gọi Destructor, gây rò rỉ bộ nhớ hoặc Heap Corruption / UB)",
+      "C. Lỗi biên dịch vì delete không nhận con trỏ mảng",
+      "D. Chương trình tự động sửa thành delete[]"
+    ],
+    "correct": 1,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Khi cấp phát mảng đối tượng <code>new Sample[3]</code>, trình biên dịch cấp phát một vùng nhớ heap kèm theo một ô nhớ phụ (Array Cookie) nằm ngay trước con trỏ trả về để lưu trữ số lượng phần tử (ở đây là 3), đồng thời gọi 3 lần Constructor (in <code>CCC</code>).<br>2. Khi gọi toán tử <code>delete[] p</code>, runtime sẽ đọc cookie này để gọi đúng 3 lần Destructor và giải phóng toàn bộ khối heap.<br>3. Nhưng nếu gọi <code>delete p</code> (không có ngoặc vuông), runtime coi <code>p</code> chỉ là một đối tượng đơn lẻ: nó chỉ gọi duy nhất 1 lần Destructor của phần tử đầu tiên (in <code>D</code>), bỏ qua Destructor của các phần tử còn lại, và truyền sai địa chỉ cho trình quản lý heap của OS.<br>4. Hành vi này theo chuẩn C++11 là <strong>UNDEFINED BEHAVIOR</strong> (thường gây crash Heap Corruption). Slide trang 53 & 55 nhấn mạnh: bắt buộc phải dùng <code>delete [] biếncontrỏ</code> để hủy mảng động.<br><span class=\"citation-badge\">[Nguồn: OOP1-C to C++-New.pdf - Trang 53 & 55: Giải phóng bộ nhớ & Hủy mảng động bất hợp lệ]</span>"
+  },
+  {
+    "id": 47,
+    "group_id": "q-group-10",
+    "group_name": "Nhóm 10: Cấp Phát Động (new/delete, Memory Leaks & Dangling)",
+    "title": "Bẫy con trỏ lạc (Dangling Pointer) khi nhiều con trỏ cùng trỏ tới một vùng nhớ",
+    "code": "#include <iostream>\n\nint main() {\n    int* P = new int(100);\n    int* Q = P; // Q cùng trỏ vào ô nhớ của P\n    \n    delete P; // Giải phóng ô nhớ qua P\n    P = nullptr;\n    \n    // Kiểm tra Q:\n    if (Q != nullptr) {\n        std::cout << *Q << std::endl; // Dòng nguy hiểm\n    }\n    return 0;\n}",
+    "options": [
+      "A. Luôn in ra 100 an toàn vì Q vẫn còn giữ giá trị",
+      "B. Biến Q tự động được cập nhật thành nullptr khi P bị delete",
+      "C. Lỗi biên dịch vì Q không thể đọc ô nhớ đã delete",
+      "D. Nguy hiểm: Q trở thành con trỏ lạc (Dangling Pointer); đọc *Q dẫn đến đọc vùng nhớ rác hoặc Undefined Behavior"
+    ],
+    "correct": 3,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Slide trang 56 giải thích trực quan: Khi thực hiện <code>delete P</code>, hệ điều hành thu hồi ô nhớ mà <code>P</code> trỏ tới để cấp phát cho việc khác.<br>2. Việc gán <code>P = nullptr;</code> chỉ làm sạch giá trị của bản thân con trỏ <code>P</code>. Con trỏ <code>Q</code> vẫn lưu địa chỉ cũ của vùng nhớ đã bị giải phóng.<br>3. Điều kiện <code>if (Q != nullptr)</code> vẫn thỏa mãn, nhưng việc truy cập <code>*Q</code> (Use-After-Free) là hành vi không xác định (Undefined Behavior), có thể in ra số rác hoặc gây đổ vỡ chương trình.<br><span class=\"citation-badge\">[Nguồn: OOP1-C to C++-New.pdf - Trang 56: Con trỏ lạc (Dangling pointer)]</span>"
+  },
+  {
+    "id": 48,
+    "group_id": "q-group-10",
+    "group_name": "Nhóm 10: Cấp Phát Động (new/delete, Memory Leaks & Dangling)",
+    "title": "Bẫy rò rỉ bộ nhớ (Memory Leak) khi hủy mảng 2 chiều cấp phát động",
+    "code": "#include <iostream>\n\nint main() {\n    int rows = 3, cols = 4;\n    // Cấp phát mảng 2 chiều:\n    int** arr = new int*[rows];\n    for (int i = 0; i < rows; i++) {\n        arr[i] = new int[cols];\n    }\n\n    // Giải phóng bộ nhớ:\n    delete[] arr; // Bẫy: chỉ giải phóng mảng con trỏ\n\n    std::cout << \"Done\" << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. Hoàn toàn sạch bộ nhớ, không rò rỉ",
+      "B. Rò rỉ bộ nhớ nghiêm trọng (Memory Leak): toàn bộ 3 mảng con arr[i] chứa các phần tử số nguyên bị mất dấu vĩnh viễn trên Heap",
+      "C. Lỗi biên dịch vì arr là con trỏ kép không dùng được delete[]",
+      "D. Lỗi runtime crash ngay tại dòng delete[] arr"
+    ],
+    "correct": 1,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Cấp phát mảng 2 chiều động bằng con trỏ kép thực chất là cấp phát 1 mảng các con trỏ (kích thước <code>rows</code>), và mỗi con trỏ này lại trỏ tới 1 khối nhớ độc lập trên Heap (kích thước <code>cols</code>). Tổng cộng có <code>rows + 1</code> block nhớ độc lập được cấp phát.<br>2. Nếu lập trình viên chỉ gọi <code>delete[] arr;</code>, runtime chỉ giải phóng mảng con trỏ chứa các địa chỉ. Toàn bộ <code>rows</code> khối nhớ dữ liệu thực tế vẫn nằm trên Heap nhưng đã mất hoàn toàn địa chỉ truy cập (con trỏ lưu địa chỉ bị xóa).<br>3. Vùng nhớ này không bao giờ có thể thu hồi được cho đến khi tiến trình kết thúc (Rò rỉ bộ nhớ - Memory Leak).<br>4. Quy tắc đúng: Phải duyệt vòng lặp giải phóng từng <code>delete[] arr[i];</code> trước, sau đó mới giải phóng <code>delete[] arr;</code>.<br><span class=\"citation-badge\">[Nguồn: OOP1-C to C++-New.pdf - Trang 54 & 57: Cấp phát động mảng đa chiều & Rò rỉ bộ nhớ]</span>"
+  },
+  {
+    "id": 49,
+    "group_id": "q-group-11",
+    "group_name": "Nhóm 11: Đa Năng Hóa Hàm & Đa Năng Hóa Toán Tử Cơ Bản",
+    "title": "Bẫy chuyển đổi ngầm định gây Ambiguity trong Phân giải Đa năng hóa hàm (Overload Resolution)",
+    "code": "#include <iostream>\n\nvoid printVal(int a) {\n    std::cout << \"Int: \" << a << std::endl;\n}\n\nvoid printVal(double a) {\n    std::cout << \"Double: \" << a << std::endl;\n}\n\nint main() {\n    float f = 3.14f;\n    // printVal(f); // Dòng A\n    printVal('A');  // Dòng B\n    return 0;\n}",
+    "options": [
+      "A. Dòng B in ra: Int: 65 (do ký tự char được nguyên số hóa thăng cấp nguyên vẹn - Integral Promotion lên int)",
+      "B. Cả hai dòng đều gây lỗi nhập nhằng (Ambiguity Error)",
+      "C. Dòng B in ra: Double: 65",
+      "D. Lỗi biên dịch vì không có hàm printVal(char)"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Phân giải nạp chồng hàm (Overload Resolution) trong C++11 tuân thủ thứ tự ưu tiên chặt chẽ:<br>   - Ưu tiên 1: Khớp chính xác (Exact Match).<br>   - Ưu tiên 2: Thăng cấp chuẩn (Promotion): ví dụ <code>char</code>, <code>short</code> thăng cấp lên <code>int</code>; <code>float</code> thăng cấp lên <code>double</code>.<br>   - Ưu tiên 3: Chuyển đổi chuẩn (Standard Conversion): ví dụ <code>int</code> sang <code>double</code>, hoặc ngược lại.<br>2. Tại Dòng B: Đối số truyền vào là <code>'A'</code> (kiểu <code>char</code>). Phép thăng cấp số nguyên (Integral Promotion) tự động biến <code>char</code> thành <code>int</code> với mã ASCII 65. Đây là mức Promotion (ưu tiên 2), hoàn toàn áp đảo việc chuyển đổi sang <code>double</code> (mức Conversion - ưu tiên 3). Do đó hàm <code>printVal(int)</code> được chọn dứt khoát -> in <code>Int: 65</code>.<br>3. Lưu ý: Nếu mở Dòng A với <code>float f</code>, vì có <code>float</code> thăng cấp lên <code>double</code> nên hàm <code>printVal(double)</code> sẽ được chọn an toàn.<br><span class=\"citation-badge\">[Nguồn: OOP1-C to C++-New.pdf - Trang 59-60: Quá trình tìm hàm đa năng hóa]</span>"
+  },
+  {
+    "id": 50,
+    "group_id": "q-group-11",
+    "group_name": "Nhóm 11: Đa Năng Hóa Hàm & Đa Năng Hóa Toán Tử Cơ Bản",
+    "title": "Các giới hạn bất khả xâm phạm của Đa năng hóa toán tử trong C++",
+    "code": "#include <iostream>\n\nstruct Vector2D {\n    float x, y;\n    \n    // Thử định nghĩa các toán tử:\n    // Toán tử 1:\n    Vector2D operator+(const Vector2D& o) const { return {x + o.x, y + o.y}; }\n    \n    // Toán tử 2:\n    // float operator::(int a);\n    \n    // Toán tử 3:\n    // Vector2D operator**(int exp);\n    \n    // Toán tử 4:\n    // int operatorsizeof();\n};\n\nint main() {\n    Vector2D v1{1.0f, 2.0f}, v2{3.0f, 4.0f};\n    Vector2D v3 = v1 + v2;\n    std::cout << v3.x << \" \" << v3.y << std::endl;\n    return 0;\n}",
+    "options": [
+      "A. Hợp lệ in ra 4.0 6.0; C++ cấm đa năng hóa ::, sizeof, và không cho phép tạo toán tử mới như **",
+      "B. C++ cho phép định nghĩa mọi toán tử mới kể cả ** nếu viết hàm thành viên",
+      "C. Toán tử + chỉ được phép overload dưới dạng hàm tự do bên ngoài struct",
+      "D. Toán tử :: có thể đa năng hóa được trong chuẩn C++11"
+    ],
+    "correct": 0,
+    "explanation": "<b>Cơ chế dưới gầm máy:</b><br>Slide trang 64 liệt kê chính xác các quy tắc thép của Operator Overloading trong C++:<br>1. <strong>Không thể định nghĩa các toán tử mới:</strong> Ký hiệu <code>**</code> không tồn tại trong tập toán tử của C++, do đó không thể tự chế ra nó.<br>2. <strong>Danh sách các toán tử CẤM ĐA NĂNG HÓA:</strong><br>   - <code>::</code> : Toán tử định phạm vi (Scope Resolution).<br>   - <code>.</code> : Truy cập trường struct / thành viên class trực tiếp.<br>   - <code>.*</code> : Truy cập thành viên thông qua con trỏ thành viên.<br>   - <code>?:</code> : Toán tử điều kiện ba ngôi.<br>   - <code>sizeof</code> : Toán tử tính kích thước bộ nhớ.<br>   - <code>typeid</code> : Toán tử xác định kiểu RTTI.<br>3. Do đó chỉ có Toán tử 1 (<code>operator+</code>) là hợp lệ, in ra <code>4 6</code>.<br><span class=\"citation-badge\">[Nguồn: OOP1-C to C++-New.pdf - Trang 64: Các giới hạn của đa năng hóa toán tử]</span>"
+  }
+];
+
+        let userAnswers = {};
+        let score = 0;
+
+        function renderQuiz() {
+            const container = document.getElementById('quiz-container');
+            container.innerHTML = '';
+
+            let currentGroup = '';
+
+            quizData.forEach((q, index) => {
+                // If new group, render group header
+                if (q.group_name !== currentGroup) {
+                    currentGroup = q.group_name;
+                    const groupHeader = document.createElement('div');
+                    groupHeader.id = q.group_id;
+                    groupHeader.className = 'pt-6 pb-2 border-b border-zinc-200 mt-6';
+                    groupHeader.innerHTML = `
+                        <div class="flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-[#991b1b]"></span>
+                            <h3 class="text-base font-bold text-zinc-800 uppercase tracking-wide font-sans">${currentGroup}</h3>
+                        </div>
+                    `;
+                    container.appendChild(groupHeader);
+                }
+
+                // Render Question Card
+                const card = document.createElement('div');
+                card.id = `q-${q.id}`;
+                card.className = 'bg-white border border-zinc-200 rounded-lg p-5 sm:p-6 shadow-sm hover:border-red-300 transition-colors';
+
+                const escapedCode = q.code.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+                card.innerHTML = `
+                    <div class="flex items-start justify-between gap-4 mb-3">
+                        <div class="flex items-center gap-2.5">
+                            <span class="inline-flex items-center justify-center w-7 h-7 rounded bg-red-100 text-[#991b1b] font-mono font-bold text-xs">
+                                #${q.id}
+                            </span>
+                            <h4 class="font-bold text-zinc-900 text-base leading-snug">${q.title}</h4>
+                        </div>
+                        <span id="badge-status-${q.id}" class="text-xs font-mono font-medium text-zinc-400">Chưa làm</span>
+                    </div>
+
+                    <div class="mb-4">
+                        <pre><code class="language-cpp">${escapedCode}</code></pre>
+                    </div>
+
+                    <div class="space-y-2.5" id="options-container-${q.id}">
+                        ${q.options.map((opt, optIdx) => `
+                            <button type="button" 
+                                    id="btn-${q.id}-${optIdx}" 
+                                    onclick="handleSelectOption(${q.id}, ${optIdx})"
+                                    class="option-btn">
+                                <span class="w-5 h-5 rounded-full border border-zinc-300 flex items-center justify-center text-xs font-mono font-bold flex-shrink-0 mt-0.5">
+                                    ${String.fromCharCode(65 + optIdx)}
+                                </span>
+                                <span class="flex-grow">${opt}</span>
+                            </button>
+                        `).join('')}
+                    </div>
+
+                    <div id="answer-${q.id}" class="answer-block">
+                        <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#991b1b] mb-2 font-sans">
+                            <i class="fa-solid fa-microchip"></i> Cơ chế dưới gầm máy (Under the hood)
+                        </div>
+                        <div class="text-zinc-700 space-y-1">${q.explanation}</div>
+                    </div>
+                `;
+
+                container.appendChild(card);
+            });
+
+            Prism.highlightAll();
+        }
+
+        function handleSelectOption(qId, selectedIdx) {
+            if (userAnswers[qId] !== undefined) return; // already answered
+
+            const q = quizData.find(item => item.id === qId);
+            userAnswers[qId] = selectedIdx;
+
+            const isCorrect = (selectedIdx === q.correct);
+            if (isCorrect) {
+                score++;
+            }
+
+            // Update score & count
+            updateScoreDisplay();
+
+            // Disable all buttons in this question
+            q.options.forEach((_, idx) => {
+                const btn = document.getElementById(`btn-${qId}-${idx}`);
+                btn.disabled = true;
+
+                if (idx === q.correct) {
+                    btn.classList.add('show-correct');
+                }
+            });
+
+            // Mark clicked button
+            const clickedBtn = document.getElementById(`btn-${qId}-${selectedIdx}`);
+            if (isCorrect) {
+                clickedBtn.classList.remove('show-correct');
+                clickedBtn.classList.add('selected-correct');
+            } else {
+                clickedBtn.classList.add('selected-wrong');
+            }
+
+            // Update status badge
+            const statusBadge = document.getElementById(`badge-status-${qId}`);
+            if (isCorrect) {
+                statusBadge.innerHTML = '<span class="text-emerald-700 font-bold"><i class="fa-solid fa-check"></i> Đúng</span>';
+            } else {
+                statusBadge.innerHTML = '<span class="text-rose-700 font-bold"><i class="fa-solid fa-xmark"></i> Sai</span>';
+            }
+
+            // Show answer explanation block
+            const ansBlock = document.getElementById(`answer-${qId}`);
+            ansBlock.classList.add('show');
+        }
+
+        function updateScoreDisplay() {
+            const total = quizData.length;
+            const answeredCount = Object.keys(userAnswers).length;
+            document.getElementById('score-display').innerText = `Điểm: ${score}/${total}`;
+            document.getElementById('answered-count').innerText = `${answeredCount}/${total}`;
+        }
+
+        function resetQuiz() {
+            if (!confirm('Bạn có chắc chắn muốn làm lại bài kiểm tra từ đầu?')) return;
+            userAnswers = {};
+            score = 0;
+            updateScoreDisplay();
+            renderQuiz();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Initialize on DOM Ready
+        document.addEventListener('DOMContentLoaded', () => {
+            renderQuiz();
+            updateScoreDisplay();
+        });
+    </script>
+</body>
+</html>

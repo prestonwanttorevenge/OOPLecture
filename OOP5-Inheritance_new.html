@@ -1,0 +1,1323 @@
+<!DOCTYPE html>
+<html lang="vi" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chương 5: Kế Thừa (Inheritance) - MOSTest5_2</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Lora', 'serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        crimson: {
+                            50: '#fff1f2',
+                            100: '#ffe4e6',
+                            200: '#fecdd3',
+                            300: '#fda4af',
+                            400: '#fb7185',
+                            500: '#f43f5e',
+                            600: '#e11d48',
+                            700: '#be123c',
+                            800: '#991b1b',
+                            900: '#881337',
+                            950: '#4c0519',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- PrismJS Dark Tomorrow Theme -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+
+    <style>
+        body {
+            background-color: #fafafa;
+            color: #18181b;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .theory-content {
+            font-family: 'Lora', serif;
+            font-size: 1.05rem;
+            line-height: 1.8;
+            color: #27272a;
+        }
+
+        .theory-content h3 {
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            color: #991b1b;
+            letter-spacing: -0.02em;
+        }
+
+        .under-the-hood {
+            background-color: #ffffff;
+            border-left: 4px solid #991b1b;
+            padding: 1.25rem 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 0 0.5rem 0.5rem 0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+        }
+
+        .under-the-hood-title {
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.05em;
+            color: #991b1b;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .citation-badge {
+            display: inline-block;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: #991b1b;
+            background-color: #fef2f2;
+            border: 1px solid #fecaca;
+            padding: 0.15rem 0.5rem;
+            border-radius: 0.25rem;
+            margin-top: 0.5rem;
+        }
+
+        pre[class*="language-"] {
+            border-radius: 0.5rem;
+            margin: 1rem 0;
+            border: 1px solid #27272a;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+        }
+
+        .quiz-btn {
+            transition: all 0.15s ease-in-out;
+        }
+
+        .quiz-btn.selected-correct {
+            background-color: #059669 !important;
+            color: #ffffff !important;
+            border-color: #047857 !important;
+        }
+
+        .quiz-btn.selected-wrong {
+            background-color: #dc2626 !important;
+            color: #ffffff !important;
+            border-color: #b91c1c !important;
+        }
+
+        .quiz-btn.show-correct {
+            background-color: #10b981 !important;
+            color: #ffffff !important;
+            border-color: #059669 !important;
+        }
+
+        .answer-block {
+            display: none;
+        }
+
+        .answer-block.show {
+            display: block;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .inline-code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875em;
+            background-color: #f4f4f5;
+            padding: 0.15em 0.4em;
+            border-radius: 0.25rem;
+            color: #991b1b;
+            border: 1px solid #e4e4e7;
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col">
+
+    <!-- Top Sticky Header -->
+    <header class="sticky top-0 z-50 bg-[#991b1b] text-white shadow-md border-b border-red-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <i class="fa-solid fa-sitemap text-2xl text-red-200"></i>
+                <div>
+                    <h1 class="text-lg font-bold tracking-tight">C++11 Academic Masterclass</h1>
+                    <p class="text-xs text-red-200 font-mono">Chương 5: Kế Thừa (Inheritance) & Cơ Chế Dưới Gầm Máy</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="text-right hidden sm:block">
+                    <span id="score-display" class="font-mono text-sm font-semibold bg-red-900/60 px-3 py-1.5 rounded border border-red-700/50">Điểm: 0/50</span>
+                </div>
+                <button onclick="resetQuiz()" class="px-3 py-1.5 text-xs font-semibold bg-red-700 hover:bg-red-600 rounded transition flex items-center gap-1.5 shadow-sm">
+                    <i class="fa-solid fa-rotate-right"></i> Làm lại
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 flex flex-col lg:flex-row gap-8 w-full">
+
+        <!-- Sticky Sidebar Navigation (TOC) -->
+        <aside class="w-full lg:w-72 shrink-0">
+            <div class="sticky top-24 space-y-6">
+                <!-- TOC Theory -->
+                <div class="bg-white border border-zinc-200 rounded-lg p-5 shadow-sm">
+                    <h2 class="text-xs font-bold uppercase tracking-wider text-[#991b1b] font-mono mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-book-open"></i> Mục Lục Lý Thuyết
+                    </h2>
+                    <nav class="space-y-1 text-sm font-medium">
+                        <a href="#theory-concept" class="block py-1.5 px-2.5 rounded hover:bg-red-50 hover:text-[#991b1b] transition text-zinc-700">1. Bản Chất Kế Thừa & IS-A vs HAS-A</a>
+                        <a href="#theory-access" class="block py-1.5 px-2.5 rounded hover:bg-red-50 hover:text-[#991b1b] transition text-zinc-700">2. Quyền Truy Cập (public/protected/private)</a>
+                        <a href="#theory-lifecycle" class="block py-1.5 px-2.5 rounded hover:bg-red-50 hover:text-[#991b1b] transition text-zinc-700">3. Vòng Đời Ctor / Dtor & Bài Tập Slide</a>
+                        <a href="#theory-hiding" class="block py-1.5 px-2.5 rounded hover:bg-red-50 hover:text-[#991b1b] transition text-zinc-700">4. Che Khuất Tên (Name Hiding) & Overriding</a>
+                        <a href="#theory-casting" class="block py-1.5 px-2.5 rounded hover:bg-red-50 hover:text-[#991b1b] transition text-zinc-700">5. Upcast, Downcast & Bẫy Slicing</a>
+                        <a href="#theory-multiple" class="block py-1.5 px-2.5 rounded hover:bg-red-50 hover:text-[#991b1b] transition text-zinc-700">6. Đa Kế Thừa & Kế Thừa Ảo (Diamond)</a>
+                    </nav>
+                </div>
+
+                <!-- TOC Quiz -->
+                <div class="bg-white border border-zinc-200 rounded-lg p-5 shadow-sm">
+                    <h2 class="text-xs font-bold uppercase tracking-wider text-[#991b1b] font-mono mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-vial-circle-check"></i> 50 Câu Trắc Nghiệm Code
+                    </h2>
+                    <nav class="space-y-1 text-xs font-mono text-zinc-600">
+                        <a href="#q-group-1" class="block py-1 px-2 rounded hover:bg-red-50 hover:text-[#991b1b] transition">Câu 01 - 08: Bố Cục Bộ Nhớ & Ctor/Dtor</a>
+                        <a href="#q-group-2" class="block py-1 px-2 rounded hover:bg-red-50 hover:text-[#991b1b] transition">Câu 09 - 16: Quyền Truy Cập public/pro/pri</a>
+                        <a href="#q-group-3" class="block py-1 px-2 rounded hover:bg-red-50 hover:text-[#991b1b] transition">Câu 17 - 24: Che Khuất Tên & Overriding</a>
+                        <a href="#q-group-4" class="block py-1 px-2 rounded hover:bg-red-50 hover:text-[#991b1b] transition">Câu 25 - 34: Upcast, Downcast & Slicing</a>
+                        <a href="#q-group-5" class="block py-1 px-2 rounded hover:bg-red-50 hover:text-[#991b1b] transition">Câu 35 - 44: Đa Kế Thừa & Kế Thừa Ảo</a>
+                        <a href="#q-group-6" class="block py-1 px-2 rounded hover:bg-red-50 hover:text-[#991b1b] transition">Câu 45 - 50: C++11 Inheriting & Nâng Cao</a>
+                    </nav>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 space-y-10 min-w-0">
+
+            <!-- THEORY SECTION -->
+            <article class="bg-white border border-zinc-200 rounded-lg p-6 sm:p-10 shadow-sm space-y-8">
+                <div class="border-b-2 border-[#991b1b] pb-4">
+                    <div class="flex items-center gap-2 text-xs font-mono font-bold text-[#991b1b] uppercase tracking-wider mb-1">
+                        Tài Liệu Học Thuật Chuyên Sâu C++11
+                    </div>
+                    <h2 class="text-3xl font-black text-zinc-900 tracking-tight font-sans uppercase">
+                        Chương 5: Cơ Chế Kế Thừa (Inheritance) & Kiến Trúc Dưới Gầm Máy
+                    </h2>
+                    <p class="text-sm text-zinc-500 font-serif italic mt-1">
+                        Trích xuất toàn diện từ slide bài giảng OOP5-Inheritance_new.pdf (81 trang) và OOP5-Inheritance_Baitap.pdf (6 trang)
+                    </p>
+                </div>
+
+                <!-- Theory Part 1 -->
+                <section id="theory-concept" class="theory-content space-y-4">
+                    <h3 class="text-xl">1. Bản Chất Kế Thừa & Cơ Chế Tái Sử Dụng Mã Nguồn</h3>
+                    <p>
+                        Trong kỹ nghệ phần mềm, sao chép mã nguồn (copy-paste) dẫn tới sự phình to kích thước chương trình, khó khăn khi bảo trì và chi phí nâng cấp tốn kém. Hiện tượng trùng lặp thông tin thường xuất hiện ở 2 dạng:
+                        <br><strong>- Dạng chia sẻ:</strong> Hai thực thể có phần chung giao nhau ($A \cap B 
+eq \emptyset$).
+                        <br><strong>- Dạng mở rộng:</strong> Thực thể $B$ bao hàm trọn vẹn $A$ và bổ sung thêm các đặc tính riêng ($B = A + \epsilon$).
+                    </p>
+                    <p>
+                        Kế thừa giải quyết bài toán trên bằng cách cho phép một lớp dẫn xuất (Derived Class) thừa hưởng các thuộc tính và phương thức của lớp cơ sở (Base Class). Tuy nhiên, cần phân biệt rõ hai mối quan hệ nền tảng:
+                        <br><strong>- IS-A (Kế Thừa):</strong> Thể hiện mối quan hệ bản chất chủng loại. Ví dụ: <code>Car IS-A MotorVehicle</code> (Ô tô là một loại phương tiện cơ giới). Dùng <code>public inheritance</code>.
+                        <br><strong>- HAS-A (Bao Đóng / Composition):</strong> Thể hiện mối quan hệ sở hữu. Ví dụ: <code>Car HAS-A Engine</code> (Xe ô tô có một động cơ). Luôn ưu tiên dùng biến thành viên thay vì kế thừa.
+                    </p>
+
+                    <div class="under-the-hood">
+                        <div class="under-the-hood-title"><i class="fa-solid fa-microchip"></i> Cơ Chế Dưới Gầm Máy: Bố Cục Bộ Nhớ Của Đối Tượng Kế Thừa (Memory Layout)</div>
+                        <p class="text-sm text-zinc-700 font-sans leading-relaxed">
+                            Khi một lớp dẫn xuất được cấp phát trong RAM, trình biên dịch bố trí <strong>Base Class Subobject nằm ngay ở phần đầu (offset 0)</strong> của cấu trúc bộ nhớ. Ngay sau Base Subobject là các trường dữ liệu riêng của lớp dẫn xuất theo thứ tự khai báo.
+                            <br>- Do đó, địa chỉ raw của đối tượng <code>Derived</code> trùng khớp hoàn toàn với địa chỉ của <code>Base</code> subobject trong đơn kế thừa, cho phép phép toán Upcasting diễn ra với chi phí CPU bằng 0 (Zero-overhead conversion).
+                        </p>
+                    </div>
+                    <span class="citation-badge">[Nguồn: OOP5-Inheritance_new.pdf - Trang 2-15 & 47-49: Khái niệm & Quan hệ IS-A vs HAS-A]</span>
+                </section>
+
+                <!-- Theory Part 2 -->
+                <section id="theory-access" class="theory-content space-y-4 pt-6 border-t border-zinc-200">
+                    <h3 class="text-xl">2. Cú Pháp & Bảng Quyền Truy Cập (public, protected, private)</h3>
+                    <p>
+                        C++ cung cấp 3 từ khóa định nghĩa kiểu thừa kế: <code class="inline-code">class Derived : [access-specifier] Base</code>. Ma trận biến đổi quyền truy cập như sau:
+                    </p>
+                    <div class="overflow-x-auto my-3">
+                        <table class="min-w-full text-xs font-sans border border-zinc-200 text-left">
+                            <thead class="bg-zinc-100 font-bold text-zinc-700">
+                                <tr>
+                                    <th class="p-2 border">Quyền ở Lớp Cơ Sở (Base)</th>
+                                    <th class="p-2 border">Thừa Kế Public</th>
+                                    <th class="p-2 border">Thừa Kế Protected</th>
+                                    <th class="p-2 border">Thừa Kế Private</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="p-2 border font-mono text-emerald-700">public</td>
+                                    <td class="p-2 border font-semibold text-emerald-700">public</td>
+                                    <td class="p-2 border font-semibold text-amber-700">protected</td>
+                                    <td class="p-2 border font-semibold text-rose-700">private</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2 border font-mono text-amber-700">protected</td>
+                                    <td class="p-2 border font-semibold text-amber-700">protected</td>
+                                    <td class="p-2 border font-semibold text-amber-700">protected</td>
+                                    <td class="p-2 border font-semibold text-rose-700">private</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2 border font-mono text-rose-700">private</td>
+                                    <td class="p-2 border text-zinc-400 italic">Không truy cập được</td>
+                                    <td class="p-2 border text-zinc-400 italic">Không truy cập được</td>
+                                    <td class="p-2 border text-zinc-400 italic">Không truy cập được</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="under-the-hood">
+                        <div class="under-the-hood-title"><i class="fa-solid fa-shield-halved"></i> Cơ Chế Dưới Gầm Máy: Compile-time Access Checking</div>
+                        <p class="text-sm text-zinc-700 font-sans leading-relaxed">
+                            Từ khóa bảo vệ (<code>public</code>, <code>protected</code>, <code>private</code>) chỉ là một cơ chế kiểm tra tính hợp lệ tại <strong>thời điểm biên dịch (Compile-time)</strong>. Chúng hoàn toàn biến mất trong file nhị phân (Binary) sau khi biên dịch và không hề tiêu tốn một byte RAM nào.
+                            <br>- Trong C++, <code>struct</code> mặc định kế thừa <code>public</code>, còn <code>class</code> mặc định kế thừa <code>private</code>.
+                            <br>- Lớp dẫn xuất có thể sử dụng chỉ thị <code class="inline-code">using Base::member;</code> để tái công khai (unhide hoặc promote) một thành viên từ protected lên public.
+                        </p>
+                    </div>
+                    <span class="citation-badge">[Nguồn: OOP5-Inheritance_new.pdf - Trang 31-40: Quyền truy nhập public, protected, private]</span>
+                </section>
+
+                <!-- Theory Part 3 -->
+                <section id="theory-lifecycle" class="theory-content space-y-4 pt-6 border-t border-zinc-200">
+                    <h3 class="text-xl">3. Vòng Đời Đối Tượng: Trình Tự Thực Thi Constructor & Destructor</h3>
+                    <p>
+                        Quy tắc bất biến trong C++: <strong>Xây nền tảng trước, xây tầng trên sau; Hủy tầng trên trước, dỡ nền tảng sau</strong>.
+                        <br><strong>- Quá trình Khởi tạo (Construction):</strong>
+                        1. Khởi tạo Base Class Subobject (thông qua Member Initializer List của Derived).
+                        2. Khởi tạo các biến thành viên của Derived theo đúng <em>thứ tự khai báo</em> trong định nghĩa class.
+                        3. Thực thi thân hàm Constructor của Derived.
+                        <br><strong>- Quá trình Hủy (Destruction):</strong>
+                        Diễn ra theo thứ tự ngăn xếp LIFO hoàn toàn ngược lại. Thân Destructor của Derived chạy trước, rồi giải phóng các thành viên riêng, cuối cùng gọi Base Destructor.
+                    </p>
+                    <div class="under-the-hood">
+                        <div class="under-the-hood-title"><i class="fa-solid fa-code-branch"></i> Bẫy Lập Trình: Side-effects trong Constructor Chaining (Bài Tập 1 Slide)</div>
+                        <p class="text-sm text-zinc-700 font-sans leading-relaxed">
+                            Xét ví dụ bài tập trang 2 slide OOP5-Baitap: <code class="inline-code">Z(int i) : Y(i++) {}</code>.
+                            <br>- Constructor của <code>Y</code> nhận giá trị cũ của <code>i</code> trước khi tăng (do toán tử hậu tố <code>i++</code>).
+                            <br>- Sau khi hoàn thành khởi tạo cho <code>Y</code>, biến <code>i</code> của <code>Z</code> mới mang giá trị mới.
+                            <br>- Nếu lớp dẫn xuất tự định nghĩa <strong>Copy Constructor</strong> mà quên gọi tường minh <code>Base(other)</code> trong danh sách khởi tạo, trình biên dịch sẽ tự động gọi <em>Default Constructor</em> của Base, làm mất sạch dữ liệu sao chép của lớp cha!
+                        </p>
+                    </div>
+                    <span class="citation-badge">[Nguồn: OOP5-Inheritance_new.pdf - Trang 29-30 & OOP5-Inheritance_Baitap.pdf - Trang 2: Thứ tự gọi hàm dựng]</span>
+                </section>
+
+                <!-- Theory Part 4 -->
+                <section id="theory-hiding" class="theory-content space-y-4 pt-6 border-t border-zinc-200">
+                    <h3 class="text-xl">4. Hiện Tượng Che Khuất Tên (Name Hiding) & Tái Định Nghĩa (Overriding)</h3>
+                    <p>
+                        Một lỗi hiểu lầm nghiêm trọng của người học C++ là cho rằng Function Overloading có thể diễn ra xuyên suốt cây kế thừa giữa Base và Derived.
+                        <br><strong>Quy tắc Name Lookup:</strong> Nếu lớp dẫn xuất khai báo bất kỳ hàm nào trùng tên với hàm của lớp cha (bất kể danh sách tham số và kiểu trả về có khác biệt hay không), toàn bộ các hàm cùng tên ở lớp cha sẽ bị <strong>CHE KHUẤT (Shadowed / Hidden)</strong> hoàn toàn khỏi scope của lớp dẫn xuất.
+                    </p>
+                    <div class="under-the-hood">
+                        <div class="under-the-hood-title"><i class="fa-solid fa-eye-slash"></i> Cơ Chế Dưới Gầm Máy: Name Lookup vs Overload Resolution</div>
+                        <p class="text-sm text-zinc-700 font-sans leading-relaxed">
+                            Trình biên dịch thực hiện tìm kiếm tên (Name Lookup) từ scope hiện tại trước. Ngay khi tìm thấy tên hàm trong <code>Derived</code>, quá trình tìm kiếm dừng lại và chuyển sang bước kiểm tra kiểu (Type Checking). Nó không bao giờ tìm kiếm tiếp lên scope của <code>Base</code>.
+                            <br>- Để khôi phục các hàm của Base vào bộ nạp chồng của Derived, ta phải sử dụng chỉ thị: <code class="inline-code">using Base::func_name;</code>.
+                            <br>- Biến thành viên trùng tên giữa Base và Derived cũng bị che khuất tương tự: cả hai biến đều cùng tồn tại trong RAM ở các offset khác nhau, truy cập bằng cú pháp <code class="inline-code">Base::variable</code>.
+                        </p>
+                    </div>
+                    <span class="citation-badge">[Nguồn: OOP5-Inheritance_new.pdf - Trang 41-46: Overriding & Name Hiding]</span>
+                </section>
+
+                <!-- Theory Part 5 -->
+                <section id="theory-casting" class="theory-content space-y-4 pt-6 border-t border-zinc-200">
+                    <h3 class="text-xl">5. Chuyển Kiểu Trong Kế Thừa: Upcasting, Downcasting & Bẫy Cắt Xén (Object Slicing)</h3>
+                    <p>
+                        Kế thừa công khai tạo ra mối quan hệ subtype tự nhiên:
+                        <br><strong>- Upcasting (Ép kiểu lên):</strong> Chuyển con trỏ hoặc tham chiếu từ <code>Derived* / Derived&</code> thành <code>Base* / Base&</code>. Đây là phép biến đổi hoàn toàn an toàn, ngầm định (implicit) và không mất chi phí runtime.
+                        <br><strong>- Downcasting (Ép kiểu xuống):</strong> Chuyển từ <code>Base*</code> thành <code>Derived*</code>. Đây là phép toán nguy hiểm vì con trỏ Base có thể không thực sự trỏ tới một đối tượng Derived hoàn chỉnh. Phải dùng <code class="inline-code">dynamic_cast</code> (đòi hỏi lớp phải có ít nhất 1 hàm virtual để sinh RTTI) hoặc <code class="inline-code">static_cast</code> (nếu chắc chắn 100% để tránh chi phí RTTI).
+                    </p>
+                    <div class="under-the-hood">
+                        <div class="under-the-hood-title"><i class="fa-solid fa-scissors"></i> Bẫy Tử Thần: Object Slicing (Cắt Xén Đối Tượng)</div>
+                        <p class="text-sm text-zinc-700 font-sans leading-relaxed">
+                            Hiện tượng <strong>Object Slicing</strong> xảy ra khi truyền tham trị một đối tượng Derived vào một biến nhận kiểu Base: <code class="inline-code">Base b = derivedObj;</code> hoặc <code class="inline-code">void func(Base b);</code>.
+                            <br>- Khi đó, hàm khởi tạo sao chép <code>Base::Base(const Base&)</code> được gọi, nó CHỈ sao chép phần Base subobject, toàn bộ dữ liệu thành viên mở rộng và con trỏ ảo của Derived bị "cắt phăng" hoàn toàn!
+                            <br>- Đối tượng <code>b</code> trở thành một Base nguyên thủy, mất hoàn toàn tính đa hình động. <em>Quy tắc vàng: Luôn truyền đối tượng đa hình qua Con trỏ (Pointer) hoặc Tham chiếu hằng (Const Reference)!</em>
+                        </p>
+                    </div>
+                    <span class="citation-badge">[Nguồn: OOP5-Inheritance_new.pdf - Trang 50-70: Upcast, Downcast và Object Slicing]</span>
+                </section>
+
+                <!-- Theory Part 6 -->
+                <section id="theory-multiple" class="theory-content space-y-4 pt-6 border-t border-zinc-200">
+                    <h3 class="text-xl">6. Đa Kế Thừa & Kế Thừa Ảo (The Diamond Problem)</h3>
+                    <p>
+                        C++ hỗ trợ đa kế thừa (Multiple Inheritance), cho phép một lớp dẫn xuất từ nhiều lớp cơ sở: <code class="inline-code">class C : public A, public B</code>.
+                        <br>Mô hình này tiềm ẩn hiểm họa <strong>Vấn Đề Hình Thoi (The Diamond Problem)</strong>: Khi cả $B$ và $C$ đều kế thừa từ $A$, và lớp $D$ kế thừa cả $B$ và $C$.
+                        <br>- Trong bộ nhớ của $D$, sẽ tồn tại <strong>HAI bản sao độc lập của $A$</strong>. Bất kỳ thao tác truy cập nào tới thành viên của $A$ qua $D$ sẽ bị compiler báo lỗi mơ hồ (Ambiguous member).
+                    </p>
+                    <div class="under-the-hood">
+                        <div class="under-the-hood-title"><i class="fa-solid fa-gem"></i> Cơ Chế Dưới Gầm Máy: Kế Thừa Ảo (Virtual Inheritance) & vbptr</div>
+                        <p class="text-sm text-zinc-700 font-sans leading-relaxed">
+                            Để giải quyết vấn đề hình thoi, C++ đưa ra <strong>Kế Thừa Ảo</strong>: <code class="inline-code">class B : virtual public A</code> và <code class="inline-code">class C : virtual public A</code>.
+                            <br>1. <strong>Đồng nhất Subobject:</strong> Trình biên dịch hợp nhất 2 bản sao thành duy nhất MỘT subobject $A$ dùng chung trong lòng đối tượng $D$.
+                            <br>2. <strong>Trách nhiệm của Most-Derived Class:</strong> Lớp dẫn xuất xa nhất ($D$) chịu trách nhiệm trực tiếp gọi Constructor của Virtual Base ($A$), bỏ qua mọi lời gọi tới $A$ từ $B$ và $C$.
+                            <br>3. <strong>Chi phí bộ nhớ:</strong> Để định vị được subobject $A$ ảo trong thời gian chạy, trình biên dịch phải chèn thêm một con trỏ cơ sở ảo (<strong>vbptr</strong> - Virtual Base Pointer) hoặc lưu offset trong VTable, làm tăng kích thước của đối tượng thêm 8-16 bytes trên kiến trúc 64-bit.
+                        </p>
+                    </div>
+                    <span class="citation-badge">[Nguồn: OOP5-Inheritance_new.pdf - Trang 71-76: Đa thừa kế, Sự mơ hồ & Lớp cơ sở ảo]</span>
+                </section>
+
+            </article>
+
+            <!-- INTERACTIVE QUIZ SECTION: EXACTLY 50 CODE-CENTRIC QUESTIONS -->
+            <article class="bg-white border border-zinc-200 rounded-lg p-6 sm:p-10 shadow-sm">
+                <div class="border-b-2 border-[#991b1b] pb-4 mb-8 flex flex-col sm:flex-row justify-between sm:items-end gap-3">
+                    <div>
+                        <div class="flex items-center gap-2 text-xs font-mono font-bold text-[#991b1b] uppercase tracking-wider mb-1">
+                            Bài Kiểm Tra Năng Lực Trắc Nghiệm Tương Tác
+                        </div>
+                        <h2 class="text-2xl font-black text-zinc-900 tracking-tight font-sans uppercase">
+                            50 Câu Trắc Nghiệm Code & Bẫy Kế Thừa C++11 Chuyên Sâu
+                        </h2>
+                        <p class="text-xs text-zinc-500 mt-1">
+                            100% dựa trên các đoạn code thực tế: bẫy Slicing, Downcast UB, Name Hiding, Diamond Problem, EBO và C++11 Inheriting Ctor
+                        </p>
+                    </div>
+                    <div class="text-xs text-zinc-500 font-mono">
+                        Tổng số câu: <span class="font-bold text-[#991b1b]">50</span> | Đã trả lời: <span id="answered-count" class="font-bold text-zinc-800">0</span>
+                    </div>
+                </div>
+
+                <!-- Questions Container -->
+                <div id="quiz-container" class="space-y-12">
+                    <!-- Injected by JavaScript -->
+                </div>
+            </article>
+
+        </main>
+    </div>
+
+    <!-- Script Quiz Engine & Data -->
+    <script>
+        const quizData = [
+        {
+                "id": 1,
+                "group_id": "q-group-1",
+                "group_name": "Nhóm 1: Bố Cục Bộ Nhớ & Vòng Đời Ctor / Dtor",
+                "title": "Thứ tự gọi Constructor và Destructor trong đơn kế thừa (LIFO)",
+                "code": "#include <iostream>\n\nstruct Base {\n    Base() { std::cout << \"B1 \"; }\n    ~Base() { std::cout << \"B2 \"; }\n};\n\nstruct Derived : public Base {\n    Derived() { std::cout << \"D1 \"; }\n    ~Derived() { std::cout << \"D2 \"; }\n};\n\nint main() {\n    {\n        Derived d;\n    }\n    return 0;\n}",
+                "options": [
+                        "A. B1 D1 D2 B2 (Lớp cơ sở xây trước, lớp dẫn xuất hủy trước)",
+                        "B. D1 B1 B2 D2",
+                        "C. B1 D1 B2 D2",
+                        "D. D1 B1 D2 B2"
+                ],
+                "correct": 0,
+                "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Trong C++, đối tượng lớp dẫn xuất chứa một đối tượng con của lớp cơ sở (Base subobject). Để xây dựng được <code>Derived</code>, hệ thống bắt buộc phải xây dựng nền tảng <code>Base</code> trước -> in ra <code>B1</code>, sau đó thân constructor của <code>Derived</code> mới thực thi -> in ra <code>D1</code>.<br>2. Khi hết phạm vi (scope), quá trình giải phóng tuân theo nguyên tắc ngăn xếp LIFO (Last-In First-Out): phần mở rộng của <code>Derived</code> được hủy trước -> in ra <code>D2</code>, sau đó đến subobject của <code>Base</code> -> in ra <code>B2</code>.<br><span class=\"citation-badge\">[Nguồn: OOP5-Inheritance_new.pdf - Trang 29-30: Hàm dựng và hàm hủy trong kế thừa]</span>"
+        },
+        {
+                "id": 2,
+                "group_id": "q-group-1",
+                "group_name": "Nhóm 1: Bố Cục Bộ Nhớ & Vòng Đời Ctor / Dtor",
+                "title": "Thứ tự khởi tạo giữa Base Subobject và Member Object",
+                "code": "#include <iostream>\n\nstruct Member {\n    Member(const char* name) { std::cout << name << \" \"; }\n};\n\nstruct Base {\n    Member m1;\n    Base() : m1(\"M1\") { std::cout << \"Base \"; }\n};\n\nstruct Derived : public Base {\n    Member m2;\n    Derived() : m2(\"M2\") { std::cout << \"Derived \"; }\n};\n\nint main() {\n    Derived d;\n    return 0;\n}",
+                "options": [
+                        "A. M2 Derived M1 Base",
+                        "B. M1 Base M2 Derived (Khởi tạo toàn bộ Base gồm thành viên của Base, rồi mới tới thành viên và thân Derived)",
+                        "C. Base M1 Derived M2",
+                        "D. M1 M2 Base Derived"
+                ],
+                "correct": 1,
+                "explanation": "<b>Cơ chế dưới gầm máy:</b><br>Thứ tự khởi tạo được chuẩn hóa nghiêm ngặt bởi C++:<br>1. Khởi tạo Base class subobject trước tiên. Trong Base, thành viên <code>m1</code> được khởi tạo trước thân Base -> in <code>M1 Base </code>.<br>2. Tiếp theo khởi tạo các thành viên của Derived theo thứ tự khai báo: <code>m2</code> được tạo -> in <code>M2 </code>.<br>3. Cuối cùng thực thi thân constructor của Derived -> in <code>Derived </code>.<br><span class=\"citation-badge\">[Nguồn: OOP5-Inheritance_new.pdf - Trang 30: Trình tự khởi tạo các thành phần]</span>"
+        },
+        {
+                "id": 3,
+                "group_id": "q-group-1",
+                "group_name": "Nhóm 1: Bố Cục Bộ Nhớ & Vòng Đời Ctor / Dtor",
+                "title": "Bẫy Side-effect post-increment trong Constructor Chaining (Bài tập Slide)",
+                "code": "#include <iostream>\n\nclass X {\npublic:\n    X() { std::cout << \"X \"; }\n};\n\nclass Y : public X {\npublic:\n    Y(int i) { std::cout << \"Y(\" << i << \") \"; }\n};\n\nclass Z : public Y {\npublic:\n    Z(int i) : Y(i++) { std::cout << \"Z(\" << i << \") \"; }\n};\n\nint main() {\n    Z obj(5);\n    return 0;\n}",
+                "options": [
+                        "A. X Y(5) Z(6)",
+                        "B. X Y(6) Z(6)",
+                        "C. Y(5) X Z(6)",
+                        "D. Lỗi biên dịch vì không thể truyền biểu thức i++ vào danh sách khởi tạo"
+                ],
+                "correct": 0,
+                "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Khởi tạo <code>Z</code> bắt đầu bằng khởi tạo lớp cha <code>Y</code>, và <code>Y</code> lại bắt đầu bằng khởi tạo <code>X</code> (in ra <code>X </code>).<br>2. Biểu thức <code>Y(i++)</code>: toán tử hậu tố <code>i++</code> trả về giá trị cũ là <code>5</code> để truyền vào constructor của <code>Y</code> -> in ra <code>Y(5) </code>.<br>3. Sau điểm sequence point đó, biến <code>i</code> của <code>Z</code> tăng lên thành <code>6</code>. Thân constructor của <code>Z</code> in ra <code>Z(6) </code>.<br><span class=\"citation-badge\">[Nguồn: OOP5-Inheritance_Baitap.pdf - Trang 2: Bài tập 1 - Thứ tự gọi hàm dựng với i++]</span>"
+        },
+        {
+                "id": 4,
+                "group_id": "q-group-1",
+                "group_name": "Nhóm 1: Bố Cục Bộ Nhớ & Vòng Đời Ctor / Dtor",
+                "title": "Bẫy Custom Copy Constructor quên gọi Base Copy Constructor",
+                "code": "#include <iostream>\n\nstruct Base {\n    int x;\n    Base(int val = 10) : x(val) {}\n    Base(const Base& other) : x(other.x) { std::cout << \"BaseCopy \"; }\n};\n\nstruct Derived : public Base {\n    int y;\n    Derived(int vx, int vy) : Base(vx), y(vy) {}\n    // Custom Copy Constructor nhưng không gọi Base(other) trong init list\n    Derived(const Derived& other) : y(other.y) {\n        std::cout << \"DerivedCopy \";\n    }\n};\n\nint main() {\n    Derived d1(100, 200);\n    Derived d2 = d1;\n    std::cout << \"| x=\" << d2.x << \", y=\" << d2.y << std::endl;\n    return 0;\n}",
+                "options": [
+                        "A. DerivedCopy | x=100, y=200",
+                        "B. BaseCopy DerivedCopy | x=100, y=200",
+                        "C. DerivedCopy | x=10, y=200 (Subobject Base bị khởi tạo bằng default constructor Base())",
+                        "D. Lỗi biên dịch vì Derived bắt buộc phải gọi Base copy constructor"
+                ],
+                "correct": 2,
+                "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Nếu bạn tự viết Copy Constructor cho lớp dẫn xuất mà KHÔNG tường minh gọi <code>Base(other)</code> trong danh sách khởi tạo, trình biên dịch sẽ tự động gọi <strong>Default Constructor</strong> <code>Base()</code> cho phần Base subobject!<br>2. Kết quả là <code>d2.x</code> nhận giá trị mặc định là <code>10</code> (chứ không phải <code>100</code> được sao chép từ <code>d1</code>). Đây là một bẫy rò rỉ logic cực kỳ phổ biến trong C++.<br><span class=\"citation-badge\">[Nguồn: OOP5-Inheritance_new.pdf - Trang 29 & OOP5-Inheritance_Baitap.pdf - Trang 2: Copy constructor trong kế thừa]</span>"
+        },
+        {
+                "id": 5,
+                "group_id": "q-group-1",
+                "group_name": "Nhóm 1: Bố Cục Bộ Nhớ & Vòng Đời Ctor / Dtor",
+                "title": "Bẫy Toán tử gán operator= trong lớp dẫn xuất",
+                "code": "#include <iostream>\n\nstruct Base {\n    int val = 0;\n    Base& operator=(const Base& rhs) {\n        val = rhs.val + 10;\n        return *this;\n    }\n};\n\nstruct Derived : public Base {\n    int extra = 0;\n    Derived& operator=(const Derived& rhs) {\n        extra = rhs.extra;\n        // Quên gọi Base::operator=(rhs);\n        return *this;\n    }\n};\n\nint main() {\n    Derived d1, d2;\n    d1.val = 5; d1.extra = 20;\n    d2 = d1;\n    std::cout << \"val=\" << d2.val << \", extra=\" << d2.extra << std::endl;\n    return 0;\n}",
+                "options": [
+                        "A. val=15, extra=20",
+                        "B. val=5, extra=20",
+                        "C. val=0, extra=20 (Phần Base subobject không hề được cập nhật vì toán tử gán không tự động gọi lên cha)",
+                        "D. Lỗi biên dịch vì Derived::operator= che khuất Base::operator="
+                ],
+                "correct": 2,
+                "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Không giống như Constructor và Destructor (tự động chuỗi hóa lên Base), toán tử gán <code>operator=</code> của lớp dẫn xuất một khi đã tự định nghĩa thì <strong>KHÔNG tự động gọi</strong> <code>operator=</code> của Base.<br>2. Vì lập trình viên quên gọi <code>Base::operator=(rhs);</code>, vùng nhớ của Base trong <code>d2</code> giữ nguyên giá trị ban đầu (<code>val = 0</code>).<br><span class=\"citation-badge\">[Nguồn: OOP5-Inheritance_new.pdf - Trang 75: Tái định nghĩa toán tử trong lớp dẫn xuất]</span>"
+        },
+        {
+                "id": 6,
+                "group_id": "q-group-1",
+                "group_name": "Nhóm 1: Bố Cục Bộ Nhớ & Vòng Đời Ctor / Dtor",
+                "title": "Tối ưu hóa lớp cơ sở rỗng (Empty Base Optimization - EBO)",
+                "code": "#include <iostream>\n\nstruct EmptyBase {};\n\nstruct Derived1 : public EmptyBase {\n    int a;\n};\n\nstruct NonDerived {\n    EmptyBase eb;\n    int a;\n};\n\nint main() {\n    std::cout << sizeof(Derived1) << \" \" << (sizeof(NonDerived) > sizeof(Derived1)) << std::endl;\n    return 0;\n}",
+                "options": [
+                        "A. 4 1 (Nhờ EBO, EmptyBase không tốn thêm byte nào trong Derived1, trong khi cấu trúc composition NonDerived tốn thêm byte padding)",
+                        "B. 8 0",
+                        "C. 5 0",
+                        "D. 4 0"
+                ],
+                "correct": 0,
+                "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Một struct rỗng độc lập có kích thước ít nhất 1 byte để đảm bảo mỗi đối tượng có địa chỉ riêng biệt.<br>2. Tuy nhiên, khi kế thừa (<code>Derived1 : public EmptyBase</code>), chuẩn C++ cho phép cơ chế <strong>Empty Base Optimization (EBO)</strong>: Base subobject rỗng có kích thước hiệu dụng là 0 byte bên trong Derived1, do đó <code>sizeof(Derived1) == sizeof(int) == 4</code>.<br>3. Ngược lại, khi nhúng làm thành viên (<code>NonDerived</code>), <code>eb</code> chiếm 1 byte + 3 byte padding căn lề (alignment) trước <code>int a</code> -> <code>sizeof(NonDerived) == 8</code>.<br><span class=\"citation-badge\">[Nguồn: OOP5-Inheritance_new.pdf - Trang 10-15: Bố cục bộ nhớ đối tượng]</span>"
+        },
+        {
+                "id": 7,
+                "group_id": "q-group-1",
+                "group_name": "Nhóm 1: Bố Cục Bộ Nhớ & Vòng Đời Ctor / Dtor",
+                "title": "Ngoại lệ văng ra từ Constructor lớp dẫn xuất và thứ tự dtor của Base",
+                "code": "#include <iostream>\n\nstruct Base {\n    Base() { std::cout << \"+B \"; }\n    ~Base() { std::cout << \"-B \"; }\n};\n\nstruct Derived : public Base {\n    Derived() {\n        std::cout << \"+D \";\n        throw 1;\n    }\n    ~Derived() { std::cout << \"-D \"; }\n};\n\nint main() {\n    try {\n        Derived d;\n    } catch (...) {\n        std::cout << \"Caught\";\n    }\n    return 0;\n}",
+                "options": [
+                        "A. +B +D -D -B Caught",
+                        "B. +B +D -B Caught (Destructor của Derived KHÔNG chạy, nhưng Destructor của Base đã hoàn thành nên PHẢI được giải phóng)",
+                        "C. +B +D Caught (Không có destructor nào chạy)",
+                        "D. +B +D -B -D Caught"
+                ],
+                "correct": 1,
+                "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Trong C++, destructor của một lớp chỉ được gọi nếu constructor của nó đã chạy XONG trọn vẹn. Vì constructor của <code>Derived</code> ném ngoại lệ giữa chừng, đối tượng <code>Derived</code> coi như chưa từng tồn tại, nên <code>~Derived()</code> <strong>KHÔNG ĐƯỢC GỌI</strong>.<br>2. Tuy nhiên, <code>Base</code> subobject đã hoàn thành constructor thành công trước đó, do đó quá trình Stack Unwinding sẽ tự động gọi <code>~Base()</code> để thu dọn phần base -> in ra <code>+B +D -B Caught</code>.<br><span class=\"citation-badge\">[Nguồn: OOP5-Inheritance_new.pdf - Trang 29 & OOP8-Exception.pdf - Trang 43: Constructor failure & Stack unwinding]</span>"
+        },
+        {
+                "id": 8,
+                "group_id": "q-group-1",
+                "group_name": "Nhóm 1: Bố Cục Bộ Nhớ & Vòng Đời Ctor / Dtor",
+                "title": "Lỗi biên dịch khi Base thiếu Default Constructor",
+                "code": "#include <iostream>\n\nclass Base {\npublic:\n    Base(int x) {}\n};\n\nclass Derived : public Base {\npublic:\n    Derived() {} // Không khai báo khởi tạo cho Base\n};\n\nint main() {\n    Derived d;\n    return 0;\n}",
+                "options": [
+                        "A. Biên dịch thành công, Base::x được gán giá trị rác",
+                        "B. Lỗi biên dịch: không có default constructor hợp lệ cho lớp Base",
+                        "C. Biên dịch thành công, compiler tự động sinh Base::Base() rỗng",
+                        "D. Chương trình crash tại runtime"
+                ],
+                "correct": 1,
+                "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Do <code>Base</code> đã tự định nghĩa một constructor có tham số <code>Base(int)</code>, trình biên dịch <strong>KHÔNG</strong> tự động sinh default constructor <code>Base()</code> nữa.<br>2. Constructor của <code>Derived()</code> cố gắng ngầm định gọi <code>Base()</code> nhưng không tồn tại, dẫn tới lỗi biên dịch ngay lập tức. Để sửa, lập trình viên phải viết tường minh <code>Derived() : Base(0) {}</code>.<br><span class=\"citation-badge\">[Nguồn: OOP5-Inheritance_new.pdf - Trang 29: Ràng buộc constructor mặc định]</span>"
+        },
+        {
+                "id": 9,
+                "group_id": "q-group-2",
+                "group_name": "Nhóm 2: Quyền Truy Cập public, protected, private",
+                "title": "Truy cập protected member từ hàm main thông qua thể hiện Derived",
+                "code": "#include <iostream>\n\nclass Vehicle {\nprotected:\n    int speed = 60;\n};\n\nclass Car : public Vehicle {\npublic:\n    void printSpeed() {\n        std::cout << speed << \" \";\n    }\n};\n\nint main() {\n    Car c;\n    c.printSpeed();\n    // std::cout << c.speed; // Dòng A\n    return 0;\n}",
+                "options": [
+                        "A. c.printSpeed() in ra 60; Dòng A nếu bỏ chú thích sẽ gây lỗi biên dịch vì speed là protected đối với bên ngoài lớp",
+                        "B. Dòng A hợp lệ vì Car kế thừa public từ Vehicle",
+                        "C. Cả c.printSpeed() và Dòng A đều gây lỗi biên dịch",
+                        "D. speed tự động biến thành public trong Car"
+                ],
+                "correct": 0,
+                "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Quyền <code>protected</code> cho phép các hàm thành viên của lớp dẫn xuất (<code>Car::printSpeed()</code>) truy cập trực tiếp.<br>2. Tuy nhiên, đối với người dùng bên ngoài (như hàm <code>main()</code>), thành viên <code>protected</code> vẫn hoàn toàn bị che giấu như <code>private</code>. Truy cập trực tiếp <code>c.speed</code> là vi phạm kiểm tra access control của compiler.<br><span class=\"citation-badge\">[Nguồn: OOP5-Inheritance_new.pdf - Trang 36-37: Từ khóa protected và quyền truy nhập]</span>"
+        },
+        {
+                "id": 10,
+                "group_id": "q-group-2",
+                "group_name": "Nhóm 2: Quyền Truy Cập public, protected, private",
+                "title": "Thừa kế private biến mọi thành viên thành private của lớp con",
+                "code": "#include <iostream>\n\nclass Engine {\npublic:\n    void start() { std::cout << \"EngineStarted \"; }\n};\n\nclass Airplane : private Engine {\npublic:\n    void fly() {\n        start(); // Truy cập nội bộ hợp lệ\n    }\n};\n\nclass Jet : public Airplane {\npublic:\n    void test() {\n        // start(); // Dòng B\n    }\n};\n\nint main() {\n    Airplane a;\n    a.fly();\n    // a.start(); // Dòng C\n    return 0;\n}",
+                "options": [
+                        "A. In ra EngineStarted; Cả Dòng B và Dòng C nếu mở ra đều gây lỗi biên dịch",
+                        "B. Dòng C lỗi nhưng Dòng B hợp lệ",
+                        "C. In ra EngineStarted; Cả Dòng B và Dòng C đều hợp lệ",
+                        "D. Lỗi biên dịch ngay từ dòng Airplane : private Engine"
+                ],
+                "correct": 0,
+                "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Với <code>private inheritance</code>, mọi thành viên public/protected của <code>Engine</code> sẽ trở thành <code>private</code> trong <code>Airplane</code>.<br>2. Do đó, chỉ riêng các phương thức của chính <code>Airplane</code> mới gọi được <code>start()</code>.<br>3. Lớp con kế tiếp là <code>Jet</code> không thể thấy <code>start()</code> (Dòng B lỗi), và người dùng bên ngoài cũng không thể gọi <code>a.start()</code> (Dòng C lỗi).<br><span class=\"citation-badge\">[Nguồn: OOP5-Inheritance_new.pdf - Trang 33-35: Thừa kế private và hệ quả]</span>"
+        },
+        {
+                "id": 11,
+                "group_id": "q-group-2",
+                "group_name": "Nhóm 2: Quyền Truy Cập public, protected, private",
+                "title": "Bẫy Upcasting với Private / Protected Inheritance",
+                "code": "#include <iostream>\n\nclass Base {};\nclass Derived : private Base {};\n\nvoid test(Base* b) {}\n\nint main() {\n    Derived d;\n    // test(&d); // Dòng X\n    return 0;\n}",
+                "options": [
+                        "A. Hợp lệ vì con trỏ Derived luôn luôn ép kiểu ngầm định được về Base*",
+                        "B. Lỗi biên dịch tại Dòng X: 'Base' is an inaccessible base of 'Derived' (Upcast chỉ hợp lệ với public inheritance bên ngoài lớp)",
+                        "C. Lỗi runtime phân mảnh bộ nhớ",
+                        "D. Trình biên dịch sinh cảnh báo nhưng vẫn chạy được"
+                ],
+                "correct": 1,
+                "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Upcasting ngầm định từ <code>Derived*</code> về <code>Base*</code> thể hiện mối quan hệ 'IS-A'.<br>2. Nhưng với <code>private</code> hoặc <code>protected</code> inheritance, quan hệ IS-A bị ẩn với thế giới bên ngoài. Trình biên dịch coi Base là không thể truy cập (inaccessible), do đó từ chối phép upcasting này tại Dòng X.<br><span class=\"citation-badge\">[Nguồn: OOP5-Inheritance_new.pdf - Trang 58 & 72: Điều kiện thực hiện phép Upcast]</span>"
+        },
+        {
+                "id": 12,
+                "group_id": "q-group-2",
+                "group_name": "Nhóm 2: Quyền Truy Cập public, protected, private",
+                "title": "Sử dụng từ khóa using để khôi phục quyền truy cập public trong Derived",
+                "code": "#include <iostream>\n\nclass Base {\nprotected:\n    void secret() { std::cout << \"Unlocked \"; }\n};\n\nclass Derived : public Base {\npublic:\n    using Base::secret; // Đưa phương thức protected lên public\n};\n\nint main() {\n    Derived d;\n    d.secret();\n    return 0;\n}",
+                "options": [
+                        "A. In ra: Unlocked (C++ cho phép dùng cú pháp using để thăng hạng quyền truy cập từ protected lên public)",
+                        "B. Lỗi biên dịch vì derived class không thể thay đổi quyền truy cập của base class",
+                        "C. Lỗi runtime Access Violation",
+                        "D. Chỉ in ra khi chạy ở chế độ debug"
+                ],
+                "correct": 0,
+                "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Trong C++, một lớp con có quyền truy cập vào thành viên <code>protected</code> của lớp cha, và nó có quyền dùng từ khóa <code>using Base::secret;</code> đặt trong phần <code>public:</code> của mình để công khai phương thức đó cho đối tượng bên ngoài gọi trực tiếp.<br><span class=\"citation-badge\">[Nguồn: OOP5-Inheritance_new.pdf - Trang 38-40: Điều chỉnh quyền truy cập thành viên]</span>"
+        },
+        {
+                "id": 13,
+                "group_id": "q-group-2",
+                "group_name": "Nhóm 2: Quyền Truy Cập public, protected, private",
+                "title": "Khác biệt mặc định về kiểu kế thừa giữa struct và class",
+                "code": "#include <iostream>\n\nclass A {\npublic:\n    int x = 10;\n};\n\nstruct B : A {}; // Kiểu thừa kế mặc định là gì?\nclass C : A {};  // Kiểu thừa kế mặc định là gì?\n\nint main() {\n    B b;\n    std::cout << b.x << \" \";\n    C c;\n    // std::cout << c.x; // Dòng Z\n    return 0;\n}",
+                "options": [
+                        "A. In ra: 10; B mặc định là public inheritance, còn C mặc định là private inheritance",
+                        "B. Cả B và C đều mặc định là public inheritance",
+                        "C. Cả B và C đều mặc định là private inheritance",
+                        "D. In ra: 10 10; Không có sự khác biệt giữa struct và class"
+                ],
+                "correct": 0,
+                "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Trong C++, nếu không ghi rõ từ khóa kế thừa: đối với <code>struct</code> mặc định là <code>public</code>, còn đối với <code>class</code> mặc định là <code>private</code>.<br>2. Do đó <code>b.x</code> truy cập công khai bình thường, trong khi <code>c.x</code> là private đối với bên ngoài (Dòng Z sẽ báo lỗi biên dịch).<br><span class=\"citation-badge\">[Nguồn: OOP5-Inheritance_new.pdf - Trang 32-33: Kiểu thừa kế mặc định của struct và class]</span>"
+        },
+        {
+                "id": 14,
+                "group_id": "q-group-2",
+                "group_name": "Nhóm 2: Quyền Truy Cập public, protected, private",
+                "title": "Bẫy truy cập protected member trên một đối tượng Base khác",
+                "code": "#include <iostream>\n\nclass Base {\nprotected:\n    int val = 42;\n};\n\nclass Derived : public Base {\npublic:\n    void hack(Base& b) {\n        // std::cout << b.val; // Dòng L\n    }\n    void accessSelf() {\n        std::cout << this->val << \" \";\n    }\n};\n\nint main() {\n    Derived d;\n    d.accessSelf();\n    return 0;\n}",
+                "options": [
+                        "A. d.accessSelf() in ra 42; Dòng L nếu mở ra sẽ bị LỖI BIÊN DỊCH (Lớp con chỉ được truy cập protected trên chính nó hoặc đối tượng cùng kiểu dẫn xuất)",
+                        "B. Cả Dòng L và d.accessSelf() đều hợp lệ vì Derived kế thừa Base",
+                        "C. d.accessSelf() gây lỗi biên dịch",
+                        "D. val bị ẩn hoàn toàn đối với Derived"
+                ],
+                "correct": 0,
+                "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Chuẩn C++ quy định nghiêm ngặt: Lớp dẫn xuất <code>Derived</code> chỉ được truy cập thành viên <code>protected</code> thông qua con trỏ hoặc tham chiếu có kiểu thuộc cây dẫn xuất của nó (như <code>Derived*</code> hoặc <code>this</code>).<br>2. Nó KHÔNG được phép truy cập thành viên protected của một đối tượng <code>Base</code> độc lập ngẫu nhiên (như tham số <code>Base& b</code> ở Dòng L) để bảo vệ tính đóng gói.<br><span class=\"citation-badge\">[Nguồn: OOP5-Inheritance_new.pdf - Trang 36-37: Ràng buộc truy cập protected]</span>"
+        },
+        {
+                "id": 15,
+                "group_id": "q-group-2",
+                "group_name": "Nhóm 2: Quyền Truy Cập public, protected, private",
+                "title": "Tính chất quan hệ bạn bè (Friendship) trong thừa kế",
+                "code": "#include <iostream>\n\nclass Base {\nprivate:\n    int secret = 99;\n    friend void reveal(Base& b);\n};\n\nclass Derived : public Base {\nprivate:\n    int dSecret = 88;\n};\n\nvoid reveal(Base& b) {\n    std::cout << b.secret << \" \";\n    // Derived* d = (Derived*)&b;\n    // std::cout << d->dSecret; // Dòng F\n}\n\nint main() {\n    Base b;\n    reveal(b);\n    return 0;\n}",
+                "options": [
+                        "A. In ra 99; Quan hệ friend KHÔNG được kế thừa (Friendship is not inherited)",
+                        "B. In ra 99 88",
+                        "C. Lỗi biên dịch vì friend function không thể truy cập private của Base",
+                        "D. reveal tự động trở thành friend của Derived"
+                ],
+                "correct": 0,
+                "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Câu thần chú bất biến của C++: <em>'Friendship is neither inherited nor transitive'</em> (Quan hệ bạn bè không được thừa kế và không có tính bắc cầu).<br>2. Hàm <code>reveal</code> là bạn của <code>Base</code> nên truy cập được <code>b.secret</code>, nhưng nó KHÔNG phải là bạn của <code>Derived</code>. Nếu mở Dòng F, compiler sẽ báo lỗi <code>dSecret is private</code>.<br><span class=\"citation-badge\">[Nguồn: OOP3-Class&Objec_new.pdf & OOP5-Inheritance_new.pdf - Trang 36: Hàm bạn và quyền kế thừa]</span>"
+        },
+        {
+                "id": 16,
+                "group_id": "q-group-2",
+                "group_name": "Nhóm 2: Quyền Truy Cập public, protected, private",
+                "title": "Ma trận biến đổi quyền truy cập trong Protected Inheritance",
+                "code": "#include <iostream>\n\nclass GrandParent {\npublic:\n    int pub = 1;\nprotected:\n    int pro = 2;\nprivate:\n    int pri = 3;\n};\n\nclass Parent : protected GrandParent {\n    // pub và pro trở thành protected trong Parent\n};\n\nclass Child : public Parent {\npublic:\n    void print() {\n        std::cout << pub << \" \" << pro << \" \";\n    }\n};\n\nint main() {\n    Child c;\n    c.print();\n    return 0;\n}",
+                "options": [
+                        "A. In ra: 1 2 (Trong protected inheritance, cả public và protected của lớp cơ sở đều chuyển thành protected, do đó Child vẫn truy cập được)",
+                        "B. Lỗi biên dịch vì pub bị biến thành private trong Parent",
+                        "C. Lỗi biên dịch vì pro không thể kế thừa qua 2 cấp",
+                        "D. In ra: 1 2 3"
+                ],
+                "correct": 0,
+                "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Trong <code>protected inheritance</code>:<br>   - <code>public</code> của cha -> trở thành <code>protected</code> của con.<br>   - <code>protected</code> của cha -> trở thành <code>protected</code> của con.<br>   - <code>private</code> của cha -> không thể truy cập.<br>2. Do <code>Parent</code> sở hữu <code>pub</code> và <code>pro</code> dưới dạng <code>protected</code>, nên lớp cháu <code>Child</code> (kế thừa public từ Parent) hoàn toàn có quyền truy cập chúng.<br><span class=\"citation-badge\">[Nguồn: OOP5-Inheritance_new.pdf - Trang 37-38: Ma trận quyền truy cập]</span>"
+        },
+        {
+                "id": 17,
+                "group_id": "q-group-3",
+                "group_name": "Nhóm 3: Che Khuất Tên (Name Hiding) & Tái Định Nghĩa",
+                "title": "Bẫy Name Hiding kinh điển khi khác danh sách tham số giữa Base và Derived",
+                "code": "#include <iostream>\n\nstruct Base {\n    void func(int x) { std::cout << \"Base::int=\" << x << \" \"; }\n};\n\nstruct Derived : public Base {\n    void func(double d) { std::cout << \"Derived::double=\" << d << \" \"; }\n};\n\nint main() {\n    Derived d;\n    d.func(10); // Truyền số nguyên 10\n    return 0;\n}",
+                "options": [
+                        "A. Base::int=10 (Trình biên dịch tự tìm overload phù hợp nhất ở Base)",
+                        "B. Derived::double=10 (Hàm func ở Derived che khuất toàn bộ hàm func ở Base; 10 bị ép kiểu ngầm định thành 10.0)",
+                        "C. Lỗi biên dịch vì mơ hồ giữa hai phiên bản",
+                        "D. Lỗi runtime do mismatch tham số"
+                ],
+                "correct": 1,
+                "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Trong C++, quy trình tìm kiếm tên (<strong>Name Lookup</strong>) diễn ra TRƯỚC quy trình chọn hàm nạp chồng (<strong>Overload Resolution</strong>).<br>2. Khi gọi <code>d.func(...)</code>, trình biên dịch tìm kiếm tên <code>func</code> trong scope của <code>Derived</code>. Do đã tìm thấy <code>Derived::func</code>, quá trình Name Lookup <strong>DỪNG LẠI NGAY LẬP TỨC</strong> và hoàn toàn bỏ qua scope của <code>Base</code>.<br>3. Số nguyên <code>10</code> sau đó bị ép kiểu ngầm định thành <code>double</code> và gọi vào <code>Derived::func</code>!<br><span class=\"citation-badge\">[Nguồn: OOP5-Inheritance_new.pdf - Trang 41-43: Hiện tượng che khuất tên & Overriding]</span>"
+        },
+        {
+                "id": 18,
+                "group_id": "q-group-3",
+                "group_name": "Nhóm 3: Che Khuất Tên (Name Hiding) & Tái Định Nghĩa",
+                "title": "Dùng từ khóa using để unhide các overload của Base trong Derived",
+                "code": "#include <iostream>\n\nstruct Base {\n    void show(int x) { std::cout << \"B_int \"; }\n};\n\nstruct Derived : public Base {\n    using Base::show; // Đưa show(int) vào overload set của Derived\n    void show(double d) { std::cout << \"D_double \"; }\n};\n\nint main() {\n    Derived d;\n    d.show(5);\n    d.show(3.14);\n    return 0;\n}",
+                "options": [
+                        "A. B_int D_double (Nhờ chỉ thị using, show(int) của Base được đưa vào bộ nạp chồng của Derived)",
+                        "B. D_double D_double",
+                        "C. Lỗi biên dịch vì trùng tên hàm show",
+                        "D. B_int B_int"
+                ],
+                "correct": 0,
+                "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Chỉ thị <code>using Base::show;</code> chỉ đạo trình biên dịch nạp tất cả các phiên bản của <code>show</code> từ lớp cha vào phạm vi nạp chồng (overload set) của lớp con <code>Derived</code>.<br>2. Do đó khi gọi <code>d.show(5)</code>, phiên bản nhận <code>int</code> là exact match tốt nhất, nên gọi <code>Base::show</code> -> in ra <code>B_int D_double</code>.<br><span class=\"citation-badge\">[Nguồn: OOP5-Inheritance_new.pdf - Trang 43-44: Nạp lại bộ hàm bị che khuất]</span>"
+        },
+        {
+                "id": 19,
+                "group_id": "q-group-3",
+                "group_name": "Nhóm 3: Che Khuất Tên (Name Hiding) & Tái Định Nghĩa",
+                "title": "Che khuất biến thành viên (Shadowing Member Variables)",
+                "code": "#include <iostream>\n\nstruct Base {\n    int value = 10;\n};\n\nstruct Derived : public Base {\n    int value = 20; // Trùng tên biến với Base\n    void print() {\n        std::cout << value << \" \" << Base::value << \" \";\n    }\n};\n\nint main() {\n    Derived d;\n    d.print();\n    std::cout << sizeof(d) / sizeof(int);\n    return 0;\n}",
+                "options": [
+                        "A. In ra: 20 10 2 (Derived chứa CẢ HAI biến value độc lập trong bộ nhớ, sizeof(d) là 8 byte)",
+                        "B. In ra: 20 20 1",
+                        "C. Lỗi biên dịch do khai báo biến trùng tên trong lớp kế thừa",
+                        "D. In ra: 10 20 2"
+                ],
+                "correct": 0,
+                "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Biến thành viên trong lớp dẫn xuất <strong>KHÔNG GHI ĐÈ</strong> vùng nhớ của lớp cha mà chỉ CHE KHUẤT (shadow) nó.<br>2. Trong RAM, đối tượng <code>d</code> sở hữu 2 ô nhớ kiểu <code>int</code> tách biệt: <code>Base::value</code> (offset 0) và <code>Derived::value</code> (offset 4).<br>3. Tổng kích thước là 8 bytes, tương đương 2 biến <code>int</code>.<br><span class=\"citation-badge\">[Nguồn: OOP5-Inheritance_new.pdf - Trang 12-14: Bộ nhớ chứa các trường trùng tên]</span>"
+        },
+        {
+                "id": 20,
+                "group_id": "q-group-3",
+                "group_name": "Nhóm 3: Che Khuất Tên (Name Hiding) & Tái Định Nghĩa",
+                "title": "Gọi hàm non-virtual bị che khuất qua con trỏ Base (Static Binding)",
+                "code": "#include <iostream>\n\nstruct Base {\n    void say() { std::cout << \"BaseSay \"; }\n};\n\nstruct Derived : public Base {\n    void say() { std::cout << \"DerivedSay \"; }\n};\n\nint main() {\n    Derived d;\n    Base* ptr = &d;\n    ptr->say(); // Gọi qua con trỏ Base\n    d.say();    // Gọi qua đối tượng Derived\n    return 0;\n}",
+                "options": [
+                        "A. DerivedSay DerivedSay",
+                        "B. BaseSay DerivedSay (Hàm không ảo dùng liên kết tĩnh Static Binding dựa trên kiểu của con trỏ tại thời điểm biên dịch)",
+                        "C. BaseSay BaseSay",
+                        "D. Lỗi biên dịch vì say bị định nghĩa lại"
+                ],
+                "correct": 1,
+                "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Vì phương thức <code>say()</code> không có từ khóa <code>virtual</code>, trình biên dịch sử dụng <strong>Liên kết tĩnh (Static Binding)</strong>.<br>2. Khi gọi <code>ptr->say()</code>, kiểu tĩnh của con trỏ là <code>Base*</code>, nên compiler cố định mã máy trỏ thẳng tới địa chỉ của <code>Base::say</code>.<br>3. Ngược lại, <code>d.say()</code> có kiểu tĩnh là <code>Derived</code>, gọi thẳng <code>Derived::say</code>.<br><span class=\"citation-badge\">[Nguồn: OOP5-Inheritance_new.pdf - Trang 41 & 61: Upcast và liên kết tĩnh]</span>"
+        },
+        {
+                "id": 21,
+                "group_id": "q-group-3",
+                "group_name": "Nhóm 3: Che Khuất Tên (Name Hiding) & Tái Định Nghĩa",
+                "title": "Tái định nghĩa hàm Static trong lớp dẫn xuất",
+                "code": "#include <iostream>\n\nstruct Base {\n    static void hello() { std::cout << \"StaticBase \"; }\n};\n\nstruct Derived : public Base {\n    static void hello() { std::cout << \"StaticDerived \"; }\n};\n\nint main() {\n    Derived d;\n    Base* p = &d;\n    p->hello();\n    Derived::hello();\n    return 0;\n}",
+                "options": [
+                        "A. StaticDerived StaticDerived",
+                        "B. StaticBase StaticDerived (Hàm static không thể có tính đa hình động, gọi qua con trỏ Base* luôn gọi bản static của Base)",
+                        "C. Lỗi biên dịch vì hàm static không được phép thừa kế",
+                        "D. StaticBase StaticBase"
+                ],
+                "correct": 1,
+                "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Hàm <code>static</code> thuộc về phạm vi của class, không liên kết với con trỏ <code>this</code> và không có bảng ảo VTable.<br>2. Biểu thức <code>p->hello()</code> thực chất chỉ dùng kiểu tĩnh của <code>p</code> (tức <code>Base</code>) để phân giải tên lúc biên dịch, tương đương với <code>Base::hello()</code>.<br><span class=\"citation-badge\">[Nguồn: OOP5-Inheritance_new.pdf - Trang 42 & OOP3-Class&Objec_new.pdf: Phương thức static trong kế thừa]</span>"
+        },
+        {
+                "id": 22,
+                "group_id": "q-group-3",
+                "group_name": "Nhóm 3: Che Khuất Tên (Name Hiding) & Tái Định Nghĩa",
+                "title": "Từ khóa final ngăn chặn kế thừa lớp trong C++11",
+                "code": "#include <iostream>\n\nclass FinalClass final {\npublic:\n    int x = 5;\n};\n\n// class SubClass : public FinalClass {}; // Dòng K\n\nint main() {\n    FinalClass fc;\n    std::cout << fc.x;\n    return 0;\n}",
+                "options": [
+                        "A. In ra 5; Dòng K nếu mở ra sẽ gây LỖI BIÊN DỊCH vì từ khóa final trong C++11 cấm bất kỳ lớp nào kế thừa từ FinalClass",
+                        "B. Dòng K hợp lệ nếu dùng private inheritance",
+                        "C. Lỗi biên dịch vì từ khóa final chỉ được dùng cho hàm ảo chứ không được dùng cho class",
+                        "D. In ra 5 và sinh cảnh báo compiler"
+                ],
+                "correct": 0,
+                "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Trong chuẩn C++11, từ khóa <code>final</code> khi đặt sau tên lớp (<code>class FinalClass final</code>) sẽ cấm tuyệt đối mọi hành vi kế thừa từ lớp này.<br>2. Mọi nỗ lực <code>class SubClass : public FinalClass</code> sẽ bị trình biên dịch chặn lại ngay lập tức với lỗi: <em>cannot derive from 'final' base</em>.<br><span class=\"citation-badge\">[Nguồn: OOP5-Inheritance_new.pdf - Trang 15 & C++11 Standard: final specifier]</span>"
+        },
+        {
+                "id": 23,
+                "group_id": "q-group-3",
+                "group_name": "Nhóm 3: Che Khuất Tên (Name Hiding) & Tái Định Nghĩa",
+                "title": "Bẫy đệ quy vô hạn khi ghi đè phương thức mà quên scope Base::",
+                "code": "#include <iostream>\n\nstruct Base {\n    void log() { std::cout << \"BaseLog \"; }\n};\n\nstruct Derived : public Base {\n    void log() {\n        // Dự định gọi hàm cha trước khi in tiếp:\n        // log(); // Dòng R: Quên viết Base::log();\n        std::cout << \"DerivedLog \";\n    }\n};\n\nint main() {\n    Derived d;\n    d.log();\n    return 0;\n}",
+                "options": [
+                        "A. In ra DerivedLog; Nếu mở Dòng R sẽ gây tràn ngăn xếp (Stack Overflow) do đệ quy vô hạn chính nó",
+                        "B. Nếu mở Dòng R sẽ in ra: BaseLog DerivedLog",
+                        "C. Trình biên dịch tự động đoán lập trình viên muốn gọi Base::log()",
+                        "D. Lỗi biên dịch tại Dòng R do gọi hàm trùng tên"
+                ],
+                "correct": 0,
+                "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Trong thân hàm <code>Derived::log()</code>, việc gọi <code>log()</code> không có tiền tố phạm vi sẽ kích hoạt tìm kiếm tên tại chính scope của <code>Derived</code>.<br>2. Nó sẽ liên tục gọi chính nó (self-recursion) mãi mãi mà không có điểm dừng, dẫn đến cạn kiệt bộ nhớ stack và sinh lỗi sập chương trình nghiêm trọng (SIGSEGV / Stack Overflow). Phải viết tường minh <code>Base::log();</code>.<br><span class=\"citation-badge\">[Nguồn: OOP5-Inheritance_new.pdf - Trang 45-46: Lời gọi hàm lớp cơ sở từ lớp dẫn xuất]</span>"
+        },
+        {
+                "id": 24,
+                "group_id": "q-group-3",
+                "group_name": "Nhóm 3: Che Khuất Tên (Name Hiding) & Tái Định Nghĩa",
+                "title": "Bẫy giá trị mặc định của tham số (Default Arguments) khi gọi qua con trỏ",
+                "code": "#include <iostream>\n\nstruct Base {\n    virtual void show(int x = 10) {\n        std::cout << \"Base:\" << x << \" \";\n    }\n};\n\nstruct Derived : public Base {\n    void show(int x = 20) override {\n        std::cout << \"Derived:\" << x << \" \";\n    }\n};\n\nint main() {\n    Derived d;\n    Base* p = &d;\n    p->show(); // Bẫy cực kỳ kinh điển!\n    return 0;\n}",
+                "options": [
+                        "A. Derived:20",
+                        "B. Base:10",
+                        "C. Derived:10 (Thực thi thân hàm ảo của Derived, nhưng tham số mặc định được liên kết tĩnh theo kiểu Base* lúc biên dịch)",
+                        "D. Lỗi biên dịch vì tham số mặc định khác nhau giữa Base và Derived"
+                ],
+                "correct": 2,
+                "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. <strong>Quy tắc vàng của C++:</strong> Hàm ảo được phân giải động tại runtime (Dynamic Binding), nhưng <em>Tham số mặc định (Default Argument) được nạp tĩnh tại thời điểm biên dịch (Static Binding)</em> dựa trên kiểu của con trỏ gọi hàm!<br>2. Con trỏ <code>p</code> có kiểu <code>Base*</code>, nên trình biên dịch gắn tham số mặc định <code>x = 10</code> vào lời gọi hàm lúc sinh mã.<br>3. Tại runtime, con trỏ vptr trỏ vào <code>Derived::show</code>, nhận giá trị <code>x = 10</code> truyền vào -> in ra <code>Derived:10</code>.<br><span class=\"citation-badge\">[Nguồn: OOP5-Inheritance_new.pdf - Trang 61 & OOP6-Polymorphism_new.pdf: Default arguments in virtual functions]</span>"
+        },
+        {
+                "id": 25,
+                "group_id": "q-group-4",
+                "group_name": "Nhóm 4: Upcast, Downcast & Object Slicing",
+                "title": "Hiện tượng Cắt Xén Đối Tượng (Object Slicing) khi truyền tham trị",
+                "code": "#include <iostream>\n\nstruct Base {\n    virtual void print() const { std::cout << \"Base \"; }\n};\n\nstruct Derived : public Base {\n    void print() const override { std::cout << \"Derived \"; }\n};\n\nvoid callByValue(Base b) {\n    b.print();\n}\n\nvoid callByRef(const Base& b) {\n    b.print();\n}\n\nint main() {\n    Derived d;\n    callByValue(d); // Truyền tham trị\n    callByRef(d);   // Truyền tham chiếu\n    return 0;\n}",
+                "options": [
+                        "A. Derived Derived",
+                        "B. Base Derived (callByValue gây ra Object Slicing: chỉ phần Base subobject được copy, vptr trỏ về Base)",
+                        "C. Base Base",
+                        "D. Lỗi biên dịch khi truyền đối tượng Derived vào tham số kiểu Base"
+                ],
+                "correct": 1,
+                "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Trong <code>callByValue(Base b)</code>, biến <code>b</code> là một đối tượng độc lập kiểu <code>Base</code> được cấp phát trên stack frame. Trình biên dịch gọi copy constructor của <code>Base</code>, chỉ sao chép phần Base subobject từ <code>d</code>.<br>2. Mọi thông tin mở rộng của <code>Derived</code> (kể cả bảng vptr trỏ tới Derived) bị <strong>CẮT BỎ HOÀN TOÀN (Sliced away)</strong>. Biến <code>b</code> trở thành một thể hiện Base thuần túy, do đó gọi <code>Base::print</code>.<br>3. Trong khi đó <code>callByRef(const Base& b)</code> chỉ là bí danh (alias) của chính đối tượng <code>d</code> trong bộ nhớ, vptr của nó vẫn trỏ tới VTable của <code>Derived</code>, gọi đúng <code>Derived::print</code>.<br><span class=\"citation-badge\">[Nguồn: OOP5-Inheritance_new.pdf - Trang 63-66: Hiện tượng Slicing]</span>"
+        },
+        {
+                "id": 26,
+                "group_id": "q-group-4",
+                "group_name": "Nhóm 4: Upcast, Downcast & Object Slicing",
+                "title": "Bẫy Slicing trong mảng các đối tượng Base thô",
+                "code": "#include <iostream>\n\nstruct Base {\n    int id = 1;\n};\n\nstruct Derived : public Base {\n    int extra = 99;\n};\n\nint main() {\n    Derived d;\n    d.id = 5;\n    d.extra = 77;\n\n    Base list[2];\n    list[0] = d; // Gán đối tượng Derived vào mảng kiểu Base\n\n    std::cout << list[0].id << \" \" << sizeof(list[0]);\n    return 0;\n}",
+                "options": [
+                        "A. 5 4 (Chỉ trường id của Base được copy vào mảng, sizeof của phần tử trong mảng cố định là sizeof(Base))",
+                        "B. 5 8",
+                        "C. 77 4",
+                        "D. Lỗi biên dịch vì không thể gán Derived vào phần tử mảng Base"
+                ],
+                "correct": 0,
+                "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Mảng <code>Base list[2]</code> được cấp phát tĩnh trong RAM với kích thước mỗi ô nhớ chính xác bằng <code>sizeof(Base) = 4 bytes</code>.<br>2. Phép gán <code>list[0] = d</code> gọi <code>Base::operator=(const Base&)</code>, chỉ sao chép trường <code>id = 5</code>, trường <code>extra</code> bị cắt bỏ không dấu vết.<br><span class=\"citation-badge\">[Nguồn: OOP5-Inheritance_new.pdf - Trang 64-65: Gán đối tượng và kích thước mảng]</span>"
+        },
+        {
+                "id": 27,
+                "group_id": "q-group-4",
+                "group_name": "Nhóm 4: Upcast, Downcast & Object Slicing",
+                "title": "Nguy cơ Undefined Behavior khi Downcast bừa bãi bằng static_cast",
+                "code": "#include <iostream>\n\nstruct Base {\n    int x = 10;\n};\n\nstruct Derived : public Base {\n    int y = 20;\n    void show() { std::cout << x << \" \" << y; }\n};\n\nint main() {\n    Base b; // Đối tượng Base THẬT\n    Derived* p = static_cast<Derived*>(&b); // Downcast liều lĩnh!\n    p->show(); // Bẫy truy cập vùng nhớ rác!\n    return 0;\n}",
+                "options": [
+                        "A. Luôn in ra 10 20 an toàn",
+                        "B. static_cast kiểm tra runtime và ném ngoại lệ std::bad_cast",
+                        "C. Hành vi không xác định (Undefined Behavior): y truy cập vào vùng nhớ ngoài phạm vi của đối tượng Base",
+                        "D. Lỗi biên dịch: static_cast không cho phép downcast"
+                ],
+                "correct": 2,
+                "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. <code>static_cast</code> là phép ép kiểu tại THỜI ĐIỂM BIÊN DỊCH. Trình biên dịch tin tưởng lập trình viên và dịch chuyển con trỏ mà KHÔNG có bất kỳ kiểm tra runtime nào.<br>2. Đối tượng <code>b</code> trong RAM chỉ được cấp phát 4 bytes cho <code>x</code>. Khi gọi <code>p->show()</code>, phương thức cố đọc <code>this->y</code> (ở offset 4 byte tiếp theo), đọc vào dữ liệu rác trên stack hoặc gây lỗi truy cập bộ nhớ bất hợp pháp (Segmentation fault).<br><span class=\"citation-badge\">[Nguồn: OOP5-Inheritance_new.pdf - Trang 67-69: Nguy cơ Downcast & static_cast]</span>"
+        },
+        {
+                "id": 28,
+                "group_id": "q-group-4",
+                "group_name": "Nhóm 4: Upcast, Downcast & Object Slicing",
+                "title": "Yêu cầu tính Đa Hình của dynamic_cast (Polymorphic Class Requirement)",
+                "code": "#include <iostream>\n\nstruct Base {\n    // Không có hàm virtual nào!\n    void dummy() {}\n};\n\nstruct Derived : public Base {\n    void dummy() {}\n};\n\nint main() {\n    Base* b = new Derived();\n    // Derived* d = dynamic_cast<Derived*>(b); // Dòng D\n    return 0;\n}",
+                "options": [
+                        "A. Hợp lệ và d nhận địa chỉ hợp lệ của Derived",
+                        "B. Lỗi biên dịch tại Dòng D: 'Base' is not polymorphic (dynamic_cast bắt buộc lớp cơ sở phải có ít nhất 1 hàm ảo để sinh thông tin RTTI)",
+                        "C. Dòng D trả về nullptr tại runtime",
+                        "D. Lỗi runtime bad_cast"
+                ],
+                "correct": 1,
+                "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. <code>dynamic_cast</code> hoạt động dựa trên cơ chế <strong>RTTI (Run-Time Type Information)</strong> được lưu trữ trong con trỏ VTable của đối tượng.<br>2. Nếu một lớp không chứa bất kỳ hàm ảo (virtual function) nào, trình biên dịch sẽ không tạo bảng ảo (VTable) và cấu trúc RTTI cho nó.<br>3. Do đó, việc gọi <code>dynamic_cast</code> trên một kiểu không đa hình (non-polymorphic) sẽ bị trình biên dịch từ chối ngay lập tức.<br><span class=\"citation-badge\">[Nguồn: OOP5-Inheritance_new.pdf - Trang 68 & OOP6-Polymorphism_new.pdf: RTTI và hàm ảo]</span>"
+        },
+        {
+                "id": 29,
+                "group_id": "q-group-4",
+                "group_name": "Nhóm 4: Upcast, Downcast & Object Slicing",
+                "title": "Cơ chế xử lý lỗi của dynamic_cast trên Con trỏ vs trên Tham chiếu",
+                "code": "#include <iostream>\n\nstruct Base {\n    virtual ~Base() = default;\n};\n\nstruct Derived : public Base {};\nstruct Other : public Base {};\n\nint main() {\n    Derived d;\n    Base& ref = d;\n\n    try {\n        Other& o = dynamic_cast<Other&>(ref); // Ép kiểu tham chiếu thất bại\n        std::cout << \"Success \";\n    } catch (const std::bad_cast& e) {\n        std::cout << \"CaughtBadCast \";\n    }\n\n    Base* ptr = &d;\n    Other* oPtr = dynamic_cast<Other*>(ptr); // Ép kiểu con trỏ thất bại\n    if (oPtr == nullptr) {\n        std::cout << \"NullPtr\";\n    }\n    return 0;\n}",
+                "options": [
+                        "A. CaughtBadCast NullPtr (Con trỏ thất bại trả về nullptr, tham chiếu thất bại không thể có 'null reference' nên bắt buộc ném std::bad_cast)",
+                        "B. Success NullPtr",
+                        "C. CaughtBadCast CaughtBadCast",
+                        "D. Chương trình crash tại dynamic_cast con trỏ"
+                ],
+                "correct": 0,
+                "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Với con trỏ (pointer), khi <code>dynamic_cast</code> thất bại, nó báo lỗi một cách nhẹ nhàng bằng cách trả về <code>nullptr</code>.<br>2. Với tham chiếu (reference), vì C++ không tồn tại khái niệm tham chiếu null (null reference), cơ chế duy nhất để báo lỗi an toàn là ném ra ngoại lệ <code>std::bad_cast</code> thuộc thư viện <code><typeinfo></code>.<br><span class=\"citation-badge\">[Nguồn: OOP5-Inheritance_new.pdf - Trang 67-69 & C++11 RTTI Specification]</span>"
+        },
+        {
+                "id": 30,
+                "group_id": "q-group-4",
+                "group_name": "Nhóm 4: Upcast, Downcast & Object Slicing",
+                "title": "Hiểm họa khi truy cập mảng Derived thông qua con trỏ Base* (Array Stride Mismatch)",
+                "code": "#include <iostream>\n\nstruct Base {\n    int b = 1;\n};\n\nstruct Derived : public Base {\n    int d = 2; // Derived lớn hơn Base (8 bytes vs 4 bytes)\n};\n\nvoid printArray(Base* arr, int n) {\n    for (int i = 0; i < n; ++i) {\n        std::cout << arr[i].b << \" \"; // Bẫy tính toán con trỏ pointer arithmetic!\n    }\n}\n\nint main() {\n    Derived arr[3];\n    arr[0].b = 10; arr[1].b = 20; arr[2].b = 30;\n    printArray(arr, 3);\n    return 0;\n}",
+                "options": [
+                        "A. 10 20 30",
+                        "B. Kết quả sai lệch hoặc rác bộ nhớ (arr[i] nhảy theo bước sizeof(Base)=4 thay vì sizeof(Derived)=8)",
+                        "C. Lỗi biên dịch vì không thể truyền Derived[] vào Base*",
+                        "D. 10 2 20"
+                ],
+                "correct": 1,
+                "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Trong C++, đa hình không áp dụng cho phép toán con trỏ mảng (Pointer Arithmetic).<br>2. Biểu thức <code>arr[i]</code> tương đương với <code>*(arr + i)</code>, tức là nhảy một đoạn bộ nhớ có kích thước <code>i * sizeof(Base) = i * 4 bytes</code>.<br>3. Nhưng thực tế các phần tử <code>Derived</code> trong mảng cách nhau <code>8 bytes</code>! Do đó <code>arr[1]</code> sẽ đọc nhầm vào trường <code>d</code> của phần tử 0 thay vì phần tử 1. Đây là lỗi cực kỳ nguy hiểm trong kiến trúc C++.<br><span class=\"citation-badge\">[Nguồn: OOP5-Inheritance_new.pdf - Trang 62-63: Upcast mảng và bẫy con trỏ]</span>"
+        },
+        {
+                "id": 31,
+                "group_id": "q-group-4",
+                "group_name": "Nhóm 4: Upcast, Downcast & Object Slicing",
+                "title": "Bẫy Slicing khi hàm trả về đối tượng theo giá trị (Return by Value)",
+                "code": "#include <iostream>\n\nstruct Base {\n    virtual const char* name() const { return \"Base\"; }\n};\n\nstruct Derived : public Base {\n    const char* name() const override { return \"Derived\"; }\n};\n\nBase getObject() {\n    Derived d;\n    return d; // Trả về theo giá trị kiểu Base\n}\n\nint main() {\n    Base b = getObject();\n    std::cout << b.name();\n    return 0;\n}",
+                "options": [
+                        "A. Derived",
+                        "B. Base (getObject trả về đối tượng tạm kiểu Base bằng copy ctor, cắt bỏ hoàn toàn bản sắc Derived)",
+                        "C. Lỗi biên dịch do mismatch kiểu trả về",
+                        "D. Chương trình crash vì con trỏ cục bộ d bị hủy"
+                ],
+                "correct": 1,
+                "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Kiểu trả về của hàm là <code>Base</code>. Khi thực hiện <code>return d;</code>, đối tượng tạm trả về được khởi tạo bằng <code>Base(const Base&)</code>.<br>2. Toàn bộ phần <code>Derived</code> bị cắt bỏ ngay tại lệnh return. Đối tượng <code>b</code> trong <code>main</code> là một Base thuần túy, vptr trỏ vào Base VTable -> in ra <code>Base</code>.<br><span class=\"citation-badge\">[Nguồn: OOP5-Inheritance_new.pdf - Trang 64: Slicing khi return đối tượng]</span>"
+        },
+        {
+                "id": 32,
+                "group_id": "q-group-4",
+                "group_name": "Nhóm 4: Upcast, Downcast & Object Slicing",
+                "title": "Upcasting qua nhiều tầng thừa kế và tính an toàn tuyệt đối",
+                "code": "#include <iostream>\n\nstruct A { int a = 1; };\nstruct B : public A { int b = 2; };\nstruct C : public B { int c = 3; };\n\nvoid inspect(A* ptr) {\n    std::cout << ptr->a << \" \";\n}\n\nint main() {\n    C obj;\n    inspect(&obj); // Upcast từ C* thẳng lên A*\n    B* bPtr = &obj; // Upcast C* lên B*\n    inspect(bPtr);  // Upcast B* lên A*\n    return 0;\n}",
+                "options": [
+                        "A. 1 1 (Upcast qua nhiều thế hệ hoàn toàn ngầm định và bảo toàn tính đúng đắn của offset địa chỉ)",
+                        "B. Lỗi biên dịch vì C không kế thừa trực tiếp từ A",
+                        "C. 3 2",
+                        "D. 1 2"
+                ],
+                "correct": 0,
+                "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Kế thừa là mối quan hệ có tính bắc cầu: Nếu C là con của B, và B là con của A, thì C cũng là một loại A (C IS-A A).<br>2. Trong đơn kế thừa, subobject của A nằm ngay tại offset 0 của B, và subobject của B nằm ngay tại offset 0 của C. Do đó <code>&obj</code>, <code>bPtr</code> và <code>(A*)&obj</code> đều cùng chỉ tới một địa chỉ bộ nhớ.<br><span class=\"citation-badge\">[Nguồn: OOP5-Inheritance_new.pdf - Trang 58-60: Upcasting nhiều cấp]</span>"
+        },
+        {
+                "id": 33,
+                "group_id": "q-group-4",
+                "group_name": "Nhóm 4: Upcast, Downcast & Object Slicing",
+                "title": "Chuyển đổi con trỏ hàm thành viên trong cây kế thừa (Contravariance)",
+                "code": "#include <iostream>\n\nstruct Base {\n    void speak() { std::cout << \"BaseSpeak \"; }\n};\n\nstruct Derived : public Base {\n    void shout() { std::cout << \"DerivedShout \"; }\n};\n\nint main() {\n    void (Derived::*funcPtr)() = &Base::speak; // Trỏ hàm của Base bằng con trỏ hàm của Derived\n    Derived d;\n    (d.*funcPtr)();\n    return 0;\n}",
+                "options": [
+                        "A. In ra: BaseSpeak (Con trỏ hàm thành viên có tính nghịch biến - Contravariance: con trỏ hàm Base có thể gán cho con trỏ hàm Derived)",
+                        "B. Lỗi biên dịch: không thể gán con trỏ hàm Base cho con trỏ hàm Derived",
+                        "C. Lỗi runtime do sai lệch con trỏ this",
+                        "D. In ra: DerivedShout"
+                ],
+                "correct": 0,
+                "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. <strong>Quy tắc nghịch biến của con trỏ hàm thành viên:</strong> Một con trỏ hàm nhận đối tượng <code>Derived</code> có thể an toàn gọi một hàm của <code>Base</code> (vì mọi <code>Derived</code> đều có phần <code>Base</code> bên trong).<br>2. Do đó phép gán <code>void (Derived::*funcPtr)() = &Base::speak;</code> là hoàn toàn hợp lệ theo chuẩn C++.<br><span class=\"citation-badge\">[Nguồn: OOP5-Inheritance_new.pdf - Trang 61 & C++11 Member Function Pointer rules]</span>"
+        },
+        {
+                "id": 34,
+                "group_id": "q-group-4",
+                "group_name": "Nhóm 4: Upcast, Downcast & Object Slicing",
+                "title": "Hiểm họa giải phóng đối tượng Upcast khi Base thiếu Virtual Destructor",
+                "code": "#include <iostream>\n#include <memory>\n\nstruct Base {\n    ~Base() { std::cout << \"~Base \"; } // Không có virtual!\n};\n\nstruct Derived : public Base {\n    int* buffer;\n    Derived() : buffer(new int[100]) {}\n    ~Derived() {\n        delete[] buffer;\n        std::cout << \"~Derived \";\n    }\n};\n\nint main() {\n    Base* p = new Derived();\n    delete p; // Bẫy cực kỳ nguy hiểm!\n    return 0;\n}",
+                "options": [
+                        "A. ~Derived ~Base (Giải phóng bình thường)",
+                        "B. Chỉ in ra ~Base (Destructor của Derived bị bỏ qua hoàn toàn, rò rỉ bộ nhớ mảng buffer và gây Undefined Behavior)",
+                        "C. Lỗi biên dịch tại delete p",
+                        "D. Chương trình crash với ngoại lệ std::bad_alloc"
+                ],
+                "correct": 1,
+                "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Chuẩn C++ (§5.3.5/3) quy định: Nếu kiểu tĩnh của con trỏ được truyền vào lệnh <code>delete</code> khác với kiểu động của đối tượng thực sự và lớp cơ sở <strong>KHÔNG CÓ VIRTUAL DESTRUCTOR</strong> thì hành vi là <strong>UNDEFINED BEHAVIOR (UB)</strong>!<br>2. Trong hầu hết các trình biên dịch, nó chỉ liên kết tĩnh tới <code>Base::~Base()</code>, thân hàm <code>Derived::~Derived()</code> không bao giờ được chạy, dẫn tới rò rỉ toàn bộ tài nguyên heap (100 phần tử int) mà Derived nắm giữ.<br><span class=\"citation-badge\">[Nguồn: OOP5-Inheritance_new.pdf - Trang 30 & OOP6-Polymorphism_new.pdf - Trang 27-30: Destructor ảo]</span>"
+        },
+        {
+                "id": 35,
+                "group_id": "q-group-5",
+                "group_name": "Nhóm 5: Đa Kế Thừa & Kế Thừa Ảo (Diamond Problem)",
+                "title": "Sự mơ hồ (Ambiguity) khi đa kế thừa từ hai lớp có phương thức trùng tên",
+                "code": "#include <iostream>\n\nstruct Printer {\n    void print() { std::cout << \"Printing \"; }\n};\n\nstruct Scanner {\n    void print() { std::cout << \"ScanningPreview \"; }\n};\n\nstruct MultiFunctionPrinter : public Printer, public Scanner {\n    // Không định nghĩa lại print()\n};\n\nint main() {\n    MultiFunctionPrinter mfp;\n    // mfp.print(); // Dòng A: Bẫy mơ hồ!\n    mfp.Printer::print(); // Dòng B\n    return 0;\n}",
+                "options": [
+                        "A. Dòng B in ra 'Printing '; Dòng A nếu mở ra sẽ bị LỖI BIÊN DỊCH do trình biên dịch không thể quyết định gọi print() của Printer hay Scanner",
+                        "B. Dòng A tự động ưu tiên lớp khai báo trước (Printer)",
+                        "C. Cả Dòng A và Dòng B đều bị lỗi biên dịch",
+                        "D. Dòng A in ra cả hai chuỗi"
+                ],
+                "correct": 0,
+                "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Trong đa kế thừa, khi hai lớp cha độc lập có phương thức cùng tên, việc gọi <code>mfp.print()</code> tạo ra một tình huống <strong>Mơ hồ (Ambiguity)</strong> trong quá trình Name Lookup.<br>2. Trình biên dịch không được phép tự ý thiên vị lớp nào, do đó nó báo lỗi biên dịch ngay lập tức.<br>3. Để giải quyết, lập trình viên bắt buộc phải dùng toán tử phân giải phạm vi tường minh như <code>mfp.Printer::print()</code>.<br><span class=\"citation-badge\">[Nguồn: OOP5-Inheritance_new.pdf - Trang 71-72: Đa thừa kế và Sự mơ hồ]</span>"
+        },
+        {
+                "id": 36,
+                "group_id": "q-group-5",
+                "group_name": "Nhóm 5: Đa Kế Thừa & Kế Thừa Ảo (Diamond Problem)",
+                "title": "Bẫy nhân bản lớp cơ sở trong cấu trúc hình thoi (Diamond Problem) không có virtual",
+                "code": "#include <iostream>\n\nstruct Device {\n    int id = 100;\n};\n\nstruct Phone : public Device {};\nstruct Computer : public Device {};\n\nstruct SmartPhone : public Phone, public Computer {};\n\nint main() {\n    SmartPhone sp;\n    // std::cout << sp.id; // Dòng X\n    std::cout << sp.Phone::id << \" \" << sp.Computer::id << \" | Size=\" << sizeof(sp);\n    return 0;\n}",
+                "options": [
+                        "A. In ra: 100 100 | Size=8 (sp chứa HAI bản sao riêng biệt của Device, Dòng X bị lỗi biên dịch do ambiguous)",
+                        "B. In ra: 100 100 | Size=4",
+                        "C. Dòng X in ra 100 bình thường",
+                        "D. Lỗi biên dịch vì không được phép kế thừa kiểu hình thoi"
+                ],
+                "correct": 0,
+                "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Khi không có từ khóa <code>virtual</code>, <code>Phone</code> sở hữu 1 bản sao <code>Device</code> (4 bytes) và <code>Computer</code> sở hữu 1 bản sao <code>Device</code> độc lập khác (4 bytes).<br>2. Đối tượng <code>SmartPhone</code> chứa cả 2 nhánh, dẫn đến kích thước <code>sizeof(sp) = 8 bytes</code>.<br>3. Lệnh <code>sp.id</code> tại Dòng X không thể biết lấy <code>id</code> của nhánh Phone hay nhánh Computer -> Lỗi biên dịch mơ hồ.<br><span class=\"citation-badge\">[Nguồn: OOP5-Inheritance_new.pdf - Trang 72-74: Cấu trúc hình thoi & Sự mơ hồ]</span>"
+        },
+        {
+                "id": 37,
+                "group_id": "q-group-5",
+                "group_name": "Nhóm 5: Đa Kế Thừa & Kế Thừa Ảo (Diamond Problem)",
+                "title": "Thứ tự gọi Constructor trong Đa kế thừa phụ thuộc vào thứ tự khai báo class",
+                "code": "#include <iostream>\n\nstruct A { A() { std::cout << \"A \"; } };\nstruct B { B() { std::cout << \"B \"; } };\nstruct C { C() { std::cout << \"C \"; } };\n\n// Thứ tự khai báo trong định nghĩa class: B, rồi tới A, rồi tới C\nstruct Derived : public B, public A, public C {\n    // Thứ tự trong Member Init List cố tình đảo ngược: C, A, B\n    Derived() : C(), A(), B() {\n        std::cout << \"Derived \";\n    }\n};\n\nint main() {\n    Derived d;\n    return 0;\n}",
+                "options": [
+                        "A. C A B Derived (Theo thứ tự trong member init list)",
+                        "B. B A C Derived (Thứ tự thực thi constructor của các Base HOÀN TOÀN phụ thuộc thứ tự khai báo ở đầu class)",
+                        "C. A B C Derived (Theo thứ tự bảng chữ cái)",
+                        "D. Lỗi biên dịch vì thứ tự trong danh sách khởi tạo không khớp thứ tự khai báo"
+                ],
+                "correct": 1,
+                "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Chuẩn C++ (§12.6.2) quy định: Thứ tự khởi tạo các lớp cơ sở luôn luôn và tuyệt đối tuân theo <strong>thứ tự xuất hiện trong danh sách dẫn xuất của khai báo lớp</strong> (ở đây là <code>public B, public A, public C</code>).<br>2. Bất kỳ thứ tự nào bạn viết trong Member Initializer List của constructor đều bị trình biên dịch bỏ qua về mặt thứ tự thực thi -> luôn in ra <code>B A C Derived </code>.<br><span class=\"citation-badge\">[Nguồn: OOP5-Inheritance_new.pdf - Trang 70-71: Thứ tự khởi tạo trong đa thừa kế]</span>"
+        },
+        {
+                "id": 38,
+                "group_id": "q-group-5",
+                "group_name": "Nhóm 5: Đa Kế Thừa & Kế Thừa Ảo (Diamond Problem)",
+                "title": "Kế thừa ảo (Virtual Inheritance) giải quyết triệt để vấn đề nhân bản subobject",
+                "code": "#include <iostream>\n\nstruct Device {\n    int id = 42;\n};\n\n// Kế thừa ảo (virtual public)\nstruct Phone : virtual public Device {};\nstruct Computer : virtual public Device {};\n\nstruct SmartPhone : public Phone, public Computer {};\n\nint main() {\n    SmartPhone sp;\n    sp.id = 99; // Truy cập trực tiếp không còn mơ hồ!\n    std::cout << sp.Phone::id << \" \" << sp.Computer::id << \" \" << sp.id;\n    return 0;\n}",
+                "options": [
+                        "A. 99 99 99 (Chỉ có duy nhất một thể hiện Device dùng chung cho toàn bộ cấu trúc hình thoi)",
+                        "B. 42 42 99",
+                        "C. Lỗi biên dịch vì vẫn tồn tại 2 biến id",
+                        "D. 99 42 99"
+                ],
+                "correct": 0,
+                "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Với <code>virtual public Device</code>, trình biên dịch đảm bảo trong đối tượng <code>SmartPhone</code> chỉ tồn tại duy nhất <strong>MỘT subobject Device chia sẻ chung</strong>.<br>2. Khi thay đổi <code>sp.id = 99</code>, cả hai góc nhìn <code>sp.Phone::id</code> và <code>sp.Computer::id</code> đều trỏ vào cùng một ô nhớ duy nhất đó, cho ra giá trị đồng nhất <code>99 99 99</code>.<br><span class=\"citation-badge\">[Nguồn: OOP5-Inheritance_new.pdf - Trang 74-75: Lớp cơ sở ảo và giải quyết đa thừa kế]</span>"
+        },
+        {
+                "id": 39,
+                "group_id": "q-group-5",
+                "group_name": "Nhóm 5: Đa Kế Thừa & Kế Thừa Ảo (Diamond Problem)",
+                "title": "Quy tắc đặc quyền của Most-Derived Class khi khởi tạo Virtual Base",
+                "code": "#include <iostream>\n\nstruct Base {\n    Base(int val) { std::cout << \"Base(\" << val << \") \"; }\n};\n\nstruct Left : virtual public Base {\n    Left() : Base(10) { std::cout << \"Left \"; }\n};\n\nstruct Right : virtual public Base {\n    Right() : Base(20) { std::cout << \"Right \"; }\n};\n\nstruct Bottom : public Left, public Right {\n    // Bottom là Most-Derived Class, nó trực tiếp chỉ định constructor của Base!\n    Bottom() : Base(30), Left(), Right() {\n        std::cout << \"Bottom \";\n    }\n};\n\nint main() {\n    Bottom b;\n    return 0;\n}",
+                "options": [
+                        "A. Base(10) Left Base(20) Right Bottom",
+                        "B. Base(30) Left Right Bottom (Lớp dẫn xuất xa nhất Bottom trực tiếp khởi tạo Virtual Base, các lời gọi Base từ Left và Right bị bỏ qua hoàn toàn)",
+                        "C. Base(10) Left Right Bottom",
+                        "D. Lỗi biên dịch vì Base được gọi 3 lần"
+                ],
+                "correct": 1,
+                "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. <strong>Quy tắc Virtual Base Constructor:</strong> Đối với một lớp cơ sở ảo, trách nhiệm gọi constructor của nó thuộc về <strong>Lớp dẫn xuất xa nhất (Most-Derived Class - ở đây là <code>Bottom</code>)</strong>.<br>2. Lời gọi <code>Base(10)</code> trong <code>Left</code> và <code>Base(20)</code> trong <code>Right</code> hoàn toàn bị trình biên dịch <strong>BỎ QUA</strong> khi đối tượng <code>Bottom</code> được khởi tạo.<br>3. <code>Base(30)</code> được thực thi đầu tiên trước tất cả, sau đó đến Left, Right và Bottom -> in ra <code>Base(30) Left Right Bottom </code>.<br><span class=\"citation-badge\">[Nguồn: OOP5-Inheritance_new.pdf - Trang 74-75: Thứ tự khởi tạo lớp cơ sở ảo]</span>"
+        },
+        {
+                "id": 40,
+                "group_id": "q-group-5",
+                "group_name": "Nhóm 5: Đa Kế Thừa & Kế Thừa Ảo (Diamond Problem)",
+                "title": "Bẫy biên dịch khi Most-Derived Class không khởi tạo Virtual Base thiếu Default Ctor",
+                "code": "#include <iostream>\n\nstruct Base {\n    Base(int x) {} // Không có default ctor!\n};\n\nstruct BranchA : virtual public Base {\n    BranchA() : Base(1) {}\n};\n\nstruct BranchB : virtual public Base {\n    BranchB() : Base(2) {}\n};\n\nstruct FinalDerived : public BranchA, public BranchB {\n    // Quên gọi Base(val) trong danh sách khởi tạo!\n    FinalDerived() : BranchA(), BranchB() {}\n};\n\nint main() {\n    // FinalDerived obj; // Dòng Err\n    return 0;\n}",
+                "options": [
+                        "A. Biên dịch thành công vì BranchA đã gọi Base(1)",
+                        "B. Lỗi biên dịch tại FinalDerived: no matching function for call to 'Base::Base()' (Most-Derived class bắt buộc phải tự gọi Base(int) vì Base không có default constructor)",
+                        "C. Lỗi runtime bad_initialization",
+                        "D. Tự động lấy Base(1) của BranchA"
+                ],
+                "correct": 1,
+                "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Vì <code>FinalDerived</code> là most-derived class, nó chịu trách nhiệm khởi tạo <code>Base</code> ảo.<br>2. Do nó không gọi tường minh constructor có tham số của <code>Base</code>, compiler cố gắng gọi ngầm định <code>Base::Base()</code>.<br>3. Nhưng <code>Base</code> không có default constructor, dẫn đến lỗi biên dịch ngay lập tức dù cho cả <code>BranchA</code> và <code>BranchB</code> đều có gọi <code>Base</code> trong code của chúng!<br><span class=\"citation-badge\">[Nguồn: OOP5-Inheritance_new.pdf - Trang 74: Trách nhiệm khởi tạo Virtual Base]</span>"
+        },
+        {
+                "id": 41,
+                "group_id": "q-group-5",
+                "group_name": "Nhóm 5: Đa Kế Thừa & Kế Thừa Ảo (Diamond Problem)",
+                "title": "Độ lệch con trỏ (Pointer Offset Adjustment) khi ép kiểu trong Đa kế thừa",
+                "code": "#include <iostream>\n\nstruct BaseA {\n    int a;\n};\n\nstruct BaseB {\n    int b;\n};\n\nstruct Derived : public BaseA, public BaseB {\n    int c;\n};\n\nint main() {\n    Derived d;\n    BaseA* pA = &d;\n    BaseB* pB = &d;\n\n    std::cout << (void*)pA << \" \";\n    std::cout << (void*)pB << \" \";\n    std::cout << (pA == (BaseA*)pB ? \"Same\" : \"Different\");\n    return 0;\n}",
+                "options": [
+                        "A. pA và pB luôn cùng địa chỉ byte 0",
+                        "B. Địa chỉ pB lệch so với pA chính xác một khoảng bằng sizeof(BaseA) (Pointer Adjustment để trỏ đúng vào subobject BaseB)",
+                        "C. Lỗi biên dịch vì không thể gán &d cho BaseB*",
+                        "D. pB luôn có giá trị nullptr"
+                ],
+                "correct": 1,
+                "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Trong bố cục RAM của <code>Derived</code>, subobject <code>BaseA</code> nằm ở offset 0. Nhưng subobject <code>BaseB</code> nằm ngay sau <code>BaseA</code> (tại offset +4 bytes).<br>2. Khi thực hiện <code>BaseB* pB = &d;</code>, trình biên dịch thực hiện phép tính <strong>Pointer Adjustment</strong>: lấy địa chỉ <code>&d</code> cộng thêm <code>sizeof(BaseA)</code> (4 bytes).<br>3. Do đó, địa chỉ raw của <code>pA</code> và <code>pB</code> là khác nhau hoàn toàn trong bộ nhớ!<br><span class=\"citation-badge\">[Nguồn: OOP5-Inheritance_new.pdf - Trang 71: Bố cục bộ nhớ đa thừa kế]</span>"
+        },
+        {
+                "id": 42,
+                "group_id": "q-group-5",
+                "group_name": "Nhóm 5: Đa Kế Thừa & Kế Thừa Ảo (Diamond Problem)",
+                "title": "Bẫy con trỏ cơ sở ảo (vbptr) và sự phình to kích thước đối tượng",
+                "code": "#include <iostream>\n\nstruct EmptyBase {};\n\nstruct VDerived1 : virtual public EmptyBase {};\nstruct VDerived2 : virtual public EmptyBase {};\n\nstruct Bottom : public VDerived1, public VDerived2 {};\n\nint main() {\n    // Trên hệ điều hành 64-bit, con trỏ có kích thước 8 bytes\n    std::cout << (sizeof(VDerived1) >= sizeof(void*)) << \" \";\n    std::cout << (sizeof(Bottom) >= sizeof(void*)) << std::endl;\n    return 0;\n}",
+                "options": [
+                        "A. 1 1 (Kế thừa ảo đòi hỏi lưu trữ con trỏ vbptr - Virtual Base Pointer để định vị subobject động tại runtime, làm tăng kích thước đối tượng)",
+                        "B. 0 0 (Empty Base Optimization làm cho kích thước bằng 0)",
+                        "C. 0 1",
+                        "D. Lỗi biên dịch"
+                ],
+                "correct": 0,
+                "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Khi kế thừa ảo, vị trí của Virtual Base Subobject không còn cố định ở một offset tĩnh đơn giản. Lớp dẫn xuất phải chèn thêm một con trỏ cơ sở ảo (<strong>vbptr</strong>) hoặc mở rộng bảng ảo VTable để chứa bảng độ lệch (offset table).<br>2. Do đó, dù <code>EmptyBase</code> rỗng hoàn toàn, <code>VDerived1</code> và <code>Bottom</code> vẫn phình to ít nhất bằng kích thước của 1-2 con trỏ (8 đến 16 bytes trên nền tảng 64-bit).<br><span class=\"citation-badge\">[Nguồn: OOP5-Inheritance_new.pdf - Trang 74: Chi phí bộ nhớ của lớp cơ sở ảo]</span>"
+        },
+        {
+                "id": 43,
+                "group_id": "q-group-5",
+                "group_name": "Nhóm 5: Đa Kế Thừa & Kế Thừa Ảo (Diamond Problem)",
+                "title": "Lỗi biên dịch Upcast mơ hồ trong mô hình hình thoi không ảo",
+                "code": "#include <iostream>\n\nstruct Base {};\nstruct Mid1 : public Base {};\nstruct Mid2 : public Base {};\nstruct Final : public Mid1, public Mid2 {};\n\nint main() {\n    Final f;\n    // Base* p = &f; // Dòng U: Bẫy ép kiểu Upcast!\n    Base* p1 = (Mid1*)&f; // Dòng U1\n    return 0;\n}",
+                "options": [
+                        "A. Dòng U1 hợp lệ; Dòng U bị LỖI BIÊN DỊCH: 'Base' is an ambiguous base of 'Final' (Có 2 subobject Base khác nhau, compiler không biết trỏ vào đâu)",
+                        "B. Cả Dòng U và U1 đều hợp lệ",
+                        "C. Dòng U tự động chọn nhánh Mid1",
+                        "D. Cả hai dòng đều bị lỗi biên dịch"
+                ],
+                "correct": 0,
+                "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Trong bộ nhớ của <code>Final</code>, tồn tại 2 subobject <code>Base</code> riêng biệt: một nằm trong <code>Mid1</code> và một nằm trong <code>Mid2</code>.<br>2. Khi viết <code>Base* p = &f;</code>, trình biên dịch không thể quyết định dịch chuyển con trỏ tới subobject nào -> sinh lỗi <em>ambiguous base class</em>.<br>3. Ở Dòng U1, lập trình viên chỉ rõ thông qua nhánh <code>(Mid1*)&f</code> nên trình biên dịch xác định được chính xác địa chỉ.<br><span class=\"citation-badge\">[Nguồn: OOP5-Inheritance_new.pdf - Trang 72: Mơ hồ khi upcast hình thoi]</span>"
+        },
+        {
+                "id": 44,
+                "group_id": "q-group-5",
+                "group_name": "Nhóm 5: Đa Kế Thừa & Kế Thừa Ảo (Diamond Problem)",
+                "title": "Cross-casting giữa hai nhánh độc lập bằng dynamic_cast",
+                "code": "#include <iostream>\n\nstruct IA {\n    virtual void funcA() = 0;\n    virtual ~IA() = default;\n};\n\nstruct IB {\n    virtual void funcB() = 0;\n    virtual ~IB() = default;\n};\n\nstruct Service : public IA, public IB {\n    void funcA() override { std::cout << \"A \"; }\n    void funcB() override { std::cout << \"B \"; }\n};\n\nint main() {\n    IA* pA = new Service();\n    IB* pB = dynamic_cast<IB*>(pA); // Cross-cast ngang giữa 2 interface!\n    if (pB != nullptr) {\n        pB->funcB();\n    }\n    delete pA;\n    return 0;\n}",
+                "options": [
+                        "A. In ra: B (dynamic_cast tra cứu bảng RTTI tại runtime và dịch con trỏ ngang qua nhánh IB thành công)",
+                        "B. Lỗi biên dịch vì IA và IB không có quan hệ cha con",
+                        "C. dynamic_cast trả về nullptr",
+                        "D. Chương trình crash do sai lệch VTable"
+                ],
+                "correct": 0,
+                "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Mặc dù <code>IA</code> và <code>IB</code> không hề kế thừa lẫn nhau, nhưng đối tượng thực tế đằng sau là <code>Service</code> (kế thừa cả hai).<br>2. Tại runtime, <code>dynamic_cast</code> kiểm tra bảng RTTI của đối tượng <code>Service</code>, nhận diện rằng đối tượng hoàn chỉnh có cài đặt <code>IB</code>, và tự động điều chỉnh con trỏ (<strong>Cross-Cast</strong>) từ subobject <code>IA</code> sang subobject <code>IB</code>.<br><span class=\"citation-badge\">[Nguồn: OOP5-Inheritance_new.pdf - Trang 68 & 70: Ép kiểu ngang trong đa kế thừa]</span>"
+        },
+        {
+                "id": 45,
+                "group_id": "q-group-6",
+                "group_name": "Nhóm 6: Bài Tập Thực Tế & C++11 Features",
+                "title": "Kế thừa toàn bộ Constructor của lớp cha bằng using Base::Base trong C++11",
+                "code": "#include <iostream>\n\nclass Base {\npublic:\n    Base(int a) { std::cout << \"B(\" << a << \") \"; }\n    Base(double d) { std::cout << \"B(\" << d << \") \"; }\n};\n\nclass Derived : public Base {\npublic:\n    using Base::Base; // Kế thừa toàn bộ constructors của Base trong C++11!\n};\n\nint main() {\n    Derived d1(42);\n    Derived d2(3.14);\n    return 0;\n}",
+                "options": [
+                        "A. B(42) B(3.14) (C++11 cho phép importing constructors của lớp cơ sở thông qua cú pháp using Base::Base)",
+                        "B. Lỗi biên dịch vì Derived không tự định nghĩa constructor nào",
+                        "C. Chỉ có Base(int) được kế thừa",
+                        "D. Constructors của Base bị biến thành private trong Derived"
+                ],
+                "correct": 0,
+                "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Trước C++11, lớp dẫn xuất phải viết lại toàn bộ các constructor chuyển tiếp (forwarding constructors) cho từng overload của lớp cha.<br>2. Chuẩn C++11 giới thiệu tính năng <strong>Inheriting Constructors</strong>: chỉ thị <code>using Base::Base;</code> yêu cầu trình biên dịch tự động sinh tất cả các hàm tạo tương ứng trong <code>Derived</code> để chuyển tiếp tham số lên <code>Base</code>.<br><span class=\"citation-badge\">[Nguồn: C++11 Standard & OOP5-Inheritance_new.pdf - Trang 29: Kế thừa hàm dựng]</span>"
+        },
+        {
+                "id": 46,
+                "group_id": "q-group-6",
+                "group_name": "Nhóm 6: Bài Tập Thực Tế & C++11 Features",
+                "title": "Bẫy giá trị rác khi dùng using Base::Base nhưng Derived có thành viên riêng",
+                "code": "#include <iostream>\n\nstruct Base {\n    Base(int x) {}\n};\n\nstruct Derived : public Base {\n    using Base::Base;\n    int extra; // Thành viên riêng không có in-class initializer!\n};\n\nint main() {\n    Derived d(10);\n    // extra nhận giá trị gì?\n    std::cout << (sizeof(d.extra) == sizeof(int)) << std::endl;\n    return 0;\n}",
+                "options": [
+                        "A. d.extra luôn tự động bằng 0",
+                        "B. 1 (d.extra không được khởi tạo và nhận giá trị rác ngẫu nhiên trên stack; C++11 khuyến nghị dùng in-class initializer: int extra = 0;)",
+                        "C. Lỗi biên dịch vì Derived có thành viên chưa được khởi tạo",
+                        "D. Chương trình ném ngoại lệ uninitialized_memory"
+                ],
+                "correct": 1,
+                "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Khi sử dụng <code>using Base::Base;</code>, constructor được sinh tự động bởi trình biên dịch chỉ khởi tạo <code>Base</code> subobject.<br>2. Các thành viên riêng của <code>Derived</code> (như <code>extra</code>) nếu không có khởi tạo mặc định tại chỗ (in-class member initializer <code>int extra = 0;</code>) sẽ bị bỏ mặc với <strong>giá trị rác (uninitialized memory)</strong>.<br><span class=\"citation-badge\">[Nguồn: OOP5-Inheritance_new.pdf - Trang 30 & C++11 Inheriting Constructor Caveats]</span>"
+        },
+        {
+                "id": 47,
+                "group_id": "q-group-6",
+                "group_name": "Nhóm 6: Bài Tập Thực Tế & C++11 Features",
+                "title": "Bẫy Two-Phase Name Lookup khi kế thừa từ Template Base Class",
+                "code": "#include <iostream>\n\ntemplate <typename T>\nstruct Base {\n    int data = 100;\n};\n\ntemplate <typename T>\nstruct Derived : public Base<T> {\n    void print() {\n        // std::cout << data; // Dòng Lỗi: Trình biên dịch không tìm thấy 'data'!\n        std::cout << this->data << \" \"; // Cách giải quyết chuẩn\n    }\n};\n\nint main() {\n    Derived<int> d;\n    d.print();\n    return 0;\n}",
+                "options": [
+                        "A. In ra 100; Ở template C++, tên thành viên của base class phụ thuộc vào tham số kiểu T (Dependent Name) nên bắt buộc phải dùng this->data hoặc Base<T>::data",
+                        "B. Trình biên dịch luôn tự tìm thấy data mà không cần this->",
+                        "C. Lỗi biên dịch tại Derived<int> d;",
+                        "D. d.print() in ra giá trị 0"
+                ],
+                "correct": 0,
+                "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Trong lập trình Template C++, cơ chế <strong>Two-Phase Name Lookup</strong> quy định: Ở Phase 1 (khi phân tích cú pháp template), trình biên dịch không biết kiểu <code>Base<T></code> có những thành viên nào (vì có thể có Specialization sau này).<br>2. Một tên không phụ thuộc như <code>data</code> sẽ không được tìm kiếm bên trong base class mẫu. Do đó nếu viết trần trụi <code>data</code>, compiler báo lỗi <em>'data' was not declared in this scope</em>.<br>3. Viết <code>this->data</code> biến nó thành một Dependent Name, hoãn việc tra cứu sang Phase 2 (khi đã khởi tạo kiểu cụ thể).<br><span class=\"citation-badge\">[Nguồn: OOP7-Template.pdf & C++11 Two-Phase Lookup Rules]</span>"
+        },
+        {
+                "id": 48,
+                "group_id": "q-group-6",
+                "group_name": "Nhóm 6: Bài Tập Thực Tế & C++11 Features",
+                "title": "Kỹ thuật an toàn khi xử lý Tự gán (Self-Assignment) trong Kế thừa",
+                "code": "#include <iostream>\n\nstruct Base {\n    int* p;\n    Base(int val = 0) : p(new int(val)) {}\n    virtual ~Base() { delete p; }\n    Base& operator=(const Base& rhs) {\n        if (this != &rhs) { // Kiểm tra tự gán\n            *p = *rhs.p;\n        }\n        return *this;\n    }\n};\n\nstruct Derived : public Base {\n    int* extra;\n    Derived(int v1, int v2) : Base(v1), extra(new int(v2)) {}\n    ~Derived() { delete extra; }\n    Derived& operator=(const Derived& rhs) {\n        if (this != &rhs) {\n            Base::operator=(rhs); // Chuyển giao phần Base\n            *extra = *rhs.extra;\n        }\n        return *this;\n    }\n};\n\nint main() {\n    Derived d1(10, 20);\n    d1 = d1; // Tự gán (Self-assignment)\n    std::cout << *d1.p << \" \" << *d1.extra;\n    return 0;\n}",
+                "options": [
+                        "A. 10 20 (An toàn vì cả hai lớp đều có cơ chế kiểm tra self-assignment this != &rhs)",
+                        "B. Lỗi runtime phân mảnh bộ nhớ do delete trúng ô nhớ đang dùng",
+                        "C. 0 0",
+                        "D. Lỗi biên dịch vì toán tử gán không được kế thừa"
+                ],
+                "correct": 0,
+                "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Trong kế thừa, việc quản lý tài nguyên thô qua toán tử gán đòi hỏi sự phối hợp nhịp nhàng giữa lớp con và lớp cha.<br>2. Lớp con <code>Derived</code> kiểm tra <code>this != &rhs</code>, sau đó gọi <code>Base::operator=(rhs);</code> để lớp cha xử lý phần subobject của nó.<br>3. Nhờ cơ chế kiểm tra địa chỉ con trỏ <code>this</code>, lệnh tự gán <code>d1 = d1;</code> kết thúc an toàn mà không làm hủy hoại dữ liệu vùng nhớ heap.<br><span class=\"citation-badge\">[Nguồn: OOP4-OperatorOverloading_new.pdf & OOP5-Inheritance_new.pdf - Trang 75: Toán tử gán trong kế thừa]</span>"
+        },
+        {
+                "id": 49,
+                "group_id": "q-group-6",
+                "group_name": "Nhóm 6: Bài Tập Thực Tế & C++11 Features",
+                "title": "Private Inheritance mô phỏng quan hệ HAS-A (Composition)",
+                "code": "#include <iostream>\n\nclass Engine {\npublic:\n    void ignite() { std::cout << \"Vroom \"; }\n};\n\n// Sử dụng private inheritance thay cho việc nhúng biến thành viên\nclass Car : private Engine {\npublic:\n    void drive() {\n        ignite(); // Sử dụng cài đặt của Engine\n        std::cout << \"Driving \";\n    }\n};\n\nint main() {\n    Car c;\n    c.drive();\n    // Engine* p = &c; // Dòng E\n    return 0;\n}",
+                "options": [
+                        "A. In ra: Vroom Driving; Dòng E bị LỖI BIÊN DỊCH vì quan hệ private inheritance thể hiện 'is-implemented-in-terms-of' chứ không phải IS-A công khai",
+                        "B. Dòng E hợp lệ",
+                        "C. In ra Driving Vroom",
+                        "D. Lỗi biên dịch tại ignite() trong thân Car"
+                ],
+                "correct": 0,
+                "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. Thiết kế phần mềm C++ kinh điển quy định: <code>public inheritance</code> biểu thị quan hệ <strong>IS-A</strong> (Xe ô tô là phương tiện), trong khi <code>private inheritance</code> biểu thị quan hệ <strong>'is-implemented-in-terms-of'</strong> (được cài đặt dựa trên).<br>2. Private inheritance cho phép lớp con tái sử dụng mã nguồn và ghi đè hàm ảo của Engine nhưng che giấu hoàn toàn giao diện Engine đối với người dùng (Dòng E sẽ lỗi biên dịch).<br><span class=\"citation-badge\">[Nguồn: OOP5-Inheritance_new.pdf - Trang 33-35 & 47-49: Quan hệ IS-A vs HAS-A]</span>"
+        },
+        {
+                "id": 50,
+                "group_id": "q-group-6",
+                "group_name": "Nhóm 6: Bài Tập Thực Tế & C++11 Features",
+                "title": "Bẫy Move Constructor trong Kế thừa: Quên dùng std::move cho Base Subobject",
+                "code": "#include <iostream>\n#include <utility>\n\nstruct Base {\n    Base() = default;\n    Base(const Base&) { std::cout << \"BaseCopy \"; }\n    Base(Base&&) noexcept { std::cout << \"BaseMove \"; }\n};\n\nstruct Derived : public Base {\n    Derived() = default;\n    Derived(const Derived& other) : Base(other) {}\n    // Bẫy Move Constructor: Truyền 'other' thay vì 'std::move(other)'\n    Derived(Derived&& other) noexcept : Base(other) {\n        std::cout << \"DerivedMove \";\n    }\n};\n\nint main() {\n    Derived d1;\n    Derived d2 = std::move(d1); // Kích hoạt Move Constructor\n    return 0;\n}",
+                "options": [
+                        "A. BaseMove DerivedMove",
+                        "B. BaseCopy DerivedMove (Vì tham số 'other' có tên nên nó là một lvalue, Base(other) vô tình gọi Base Copy Ctor thay vì Move Ctor!)",
+                        "C. DerivedMove DerivedMove",
+                        "D. Lỗi biên dịch vì không thể truyền Derived rvalue vào Base"
+                ],
+                "correct": 1,
+                "explanation": "<b>Cơ chế dưới gầm máy:</b><br>1. <strong>Quy tắc giá trị C++11 (Value Category):</strong> Dù tham số có kiểu rvalue reference <code>Derived&& other</code>, nhưng bản thân biểu thức định danh <code>other</code> là một <strong>LVALUE</strong> (vì nó có tên và có địa chỉ bộ nhớ cố định).<br>2. Khi truyền <code>Base(other)</code>, trình biên dịch thấy <code>other</code> là lvalue nên nó sẽ chọn <strong>Copy Constructor</strong> <code>Base(const Base&)</code> thay vì Move Constructor!<br>3. Để di chuyển thực sự, lập trình viên bắt buộc phải viết: <code>Base(std::move(other))</code> để ép <code>other</code> về rvalue (xvalue). Đây là một trong những bẫy hiệu năng tinh vi nhất trong lập trình C++11 hiện đại.<br><span class=\"citation-badge\">[Nguồn: OOP5-Inheritance_new.pdf - Trang 30 & C++11 Move Semantics & Rvalue references]</span>"
+        }
+];
+
+        let userAnswers = {};
+        let score = 0;
+
+        function renderQuiz() {
+            const container = document.getElementById('quiz-container');
+            container.innerHTML = '';
+
+            let currentGroup = '';
+
+            quizData.forEach((q, idx) => {
+                if (q.group_name && q.group_name !== currentGroup) {
+                    currentGroup = q.group_name;
+                    const groupHeader = document.createElement('div');
+                    groupHeader.id = q.group_id;
+                    groupHeader.className = "pt-8 pb-3 border-b-2 border-zinc-300 text-[#991b1b] font-bold text-lg font-sans uppercase tracking-tight flex items-center gap-2";
+                    groupHeader.innerHTML = `<i class="fa-solid fa-layer-group text-sm"></i> ${currentGroup}`;
+                    container.appendChild(groupHeader);
+                }
+
+                const card = document.createElement('div');
+                card.id = `q-${q.id}`;
+                card.className = "p-5 border border-zinc-200 rounded-lg bg-zinc-50/50 space-y-4 hover:border-zinc-300 transition-colors";
+
+                const header = document.createElement('div');
+                header.className = "flex items-start justify-between gap-4";
+                header.innerHTML = `
+                    <div class="space-y-1">
+                        <span class="inline-block text-xs font-mono font-bold text-white bg-[#991b1b] px-2 py-0.5 rounded">
+                            Câu ${q.id.toString().padStart(2, '0')}/50
+                        </span>
+                        <h4 class="text-base font-bold text-zinc-900 font-sans">${q.title}</h4>
+                    </div>
+                    <div id="badge-status-${q.id}" class="text-xs font-mono shrink-0"></div>
+                `;
+                card.appendChild(header);
+
+                if (q.code) {
+                    const codeBlock = document.createElement('pre');
+                    codeBlock.className = "language-cpp";
+                    const code = document.createElement('code');
+                    code.className = "language-cpp";
+                    code.textContent = q.code;
+                    codeBlock.appendChild(code);
+                    card.appendChild(codeBlock);
+                }
+
+                const optionsGrid = document.createElement('div');
+                optionsGrid.className = "grid grid-cols-1 gap-2 pt-2";
+
+                q.options.forEach((opt, optIdx) => {
+                    const btn = document.createElement('button');
+                    btn.id = `btn-${q.id}-${optIdx}`;
+                    btn.type = "button";
+                    btn.className = "quiz-btn text-left p-3 text-sm rounded border border-zinc-300 bg-white hover:bg-zinc-100 text-zinc-800 font-sans transition-all flex items-start gap-2.5";
+                    btn.innerHTML = `<span class="font-mono font-bold text-zinc-500 shrink-0">${String.fromCharCode(65 + optIdx)}.</span> <span>${opt.substring(3)}</span>`;
+                    btn.onclick = () => selectOption(q.id, optIdx);
+                    optionsGrid.appendChild(btn);
+                });
+                card.appendChild(optionsGrid);
+
+                const answerBlock = document.createElement('div');
+                answerBlock.id = `answer-${q.id}`;
+                answerBlock.className = "answer-block mt-4 p-4 rounded bg-white border-l-4 border-emerald-600 shadow-sm text-sm text-zinc-800";
+                answerBlock.innerHTML = `
+                    <div class="font-bold text-emerald-800 font-sans mb-1 flex items-center gap-1.5">
+                        <i class="fa-solid fa-circle-check"></i> GIẢI THÍCH CHUYÊN SÂU
+                    </div>
+                    <div class="text-xs sm:text-sm font-sans leading-relaxed text-zinc-700">
+                        ${q.explanation}
+                    </div>
+                `;
+                card.appendChild(answerBlock);
+
+                container.appendChild(card);
+            });
+
+            Prism.highlightAll();
+        }
+
+        function selectOption(qId, selectedIdx) {
+            if (userAnswers[qId] !== undefined) return;
+
+            userAnswers[qId] = selectedIdx;
+            const q = quizData.find(item => item.id === qId);
+            const isCorrect = (selectedIdx === q.correct);
+
+            if (isCorrect) {
+                score++;
+            }
+
+            updateScoreDisplay();
+
+            q.options.forEach((_, idx) => {
+                const btn = document.getElementById(`btn-${qId}-${idx}`);
+                btn.disabled = true;
+
+                if (idx === q.correct) {
+                    btn.classList.add('show-correct');
+                }
+            });
+
+            const clickedBtn = document.getElementById(`btn-${qId}-${selectedIdx}`);
+            if (isCorrect) {
+                clickedBtn.classList.remove('show-correct');
+                clickedBtn.classList.add('selected-correct');
+            } else {
+                clickedBtn.classList.add('selected-wrong');
+            }
+
+            const statusBadge = document.getElementById(`badge-status-${qId}`);
+            if (isCorrect) {
+                statusBadge.innerHTML = '<span class="text-emerald-700 font-bold"><i class="fa-solid fa-check"></i> Đúng</span>';
+            } else {
+                statusBadge.innerHTML = '<span class="text-rose-700 font-bold"><i class="fa-solid fa-xmark"></i> Sai</span>';
+            }
+
+            const ansBlock = document.getElementById(`answer-${qId}`);
+            ansBlock.classList.add('show');
+        }
+
+        function updateScoreDisplay() {
+            const total = quizData.length;
+            const answeredCount = Object.keys(userAnswers).length;
+            document.getElementById('score-display').innerText = `Điểm: ${score}/${total}`;
+            document.getElementById('answered-count').innerText = `${answeredCount}/${total}`;
+        }
+
+        function resetQuiz() {
+            if (!confirm('Bạn có chắc chắn muốn làm lại bài kiểm tra từ đầu?')) return;
+            userAnswers = {};
+            score = 0;
+            updateScoreDisplay();
+            renderQuiz();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderQuiz();
+            updateScoreDisplay();
+        });
+    </script>
+</body>
+</html>
