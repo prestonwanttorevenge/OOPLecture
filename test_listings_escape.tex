@@ -1,0 +1,24 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage{fontspec}
+\setmainfont{Latin Modern Roman}
+\setmonofont{Consolas}
+\usepackage{xcolor}
+\usepackage{listings}
+
+\lstset{
+    language=C++,
+    basicstyle=\ttfamily\footnotesize,
+    numbers=left,
+    escapeinside={/*@}{@*/}
+}
+
+\begin{document}
+\begin{lstlisting}
+// /*@Khởi tạo đối tượng và kiểm tra con trỏ@*/
+int main() {
+    std::cout << "Xin chao the gioi!" << std::endl;
+    return 0;
+}
+\end{lstlisting}
+\end{document}
+

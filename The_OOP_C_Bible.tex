@@ -1,0 +1,2407 @@
+\documentclass[12pt,a4paper,oneside]{book}
+
+% ==============================================================================
+% GÓI HỆ THỐNG VÀ THIẾT LẬP PHÔNG CHỮ HỌC THUẬT
+% ==============================================================================
+\usepackage{fontspec}
+\setmainfont{Latin Modern Roman}
+\setsansfont{Latin Modern Sans}
+\setmonofont[Scale=0.92]{Consolas}
+
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{graphicx}
+\usepackage{adjustbox}
+\usepackage[
+    a4paper,
+    top=2.5cm,
+    bottom=2.5cm,
+    left=3.0cm,
+    right=2.5cm,
+    headheight=26pt,
+    footskip=1.5cm
+]{geometry}
+
+\usepackage{xcolor}
+% Bảng màu học thuật Xanh Navy Oxford & Lam Nhạt Dịu Mắt (Gentle Academic Blue Palette)
+\definecolor{primaryblue}{RGB}{24, 49, 83}      % Xanh Navy học thuật Oxford (#183153)
+\definecolor{darkblue}{RGB}{15, 23, 42}         % Xanh sẫm tiêu đề và bìa (#0f172a)
+\definecolor{accentblue}{RGB}{30, 64, 175}      % Lam hoàng gia tạo điểm nhấn viền (#1e40af)
+\definecolor{softblue}{RGB}{59, 130, 246}       % Lam dịu cho thanh tiêu đề phụ (#3b82f6)
+\definecolor{bgsoftblue}{RGB}{245, 248, 252}    % Lam nhạt pastel dịu mắt cho nền hộp lý thuyết (#f5f8fc)
+\definecolor{bglighterblue}{RGB}{238, 244, 251} % Lam băng siêu dịu cho hộp chuyên sâu (#eef4fb)
+\definecolor{codebg}{RGB}{248, 250, 252}        % Xám đá phiến siêu nhạt nền code (#f8fafc)
+\definecolor{codeframe}{RGB}{226, 232, 240}     % Viền mã nguồn trung tính (#e2e8f0)
+\definecolor{keywordblue}{RGB}{14, 65, 148}     % Xanh navy đậm cho từ khóa C++
+\definecolor{commentgray}{RGB}{100, 116, 139}   % Xám tro cho chú thích code
+\definecolor{stringblue}{RGB}{3, 105, 161}      % Lam biển cho chuỗi ký tự
+
+\usepackage{parskip}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\itshape\color{darkblue}The OOP C++ Bible --- Giáo Trình Khoa Học Máy Tính Toàn Diện}
+\fancyhead[R]{\small\bfseries\color{primaryblue}\thepage}
+\renewcommand{\headrulewidth}{0.6pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{primaryblue}\leaders\hrule height \headrulewidth\hfill}}
+
+\usepackage{titlesec}
+\titleformat{\chapter}[display]
+  {\normalfont\huge\bfseries\color{primaryblue}}
+  {\filleft\Large\textsf{\color{accentblue}CHƯƠNG}\ \Huge\thechapter}
+  {1.5ex}
+  {\titlerule[2pt]\vspace{1.5ex}\filright}
+  [\vspace{1.5ex}{\color{primaryblue}\titlerule[0.8pt]}]
+
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{darkblue}}
+  {\thesection}{1em}{}
+
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\color{primaryblue}}
+  {\thesubsection}{1em}{}
+
+\titleformat{\subsubsection}
+  {\normalfont\normalsize\bfseries\color{accentblue}}
+  {\thesubsubsection}{1em}{}
+
+% ==============================================================================
+% CẤU HÌNH TRÍCH XUẤT MÃ NGUỒN (LISTINGS) VÀ HỖ TRỢ UNICODE
+% ==============================================================================
+\usepackage{listings}
+\lstset{
+    language=C++,
+    basicstyle=\ttfamily\footnotesize,
+    keywordstyle=\color{keywordblue}\bfseries,
+    commentstyle=\color{commentgray}\itshape,
+    stringstyle=\color{stringblue},
+    backgroundcolor=\color{codebg},
+    frame=single,
+    rulecolor=\color{codeframe},
+    breaklines=true,
+    breakatwhitespace=false,
+    showstringspaces=false,
+    tabsize=4,
+    numbers=left,
+    numberstyle=\tiny\color{commentgray},
+    numbersep=8pt,
+    xleftmargin=16pt,
+    xrightmargin=6pt,
+    captionpos=b,
+    columns=flexible,
+    keepspaces=true,
+    escapeinside={/*@}{@*/},
+    morekeywords={nullptr, noexcept, constexpr, decltype, override, final, static_assert, alignas, alignof}
+}
+
+% ==============================================================================
+% HỘP ĐỊNH NGHĨA VÀ PHÂN TÍCH CHUYÊN SÂU (TCOLORBOX)
+% ==============================================================================
+\usepackage{tcolorbox}
+\tcbuselibrary{skins, breakable}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning, calc}
+
+\newtcolorbox{theorybox}[1][]{
+    enhanced,
+    colback=bgsoftblue,
+    colframe=primaryblue,
+    coltitle=white,
+    fonttitle=\bfseries\sffamily,
+    title={Tiên Đề / Định Nghĩa Pháp Lập: #1},
+    boxrule=1.2pt,
+    arc=2pt,
+    left=12pt,
+    right=12pt,
+    top=9pt,
+    bottom=9pt,
+    before skip=14pt,
+    after skip=14pt,
+    breakable
+}
+
+\newtcolorbox{underhoodbox}[1][]{
+    enhanced,
+    colback=bglighterblue,
+    colframe=accentblue,
+    coltitle=white,
+    fonttitle=\bfseries\sffamily,
+    title={Khảo Sát Kiến Trúc Phần Cứng \& Trình Biên Dịch: #1},
+    boxrule=1.4pt,
+    arc=2pt,
+    left=12pt,
+    right=12pt,
+    top=9pt,
+    bottom=9pt,
+    before skip=14pt,
+    after skip=14pt,
+    breakable
+}
+
+\newtcolorbox{warningbox}[1][]{
+    enhanced,
+    colback=white,
+    colframe=accentblue!80!black,
+    coltitle=white,
+    fonttitle=\bfseries\sffamily,
+    title={Cảnh Báo Kỹ Thuật \& Rủi Ro Biên Dịch: #1},
+    boxrule=1.2pt,
+    arc=2pt,
+    left=12pt,
+    right=12pt,
+    top=9pt,
+    bottom=9pt,
+    before skip=14pt,
+    after skip=14pt,
+    breakable
+}
+
+\newtcolorbox{dangerbox}[1][]{
+    enhanced,
+    colback=bgsoftblue,
+    colframe=darkblue,
+    coltitle=white,
+    fonttitle=\bfseries\sffamily,
+    title={Hành Vi Không Xác Định (Undefined Behavior): #1},
+    boxrule=1.6pt,
+    arc=2pt,
+    left=12pt,
+    right=12pt,
+    top=9pt,
+    bottom=9pt,
+    before skip=14pt,
+    after skip=14pt,
+    breakable
+}
+
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage[
+    colorlinks=true,
+    linkcolor=primaryblue,
+    citecolor=primaryblue,
+    urlcolor=accentblue,
+    bookmarksnumbered=true,
+    pdfstartview=FitH
+]{hyperref}
+
+% ==============================================================================
+% PHẦN THÂN TÀI LIỆU (DOCUMENT BODY)
+% ==============================================================================
+\begin{document}
+
+% Trang Bìa Học Thuật Oxford Style
+\begin{titlepage}
+    \centering
+    \vspace*{1.5cm}
+    
+    {\Huge\bfseries\color{darkblue} THE OOP C++ BIBLE\par}
+    \vspace{0.4cm}
+    {\large\scshape\color{primaryblue} Giáo Trình Khoa Học Máy Tính \& Kiến Trúc Phần Mềm Hướng Đối Tượng\par}
+    
+    \vspace{1.2cm}
+    {\color{primaryblue}\rule{0.85\textwidth}{1.8pt}}\par
+    \vspace{0.6cm}
+    
+    {\LARGE\bfseries Phân Tích Chuyên Sâu C++11/14/17 Dưới Tầng Phần Cứng, Quản Trị Bộ Nhớ RAM, VTable \& Cơ Chế Trình Biên Dịch\par}
+    
+    \vspace{0.6cm}
+    {\color{primaryblue}\rule{0.85\textwidth}{1.8pt}}\par
+    
+    \vspace{2.5cm}
+    
+    \begin{minipage}{0.85\textwidth}
+        \centering
+        \textbf{\large Chuyên Luận Đào Tạo Kỹ Sư Công Nghệ Thông Tin Cao Cấp}\\[0.3cm]
+        \textit{\normalsize Tái hiện toàn diện cơ sở lý thuyết, mô hình kiến trúc bộ nhớ, các hệ hình lập trình, và giải thuật tối ưu hóa tài nguyên chuẩn mực quốc tế ISO/IEC 14882.}
+    \end{minipage}
+    
+    \vfill
+    
+    {\large\bfseries Tủ Sách Kỹ Thuật Máy Tính \& Khoa Học Phần Mềm\par}
+    {\normalsize Lưu Hành Học Thuật \& Nghiên Cứu Chuyên Sâu --- Năm 2026\par}
+    \vspace*{1cm}
+\end{titlepage}
+
+\frontmatter
+\tableofcontents
+\mainmatter
+
+% ==============================================================================
+% CHƯƠNG 1: TRIẾT LÝ & NỀN TẢNG (PHILOSOPHY & FOUNDATIONS)
+% ==============================================================================
+\chapter{Triết lý \& Nền tảng (Philosophy \& Foundations)}
+
+\begin{theorybox}[Định Lý Nền Tảng: Nguyên Lý Không Chi Phí Phụ Trội (Zero-Overhead Principle)]
+Được phát biểu bởi Bjarne Stroustrup, nguyên lý cốt tử chi phối toàn bộ tiến trình tiến hóa của C++ khẳng định hai mệnh đề bất biến:
+\begin{enumerate}
+    \item \textbf{Mệnh đề Tiêu trừ:} Những cơ chế ngôn ngữ hoặc tính năng trừu tượng mà một chương trình không sử dụng thì chương trình đó tuyệt đối không phải trả giá bằng bất kỳ chi phí thời gian thực thi (runtime CPU cycles) hay dung lượng bộ nhớ nào.
+    \item \textbf{Mệnh đề Tối ưu:} Khi một lập trình viên sử dụng một tính năng trừu tượng của ngôn ngữ, mã máy do trình biên dịch sinh ra có hiệu năng tối thiểu bằng, hoặc vượt trội hơn, mã nguồn viết thủ công bằng hợp ngữ hoặc ngôn ngữ bậc thấp.\footnote{Nguồn: OOP1-C to C++-New.pdf - Trang 3-8: Sự tiến hóa từ C lên C++ và triết lý thiết kế hệ thống}
+\end{enumerate}
+\end{theorybox}
+
+\section{Sự Tiến Hóa Hệ Hình: Từ Ngôn Ngữ C Sang C++}
+
+Ngôn ngữ lập trình C (do Dennis Ritchie phát triển tại Bell Labs) đại diện cho đỉnh cao của hệ hình \textbf{Lập trình Thủ tục (Procedural Programming)}. Trong hệ hình này, kiến trúc phần mềm được phân tách thành hai thực thể độc lập:
+\begin{itemize}
+    \item \textbf{Dữ liệu (Data):} Được biểu diễn dưới dạng các cấu trúc biến thô (\texttt{struct}) thụ động, không có cơ chế tự vệ.
+    \item \textbf{Hàm xử lý (Functions):} Các khối lệnh thao tác trực tiếp lên dữ liệu thông qua việc truyền tham trị hoặc con trỏ.
+\end{itemize}
+
+Sự phân tách này bộc lộ giới hạn nghiêm trọng khi quy mô hệ thống phần mềm tăng lên hàng triệu dòng lệnh. Do thiếu tính đóng gói (\textit{Encapsulation}), trạng thái nội tại của dữ liệu có thể bị xâm phạm hoặc làm sai lệch từ bất kỳ điểm nào trong không gian mã nguồn. 
+
+Sự ra đời của C++ (khởi đầu là \textit{C with Classes}) đánh dấu cuộc cách mạng chuyển dịch sang hệ hình \textbf{Lập trình Hướng Đối tượng (Object-Oriented Programming - OOP)} và sau đó là \textbf{Lập trình Tổng quát (Generic Programming)}. C++ hợp nhất dữ liệu và các thao tác biến đổi trạng thái thành một thực thể duy nhất: \textbf{Lớp (Class)}.
+
+\begin{table}[htbp]
+\centering
+\caption{Ma trận so sánh các đặc tính kiến trúc giữa C và C++}
+\vspace{0.2cm}
+\resizebox{0.95\textwidth}{!}{%
+\begin{tabular}{lll}
+\toprule
+\textbf{Đặc Tính Kiến Trúc} & \textbf{Ngôn Ngữ C (C99/C11)} & \textbf{Ngôn Ngữ C++ (C++11/14/17)} \\
+\midrule
+Hệ hình chủ đạo & Lập trình Thủ tục / Hướng chức năng & Đa hệ hình: Hướng đối tượng, Tổng quát, Hàm \\
+Cơ chế kiểm soát truy cập & Hoàn toàn không có (Toàn bộ là public) & Ba tầng: \texttt{public}, \texttt{protected}, \texttt{private} \\
+Cấp phát bộ nhớ động & Hàm thư viện \texttt{malloc()}, \texttt{free()} & Toán tử ngôn ngữ \texttt{new}, \texttt{delete}, Smart Pointers \\
+Quản trị vòng đời đối tượng & Thủ công, dễ rò rỉ bộ nhớ & Tự động hóa qua Constructor/Destructor (RAII) \\
+Tính đa hình & Con trỏ hàm thủ công trong struct & Bảng hàm ảo tĩnh \texttt{vtable} và con trỏ \texttt{vptr} \\
+Xử lý lỗi hệ thống & Mã lỗi trả về (\textit{Error Codes}), biến \texttt{errno} & Cơ chế ném và bắt ngoại lệ (\textit{Exceptions}), \texttt{noexcept} \\
+Không gian tên & Toàn cục phẳng (\textit{Flat namespace}), dễ xung đột & Phân cấp mô-đun qua \texttt{namespace} \\
+Khả năng mở rộng toán tử & Không hỗ trợ & Nạp chồng toán tử toàn diện (\textit{Operator Overloading}) \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\section{Kiến Trúc Bộ Nhớ Tiến Trình (Process Memory Layout)}
+
+Để nắm vững bản chất của hướng đối tượng, kỹ sư phần mềm phải hiểu rõ cách thức hệ điều hành (OS) và bộ vi xử lý (CPU) tổ chức không gian bộ nhớ ảo (Virtual Address Space). Trên các hệ điều hành hiện đại chạy trên kiến trúc x86-64, mỗi tiến trình người dùng (User-space Process) được cấp phát một không gian địa chỉ ảo 48-bit (tương đương 256 Terabytes), được phân tầng chặt chẽ từ địa chỉ thấp đến địa chỉ cao.
+
+\begin{figure}[htbp]
+\centering
+\resizebox{0.85\textwidth}{!}{%
+\begin{tikzpicture}[every node/.style={font=\small\sffamily, align=center}]
+    % Memory segments
+    \draw[thick, fill=gray!20, draw=primaryblue] (0, 0) rectangle (9.5, 1.2) node[pos=0.5] {\textbf{Text Segment (.text)}\\Mã máy thực thi nhị phân --- Read-Only \& Executable};
+    \draw[thick, fill=blue!10, draw=primaryblue] (0, 1.2) rectangle (9.5, 2.4) node[pos=0.5] {\textbf{Initialized Data Segment (.data)}\\Biến toàn cục \& tĩnh đã khởi tạo khác 0};
+    \draw[thick, fill=blue!18, draw=primaryblue] (0, 2.4) rectangle (9.5, 3.6) node[pos=0.5] {\textbf{BSS Segment (.bss)}\\Biến toàn cục \& tĩnh chưa khởi tạo (HĐH xóa về 0)};
+    \draw[thick, fill=bgsoftblue, draw=primaryblue] (0, 3.6) rectangle (9.5, 5.2) node[pos=0.5] {\textbf{Heap (Vùng nhớ động)}\\Cấp phát qua \texttt{malloc}/\texttt{new} $\longrightarrow$ Tăng trưởng LÊN TRÊN};
+    \draw[thick, dashed, fill=white, draw=commentgray] (0, 5.2) rectangle (9.5, 6.8) node[pos=0.5] {\textit{Khoảng trống bộ nhớ ảo chưa định tuyến}\\(Unallocated Virtual Address Space)};
+    \draw[thick, fill=bglighterblue, draw=primaryblue] (0, 6.8) rectangle (9.5, 8.4) node[pos=0.5] {\textbf{Stack (Ngăn xếp hàm)}\\Biến cục bộ, Khung hàm, Địa chỉ trả về $\longleftarrow$ Tăng trưởng XUỐNG DƯỚI};
+    \draw[thick, fill=darkblue!25, draw=primaryblue] (0, 8.4) rectangle (9.5, 9.4) node[pos=0.5] {\textbf{Kernel Space}\\Không gian địa chỉ lõi hệ điều hành (Được bảo vệ nghiêm ngặt)};
+
+    % Address indicators
+    \draw[-{Stealth[length=2.5mm]}, thick, primaryblue] (-1.2, 0) -- (-1.2, 9.4) node[midway, left=4pt, rotate=90] {\textbf{Chiều tăng địa chỉ bộ nhớ ảo}};
+    \node[left, font=\footnotesize\ttfamily] at (-1.3, 0) {0x0000000000000000};
+    \node[left, font=\footnotesize\ttfamily] at (-1.3, 9.4) {0xFFFFFFFFFFFFFFFF};
+
+    % Direction arrows inside
+    \draw[-{Stealth[length=2.5mm]}, very thick, accentblue] (4.75, 4.4) -- (4.75, 5.0);
+    \draw[-{Stealth[length=2.5mm]}, very thick, primaryblue] (4.75, 7.6) -- (4.75, 7.0);
+\end{tikzpicture}%
+}
+\caption{Kiến trúc phân tầng bộ nhớ ảo của một tiến trình người dùng trong kiến trúc x86-64.}
+\end{figure}
+
+\begin{underhoodbox}[Giải Phẫu Chi Tiết Các Phân Vùng Bộ Nhớ]
+\begin{enumerate}
+    \item \textbf{Text/Code Segment:} Chứa mã máy nhị phân của tất cả các hàm thành viên và thuật toán. Phân vùng này được nạp cờ bảo vệ \textbf{Read-Only và Executable} (\texttt{RX}) từ bảng trang MMU để ngăn ngừa mã độc ghi đè lên lệnh thực thi.
+    \item \textbf{Data Segment (\texttt{.data}) \& BSS Segment (\texttt{.bss}):}
+    \begin{itemize}
+        \item \texttt{.data}: Chứa các biến toàn cục (\textit{global variables}) và biến tĩnh (\textit{static variables}) đã được khởi tạo giá trị khác 0 tại thời điểm biên dịch.
+        \item \texttt{.bss} (\textit{Block Started by Symbol}): Chứa các biến tĩnh/toàn cục chưa khởi tạo hoặc khởi tạo bằng 0. Khi nạp tiến trình, kernel chỉ cần cấp phát kích thước mà không tốn dung lượng lưu trữ trên đĩa cứng, sau đó ánh xạ về các trang bộ nhớ vật lý được xóa trắng về 0.
+    \end{itemize}
+    \item \textbf{Heap Segment:} Bộ nhớ động được điều phối bởi Trình quản lý bộ nhớ (\textit{Memory Allocator}) của C/C++ runtime. Vùng nhớ này tăng trưởng theo chiều địa chỉ tăng dần thông qua các lời gọi hệ thống \texttt{brk()} hoặc \texttt{mmap()}.
+    \item \textbf{Stack Segment:} Vùng nhớ quản lý các khung hàm (\textit{Stack Frames}). Khi một hàm được gọi, một khung ngăn xếp mới được cấp phát; khi hàm trả về, đỉnh ngăn xếp tự động co rút thông qua con trỏ thanh ghi \texttt{RSP}. Ngăn xếp tăng trưởng từ địa chỉ cao xuống địa chỉ thấp.\footnote{Nguồn: OOP1-C to C++-New.pdf - Trang 9-18: Process memory layout \& Call stack architecture}
+\end{enumerate}
+\end{underhoodbox}
+
+\section{Quản Lý Bộ Nhớ Động: So Sánh Đối Kháng malloc/free và new/delete}
+
+Sự khác biệt cốt tử giữa việc quản lý bộ nhớ trong C và C++ nằm ở sự hiểu biết về \textbf{Vòng đời của một Thực thể (Object Lifecycle)}.
+
+\begin{lstlisting}[language=C++]
+#include <iostream>
+#include <cstdlib>
+
+class SocketConnection {
+private:
+    int socketFd;
+    char* networkBuffer;
+public:
+    SocketConnection(int port) : socketFd(port), networkBuffer(new char[1024]) {
+        std::cout << "[Hardware] Socket initialized on port " << socketFd << "\n";
+    }
+    
+    ~SocketConnection() {
+        delete[] networkBuffer;
+        std::cout << "[Hardware] Socket closed and buffer destroyed\n";
+    }
+};
+
+void architecturalFailure() {
+    // 1. C-STYLE ALLOCATION:
+    // malloc() ONLY allocates raw bytes on Heap. IT NEVER CALLS CONSTRUCTOR!
+    SocketConnection* pC = (SocketConnection*)malloc(sizeof(SocketConnection));
+    
+    // free() ONLY releases raw bytes. IT NEVER CALLS DESTRUCTOR!
+    // Result: networkBuffer is leaked forever in RAM!
+    free(pC);
+    
+    // 2. C++ PROPER ALLOCATION:
+    // Operator new allocates memory AND executes SocketConnection::SocketConnection(8080)
+    SocketConnection* pCpp = new SocketConnection(8080);
+    
+    // Operator delete executes ~SocketConnection() AND releases memory
+    delete pCpp;
+}
+\end{lstlisting}
+
+\begin{underhoodbox}[Bản Chất Của Heap Cookie Và Hiểm Họa Trộn Lẫn new[] / delete]
+Khi toán tử \texttt{new[]} cấp phát một mảng đối tượng:
+\begin{lstlisting}[language=C++]
+SocketConnection* array = new SocketConnection[10];
+\end{lstlisting}
+
+Trình biên dịch thực hiện các thao tác mức máy sau:
+\begin{enumerate}
+    \item \textbf{Tính toán kích thước thực tế:} Bộ nhớ cần cấp phát không chỉ là $10 \times \text{sizeof}(\text{SocketConnection})$, mà được cộng thêm một phần phụ trội gọi là \textbf{Heap Cookie} (thường là 8 bytes trên kiến trúc 64-bit):
+    $$\text{Total Bytes} = \text{sizeof}(\text{size\_t}) + 10 \times \text{sizeof}(\text{SocketConnection})$$
+    \item \textbf{Ghi nhận số lượng phần tử:} Trình biên dịch ghi số nguyên \texttt{10} vào 8 bytes đầu tiên của khối bộ nhớ được cấp phát trên Heap.
+    \item \textbf{Dịch chuyển con trỏ:} Con trỏ trả về cho chương trình \texttt{array} được dịch chuyển qua khỏi Heap Cookie (tức trỏ vào phần tử đầu tiên).
+    \item \textbf{Khởi tạo mảng:} Trình biên dịch sinh vòng lặp gọi Constructor 10 lần liên tiếp.
+\end{enumerate}
+
+\textbf{Hậu quả khi gọi sai toán tử (\texttt{delete array} thay vì \texttt{delete[] array}):}
+Trình biên dịch sẽ hiểu rằng \texttt{array} chỉ trỏ tới \textbf{MỘT đối tượng duy nhất}. Nó chỉ gọi Destructor đúng 1 lần cho phần tử đầu tiên, bỏ qua 9 phần tử còn lại (gây rò rỉ tài nguyên nội bộ nghiêm trọng). Sau đó, nó truyền địa chỉ \texttt{array} cho hàm thu hồi bộ nhớ của OS. 
+
+Vì hàm thu hồi bộ nhớ kỳ vọng địa chỉ bắt đầu của khối phân bổ gốc (chứa Heap Cookie), việc truyền địa chỉ bị lệch 8 bytes sẽ làm hỏng cấu trúc siêu dữ liệu của Heap (\textbf{Heap Corruption}), dẫn tới lỗi sập tiến trình ngay lập tức!\footnote{Nguồn: OOP1-C to C++-New.pdf - Trang 19-27: So sánh new/delete và malloc/free, Cấu trúc Heap Cookie}
+\end{underhoodbox}
+
+\section{Con Trỏ, Tham Chiếu và Cuộc Cách Mạng Move Semantics (C++11)}
+
+\subsection{Bản Chất Dưới Gầm Máy: Tham Chiếu Lvalue (Lvalue Reference)}
+
+Trong ngôn ngữ C, mọi tham số truyền vào hàm mặc định là truyền theo giá trị (\textit{Pass-by-value}). Để hàm có thể biến đổi giá trị bên ngoài, lập trình viên buộc phải sử dụng con trỏ (\textit{Pointers}). 
+
+C++ giới thiệu khái niệm \textbf{Tham chiếu (Reference)}. Về mặt ngữ pháp, tham chiếu đóng vai trò là một bí danh (\textit{Alias}) cho một đối tượng đã tồn tại:
+\begin{lstlisting}[language=C++]
+int x = 42;
+int& ref = x; // ref is an alias of x
+ref = 100;    // x becomes 100
+\end{lstlisting}
+
+\begin{theorybox}[Bản Chất Hợp Ngữ Của Tham Chiếu Lvalue]
+Dưới góc nhìn kiến trúc máy tính, \textbf{Tham chiếu lvalue thực chất là một Con trỏ Hằng ngầm định (Constant Pointer)}:
+$$\texttt{T\& ref = x;} \quad \Longleftrightarrow \quad \texttt{T* const ref = \&x;}$$
+
+Trình biên dịch sinh mã máy hợp ngữ hoàn toàn tương đồng: Nó lưu trữ địa chỉ của \texttt{x} vào một thanh ghi hoặc ô nhớ 8 bytes, và mỗi khi biểu thức sử dụng \texttt{ref}, trình biên dịch tự động chèn lệnh giải tham chiếu (\textit{Dereferencing}):
+\begin{lstlisting}[language={[x86masm]Assembler}]
+; ref = 100
+mov rax, QWORD PTR [rbp-8]    ; Load memory address of x stored in reference
+mov DWORD PTR [rax], 100       ; Write integer 100 directly to x memory location
+\end{lstlisting}
+Điểm khác biệt tối hậu: Tham chiếu bắt buộc phải được khởi tạo ngay khi khai báo, không bao giờ được phép trỏ vào \texttt{nullptr}, và không thể trỏ sang đối tượng khác sau khi đã gắn kết.\footnote{Nguồn: OOP1-C to C++-New.pdf - Trang 28-35: Con trỏ và tham chiếu dưới tầng kiến trúc}
+\end{theorybox}
+
+\subsection{Hệ Thống Phân Loại Giá Trị (Value Categories) Trong C++11}
+
+Trước C++11, các biểu thức chỉ được phân loại đơn giản thành \textbf{lvalue} (những gì có thể đứng bên trái phép gán) và \textbf{rvalue} (những gì chỉ có thể đứng bên phải phép gán). Chuẩn C++11 đã định nghĩa lại toàn diện lý thuyết biểu thức dựa trên hai đặc tính độc lập:
+\begin{enumerate}
+    \item \textbf{Has Identity (Có định danh bộ nhớ):} Chương trình có thể xác định địa chỉ bộ nhớ cụ thể (\texttt{\&expr}) của đối tượng.
+    \item \textbf{Can be Moved from (Có thể di dời tài nguyên):} Trạng thái nội tại của đối tượng có thể được "đánh cắp" một cách an toàn mà không ảnh hưởng tới tính toàn vẹn của logic chương trình.
+\end{enumerate}
+
+\begin{figure}[htbp]
+\centering
+\resizebox{0.95\textwidth}{!}{%
+\begin{tikzpicture}[
+    box/.style={draw=primaryblue, thick, rounded corners=3pt, fill=white, inner sep=8pt, font=\small\bfseries\sffamily, align=center},
+    catbox/.style={draw=accentblue, thick, rounded corners=3pt, fill=bgsoftblue, inner sep=6pt, font=\small\bfseries\sffamily, align=center}
+]
+    % Top expression node
+    \node[box, fill=bglighterblue, text width=12cm] (expr) at (0, 3.5) {Tất Cả Các Biểu Thức Trong C++11 (Expressions)};
+
+    % Intermediate glvalue and rvalue nodes
+    \node[catbox, text width=5.5cm] (glval) at (-3.5, 1.8) {glvalue (Generalized lvalue)\\\footnotesize Có Identity (Định danh bộ nhớ)};
+    \node[catbox, text width=5.5cm] (rval) at (3.5, 1.8) {rvalue\\\footnotesize Có thể di dời tài nguyên (Movable)};
+
+    % Leaf categories: lvalue, xvalue, prvalue
+    \node[box, text width=3.4cm, fill=white] (lval) at (-4.5, -0.2) {lvalue\\\footnotesize Có Identity\\\footnotesize Không Move được};
+    \node[box, text width=3.4cm, fill=bgsoftblue, draw=accentblue, line width=1.4pt] (xval) at (0, -0.2) {xvalue (eXpiring)\\\footnotesize Có Identity\\\footnotesize Move được (Giao điểm)};
+    \node[box, text width=3.4cm, fill=white] (prval) at (4.5, -0.2) {prvalue (Pure rvalue)\\\footnotesize Không Identity\\\footnotesize Move được};
+
+    % Connections
+    \draw[-{Stealth[length=2.5mm]}, thick, primaryblue] (expr.south) -- (glval.north);
+    \draw[-{Stealth[length=2.5mm]}, thick, primaryblue] (expr.south) -- (rval.north);
+
+    \draw[-{Stealth[length=2.5mm]}, thick, accentblue] (glval.south) -- (lval.north);
+    \draw[-{Stealth[length=2.5mm]}, thick, accentblue] (glval.south) -- (xval.north);
+
+    \draw[-{Stealth[length=2.5mm]}, thick, accentblue] (rval.south) -- (xval.north);
+    \draw[-{Stealth[length=2.5mm]}, thick, accentblue] (rval.south) -- (prval.north);
+\end{tikzpicture}%
+}
+\caption{Cây phân loại giá trị chuẩn mực quốc tế ISO/IEC 14882:2011 (Value Categories).}
+\end{figure}
+
+\begin{itemize}
+    \item \textbf{lvalue (Locator Value):} Đại diện cho một đối tượng có vị trí bộ nhớ xác định và có tên (ví dụ: tên biến, hàm trả về tham chiếu lvalue \texttt{T\&}).
+    \item \textbf{prvalue (Pure Rvalue):} Đại diện cho các giá trị tạm thời tính toán tức thời hoặc hằng số nguyên thủy (ví dụ: số \texttt{42}, kết quả biểu thức \texttt{a + b}, hàm trả về theo giá trị \texttt{T}).
+    \item \textbf{xvalue (eXpiring Value):} Đại diện cho một đối tượng có danh tính bộ nhớ nhưng vòng đời của nó chuẩn bị chấm dứt, cho phép các hàm khác đánh cắp tài nguyên của nó (ví dụ: kết quả của \texttt{std::move(var)}).
+\end{itemize}
+
+\subsection{Tham Chiếu Rvalue (\texttt{T\&\&}) và Ngữ Nghĩa Di Chuyển (Move Semantics)}
+
+Trong C++98, việc truyền các đối tượng lớn (như chuỗi ký tự, mảng động, ma trận) ra khỏi hàm luôn đòi hỏi một phép sao chép sâu (\textit{Deep Copy}) vô cùng đắt đỏ. Chuẩn C++11 giải quyết triệt để vấn đề này thông qua \textbf{Tham chiếu Rvalue (\texttt{T\&\&})}.
+
+\begin{lstlisting}[language=C++]
+#include <iostream>
+#include <utility>
+
+class HeavyBuffer {
+public:
+    size_t size;
+    int* data;
+
+    // 1. Resource Allocating Constructor
+    HeavyBuffer(size_t s) : size(s), data(new int[s]) {}
+
+    // 2. Destructor
+    ~HeavyBuffer() { delete[] data; }
+
+    // 3. Classical Copy Constructor (Deep Copy - O(N))
+    HeavyBuffer(const HeavyBuffer& other) : size(other.size), data(new int[other.size]) {
+        for (size_t i = 0; i < size; ++i) data[i] = other.data[i];
+    }
+
+    // 4. C++11 Move Constructor (Resource Theft - O(1))
+    HeavyBuffer(HeavyBuffer&& other) noexcept : size(other.size), data(other.data) {
+        // STEAL THE RESOURCE AND NEUTRALIZE SOURCE
+        other.data = nullptr;
+        other.size = 0;
+    }
+};
+\end{lstlisting}
+
+\begin{theorybox}[Bản Chất Thực Sự Của \texttt{std::move}]
+Một trong những hiểu lầm phổ biến nhất của các kỹ sư là cho rằng hàm \texttt{std::move()} thực hiện việc di chuyển dữ liệu trong bộ nhớ RAM.
+
+\textbf{Sự thật kỹ thuật:} \texttt{std::move()} hoàn toàn \textbf{KHÔNG DI CHUYỂN BẤT KỲ BYTE DỮ LIỆU NÀO} và \textbf{KHÔNG SINH RA BẤT KỲ LỆNH MÃ MÁY NÀO} tại thời điểm thực thi! 
+
+Bản chất của \texttt{std::move()} là một hàm khuôn mẫu thực hiện phép \textbf{Ép kiểu tĩnh không điều kiện} (\textit{Unconditional Static Cast}) biến một biểu thức kiểu lvalue thành một biểu thức kiểu rvalue (chính xác là xvalue):
+\begin{lstlisting}[language=C++]
+template <typename T>
+constexpr typename std::remove_reference<T>::type&& move(T&& arg) noexcept {
+    return static_cast<typename std::remove_reference<T>::type&&>(arg);
+}
+\end{lstlisting}
+Phép ép kiểu này cho phép trình biên dịch lựa chọn nạp chồng \textbf{Move Constructor} hoặc \textbf{Move Assignment Operator} thay vì Copy Constructor!\footnote{Nguồn: OOP1-C to C++-New.pdf - Trang 36-45: C++11 Move Semantics, std::move và rvalue references}
+\end{theorybox}
+
+\subsection{Quy Tắc Sụp Đổ Tham Chiếu (Reference Collapsing Rules)}
+
+Khi viết các hàm khuôn mẫu nhận tham số vạn năng (\textit{Universal / Forwarding References}) có dạng \texttt{T\&\&}, trình biên dịch C++ áp dụng bốn quy tắc sụp đổ tham chiếu để xác định kiểu thực tế:
+\begin{enumerate}
+    \item $\& + \& \longrightarrow \&$
+    \item $\& + \&\& \longrightarrow \&$
+    \item $\&\& + \& \longrightarrow \&$
+    \item $\&\& + \&\& \longrightarrow \&\&$
+\end{enumerate}
+
+Dựa trên bốn quy tắc này, hàm \texttt{std::forward<T>()} được hiện thực hóa để bảo toàn trọn vẹn danh mục giá trị gốc (\textit{Perfect Forwarding}): Nếu đối số ban đầu là lvalue, nó được chuyển tiếp dưới dạng lvalue; nếu là rvalue, nó được chuyển tiếp dưới dạng rvalue!
+
+\section{Hệ Thống Ép Kiểu An Toàn Chuẩn C++11}
+
+Ngôn ngữ C sử dụng cú pháp ép kiểu thô \texttt{(Type)expression}. Cách làm này bị xem là cực kỳ nguy hiểm trong công nghệ phần mềm hiện đại vì nó gộp chung mọi dạng biến đổi: chuyển đổi số học, xóa bỏ thuộc tính hằng (\texttt{const}), và tái thông dịch con trỏ mà không có sự kiểm tra tính hợp lệ của hệ thống kiểu.
+
+C++ thiết lập bộ tứ toán tử ép kiểu tường minh với ngữ nghĩa chuyên biệt hóa:
+
+\begin{enumerate}
+    \item \textbf{\texttt{static\_cast<TargetType>(expr)}:}
+    \begin{itemize}
+        \item Thực hiện các chuyển đổi kiểu hợp lệ tại thời điểm biên dịch: chuyển đổi số học (giữa \texttt{int}, \texttt{float}, \texttt{double}), gọi các hàm tạo đơn tham số (\textit{Converting Constructors}), hoặc ép kiểu ngược từ \texttt{void*} về con trỏ đích đã biết.
+        \item Không thể dùng để xóa bỏ thuộc tính \texttt{const}.
+    \end{itemize}
+
+    \item \textbf{\texttt{const\_cast<TargetType>(expr)}:}
+    \begin{itemize}
+        \item Dùng duy nhất cho mục đích: Gắn thêm hoặc loại bỏ thuộc tính \texttt{const} hoặc \texttt{volatile} khỏi con trỏ hoặc tham chiếu.
+        \item \textit{Cảnh báo an ninh:} Việc dùng \texttt{const\_cast} để ghi dữ liệu vào một biến vốn được định nghĩa ban đầu là hằng số (\texttt{const}) nằm trong phân vùng bộ nhớ chỉ đọc (\texttt{.rodata}) sẽ dẫn tới lỗi sập tiến trình (\textbf{Segmentation Fault}).
+    \end{itemize}
+
+    \item \textbf{\texttt{reinterpret\_cast<TargetType>(expr)}:}
+    \begin{itemize}
+        \item Chỉ thị cho trình biên dịch: \textit{"Hãy tái thông dịch chuỗi bit nhị phân của con trỏ này thành kiểu con trỏ khác mà không thực hiện bất kỳ phép biến đổi dữ liệu nào"}.
+        \item Dùng để giao tiếp trực tiếp với phần cứng, driver, hoặc thao tác trên địa chỉ mạng nhị phân. Không an toàn và phụ thuộc chặt chẽ vào kiến trúc phần cứng (\textit{Non-portable}).
+    \end{itemize}
+
+    \item \textbf{\texttt{dynamic\_cast<TargetType>(expr)}:}
+    \begin{itemize}
+        \item Thực hiện phép ép kiểu xuôi ngược trong cây phái sinh (\textit{Downcasting}) tại \textbf{thời điểm thực thi (Runtime)}.
+        \item \textbf{Yêu cầu kỹ thuật bắt buộc:} Lớp cơ sở phải có \textbf{ít nhất một hàm ảo (\texttt{virtual})} để trình biên dịch tạo thông tin nhận dạng kiểu động tại thời điểm chạy (\textbf{Run-Time Type Information - RTTI}).
+        \item Nếu ép kiểu con trỏ thất bại, nó trả về \texttt{nullptr}. Nếu ép kiểu tham chiếu thất bại, nó ném ngoại lệ \texttt{std::bad\_cast}.\footnote{Nguồn: OOP1-C to C++-New.pdf - Trang 46-55: Hệ thống ép kiểu an toàn chuẩn C++}
+    \end{itemize}
+\end{enumerate}
+
+% ==============================================================================
+% CHƯƠNG 2: LỚP & ĐỐI TƯỢNG (CLASSES & OBJECTS)
+% ==============================================================================
+\chapter{Lớp \& Đối tượng (Classes \& Objects)}
+
+\begin{theorybox}[Định Nghĩa Pháp Lập: Lớp (Class) và Đối Tượng (Object)]
+\textbf{Lớp (Class)} là một khuôn mẫu trừu tượng do người dùng định nghĩa, đóng vai trò là một kiểu dữ liệu mới (\textit{User-Defined Type}), quy định cấu trúc bộ nhớ và các phép toán hợp lệ trên kiểu dữ liệu đó.
+
+\textbf{Đối tượng (Object)} là một thực thể vật lý cụ thể (\textit{Instance}) được cấp phát trong không gian bộ nhớ (trên Stack hoặc Heap), chiếm một vùng kích thước xác định và sở hữu trạng thái dữ liệu độc lập.\footnote{Nguồn: OOP2-introduction\_new.pdf - Trang 4-12: Khái niệm lớp, đối tượng và đóng gói}
+\end{theorybox}
+
+\section{Tính Đóng Gói (Encapsulation) \& Bộ Chỉ Định Quyền Truy Cập}
+
+\subsection{Cơ Chế Phân Quyền Truy Cập}
+
+Tính đóng gói (\textit{Encapsulation}) trong C++ thực hiện việc che giấu cấu trúc dữ liệu nội tại và bảo vệ trạng thái bất biến (\textit{Class Invariants}) của đối tượng thông qua ba từ khóa chỉ định phạm vi truy cập:
+
+\begin{itemize}
+    \item \textbf{\texttt{public}:} Các thành viên có thể được truy cập tự do từ bất kỳ điểm nào trong chương trình thông qua biến đối tượng, con trỏ hoặc tham chiếu.
+    \item \textbf{\texttt{private}:} Các thành viên bị khóa hoàn toàn; chỉ có thể được truy cập bởi các hàm thành viên của chính lớp đó hoặc bởi các hàm/lớp được cấp quyền bạn bè (\texttt{friend}).
+    \item \textbf{\texttt{protected}:} Tương tự như \texttt{private}, nhưng cho phép các lớp con cháu trong cây phái sinh (\textit{Derived Classes}) có quyền truy cập trực tiếp.
+\end{itemize}
+
+\textbf{Sự khác biệt cốt tử giữa \texttt{class} và \texttt{struct}:}
+Trong C++, sự khác biệt duy nhất giữa \texttt{class} và \texttt{struct} nằm ở \textbf{Quyền truy cập mặc định}:
+\begin{itemize}
+    \item Trong \texttt{struct}, mọi thành viên và mối quan hệ kế thừa mặc định là \textbf{\texttt{public}}.
+    \item Trong \texttt{class}, mọi thành viên và mối quan hệ kế thừa mặc định là \textbf{\texttt{private}}.
+\end{itemize}
+
+\subsection{Khảo Sát Bộ Nhớ: Sự Căn Chỉnh Dữ Liệu (Memory Alignment \& Padding)}
+
+Kích thước của một đối tượng trong RAM không đơn thuần là tổng kích thước của các biến thành viên:
+
+\begin{lstlisting}[language=C++]
+struct UnalignedStruct {
+    char a;     // 1 byte
+    // 3 bytes padding do kien truc 32-bit/64-bit yeu cau can le 4 bytes
+    int b;      // 4 bytes
+    char c;     // 1 byte
+    // 7 bytes padding do kien truc 64-bit yeu cau can le 8 bytes
+    double d;   // 8 bytes
+}; // sizeof(UnalignedStruct) = 24 bytes (thay vi 1 + 4 + 1 + 8 = 14 bytes)!
+
+struct OptimizedStruct {
+    double d;   // 8 bytes (Offset 0)
+    int b;      // 4 bytes (Offset 8)
+    char a;     // 1 byte  (Offset 12)
+    char c;     // 1 byte  (Offset 13)
+    // 2 bytes padding de tong kich thuoc chia het cho 8
+}; // sizeof(OptimizedStruct) = 16 bytes! Tiet kiem 33% bo nho RAM!
+\end{lstlisting}
+
+\begin{underhoodbox}[Nguyên Lý Căn Lề Bộ Nhớ Phần Cứng (Hardware Bus Alignment)]
+Tại sao CPU không đọc dữ liệu tại bất kỳ địa chỉ nào mà đòi hỏi căn lề (\textit{Data Alignment})?
+\begin{enumerate}
+    \item \textbf{Đường truyền Bus dữ liệu:} Bộ vi xử lý hiện đại (x86-64) đọc dữ liệu từ RAM vào CPU Cache theo từng khối 32-bit, 64-bit, hoặc Cache Line 64 bytes.
+    \item \textbf{Chi phí truy cập lệch lề (Misaligned Access):} Nếu một biến số thực 8 bytes (\texttt{double}) nằm vắt ngang qua ranh giới của hai khối 8 bytes, CPU buộc phải thực hiện \textbf{HAI chu kỳ đọc bộ nhớ riêng biệt}, sau đó dùng các lệnh dịch bit (\texttt{shl}, \texttt{shr}) và ghép bit (\texttt{or}) để tái tạo lại giá trị.
+    \item Trình biên dịch C++ tự động chèn các byte đệm rác (\textbf{Padding Bytes}) để tối ưu hóa tốc độ truy xuất của CPU, ưu tiên hiệu năng thực thi hơn việc tiết kiệm vài byte bộ nhớ vật lý.\footnote{Nguồn: OOP3-Class\&Objec\_new.pdf - Trang 5-15: Cấu trúc lớp và tổ chức dữ liệu trong bộ nhớ}
+\end{enumerate}
+\end{underhoodbox}
+
+\section{Bản Chất Con Trỏ this Dưới Tầng RAM \& ABI Gọi Hàm}
+
+Một đối tượng khi được tạo ra trong RAM chỉ chiếm dung lượng bằng tổng các biến thành viên dữ liệu (cộng padding và con trỏ ảo nếu có). \textbf{Các hàm thành viên không chiếm bất kỳ byte nào trong không gian nhớ của đối tượng}! Mã máy của các hàm nằm duy nhất một bản trong phân vùng \texttt{.text}.
+
+Làm thế nào một hàm thành viên biết nó đang thao tác trên dữ liệu của đối tượng nào? Câu trả lời là \textbf{Con trỏ ngầm định \texttt{this}}.
+
+\begin{lstlisting}[language=C++]
+class RegisterFile {
+private:
+    int value;
+public:
+    void setValue(int v) {
+        this->value = v; // this la con tro hang tro toi chinh doi tuong
+    }
+};
+\end{lstlisting}
+
+\begin{underhoodbox}[Giao Diện Nhị Phân Ứng Dụng (ABI) Và Thanh Ghi Truyền Con Trỏ this]
+Khi lập trình viên viết dòng lệnh gọi hàm: \texttt{reg.setValue(42);}, trình biên dịch biến đổi lời gọi này thành một hàm dạng thủ tục mức thấp:
+$$\texttt{RegisterFile::setValue(\&reg, 42);}$$
+
+\textbf{Quy ước gọi hàm (Calling Conventions):}
+\begin{itemize}
+    \item \textbf{Trên kiến trúc 32-bit x86 (\texttt{\_\_thiscall}):} Con trỏ \texttt{this} được truyền trực tiếp thông qua thanh ghi chuyên dụng \textbf{\texttt{ECX}}, trong khi các tham số còn lại được đẩy vào Stack từ phải qua trái.
+    \item \textbf{Trên kiến trúc 64-bit (System V AMD64 ABI - Linux/macOS):} Con trỏ \texttt{this} luôn được nạp vào thanh ghi tham số đầu tiên: \textbf{\texttt{RDI}}. Tham số thứ hai được nạp vào \textbf{\texttt{RSI}}.
+    \item \textbf{Trên kiến trúc 64-bit (Microsoft x64 ABI - Windows):} Con trỏ \texttt{this} được nạp vào thanh ghi \textbf{\texttt{RCX}}. Tham số thứ hai được nạp vào \textbf{\texttt{RDX}}.
+\end{itemize}
+
+Mã máy hợp ngữ được sinh ra minh họa cơ chế này:
+\begin{lstlisting}[language={[x86masm]Assembler}]
+lea rdi, [rbp-16]       ; Load dia chi doi tuong 'reg' vao thanh ghi RDI (this pointer)
+mov esi, 42             ; Load tham so 42 vao thanh ghi RSI
+call RegisterFile::setValue ; Nhay toi ham thanh vien trong .text
+\end{lstlisting}
+Thuộc tính bất biến: \texttt{this} là một con trỏ hằng có kiểu \texttt{ClassName* const}. Đối với các phương thức hằng (\texttt{const} method), nó có kiểu \texttt{const ClassName* const}.\footnote{Nguồn: OOP3-Class\&Objec\_new.pdf - Trang 16-25: Con trỏ this và cơ chế truyền tham số ngầm định}
+\end{underhoodbox}
+
+\section{Vòng Đời Khởi Tạo Đối Tượng (Constructors Architecture)}
+
+Hàm dựng (\textbf{Constructor}) là hàm thành viên đặc biệt chịu trách nhiệm thiết lập trạng thái ban đầu của đối tượng và thiết lập các điều kiện bất biến (\textit{Class Invariants}). Constructor không có kiểu trả về và mang tên trùng khớp với tên lớp.
+
+\subsection{Member Initializer List vs Phép Gán Trong Thân Constructor}
+
+\begin{lstlisting}[language=C++]
+class PipelineBlock {
+private:
+    std::string blockName;
+    const int blockId;      // Const field: Bat buoc phai khoi tao bang danh sach
+    int& systemRef;         // Reference field: Bat buoc phai khoi tao bang danh sach
+
+public:
+    // PHUONG PHAP CHUAN MUC (Member Initializer List):
+    PipelineBlock(const std::string& name, int id, int& ref)
+        : blockName(name), blockId(id), systemRef(ref) {
+        // Truong du lieu duoc khoi tao truc tiep dung Constructor tuong ung!
+    }
+
+    // PHUONG PHAP PHAM QUY (Assignment inside body):
+    /*
+    PipelineBlock(const std::string& name, int id, int& ref) {
+        blockName = name; // LANG PHI: Goi Default Ctor roi moi goi Assignment!
+        // blockId = id;  // LOI BIEN DICH: Khong the gan cho const!
+        // systemRef = ref; // LOI BIEN DICH: Khong the gan cho reference!
+    }
+    */
+};
+\end{lstlisting}
+
+\begin{theorybox}[Bản Chất Của Danh Sách Khởi Tạo Thành Viên (Member Initializer List)]
+Khi một đối tượng được khởi tạo, tiến trình cấp phát diễn ra theo hai giai đoạn độc lập:
+\begin{enumerate}
+    \item \textbf{Giai đoạn 1: Khởi tạo các trường thành viên (Initialization Phase):} Xảy ra tại danh sách khởi tạo \texttt{: var1(val1), var2(val2)}. Mỗi trường được gọi trực tiếp hàm tạo tương ứng.
+    \item \textbf{Giai đoạn 2: Thực thi phần thân hàm tạo (Execution Phase):} Các dòng lệnh bên trong cặp dấu ngoặc nhọn \texttt{\{ \}} được thực thi. Nếu tại đây có phép gán \texttt{var1 = val1;}, trường đó đã phải trải qua việc khởi tạo mặc định từ trước, sau đó bị ghi đè bởi toán tử gán, gây lãng phí ít nhất 50\% hiệu năng xử lý!
+\end{enumerate}
+\end{theorybox}
+
+\begin{dangerbox}[Bẫy Thứ Tự Khởi Tạo Thành Viên (Initialization Order Trap)]
+Xét đoạn mã nguồn sau:
+\begin{lstlisting}[language=C++]
+class MemoryController {
+private:
+    size_t bufferSize;
+    int* buffer;
+public:
+    // Canh bao chet nguoi: buffer duoc viet truoc bufferSize trong danh sach!
+    MemoryController(size_t size)
+        : buffer(new int[bufferSize]), bufferSize(size) {}
+};
+\end{lstlisting}
+
+\textbf{Quy tắc chuẩn quốc tế ISO/IEC 14882:}
+Thứ tự khởi tạo các trường thành viên của một lớp \textbf{HOÀN TOÀN DỰA VÀO THỨ TỰ KHAI BÁO TRONG ĐỊNH NGHĨA LỚP}, hoàn toàn bất chấp thứ tự được liệt kê trong Member Initializer List!
+
+Trong ví dụ trên, biến \texttt{bufferSize} được khai báo \textbf{TRƯỚC} biến \texttt{buffer}. Do đó, \texttt{bufferSize} sẽ được khởi tạo trước! 
+Tuy nhiên, nếu một lập trình viên vô tình đảo thứ tự khai báo: \texttt{int* buffer;} đứng trước \texttt{size\_t bufferSize;}, thì \texttt{buffer} sẽ được cấp phát trước khi \texttt{bufferSize} có giá trị (tức \texttt{bufferSize} đang giữ rác bộ nhớ). Kết quả là hệ thống cố gắng cấp phát một lượng RAM ngẫu nhiên khổng lồ, gây sập chương trình ngay lập tức (\textbf{Segmentation Fault})!\footnote{Nguồn: OOP3-Class\&Objec\_new.pdf - Trang 26-40: Vòng đời Constructor và thứ tự khởi tạo}
+\end{dangerbox}
+
+\subsection{Ngăn Chặn Ép Kiểu Ngầm Định Với Từ Khóa \texttt{explicit}}
+
+Trong C++, bất kỳ Constructor nào có thể được gọi với \textbf{MỘT tham số duy nhất} đều mặc định đóng vai trò là một hàm chuyển đổi kiểu ngầm định (\textit{Converting Constructor}):
+
+\begin{lstlisting}[language=C++]
+class BufferPool {
+public:
+    // explicit ngan chan compiler tu dong ep kieu int thanh BufferPool
+    explicit BufferPool(int capacity) { ... }
+};
+
+void allocate(const BufferPool& pool);
+
+void test() {
+    // BufferPool p = 100; // LOI BIEN DICH: explicit da chan ep kieu ngam dinh!
+    BufferPool p(100);    // HOP LE: Khoi tao tuong minh
+    allocate(BufferPool(50)); // HOP LE
+}
+\end{lstlisting}
+
+\section{Hàm Hủy (Destructor) \& Triết Lý Thiết Kế RAII}
+
+Hàm hủy (\textbf{Destructor}) có cú pháp \texttt{\textasciitilde{}ClassName()}, không nhận tham số và không trả về giá trị. Destructor được hệ thống tự động kích hoạt khi đối tượng chuẩn bị kết thúc vòng đời.
+
+\begin{theorybox}[Triết Lý Thiết Kế RAII (Resource Acquisition Is Initialization)]
+Được phát minh bởi Bjarne Stroustrup, \textbf{RAII} là mô thức thiết kế phần mềm quan trọng nhất của C++ hiện đại. Tư tưởng cốt lõi của RAII thiết lập định đề:
+\begin{center}
+\textit{"Mọi tài nguyên hệ thống (Bộ nhớ RAM, File Descriptor, Socket Mạng, Mutex Lock) phải được gắn chặt vào Vòng đời của một Đối tượng Ngăn xếp (Stack-allocated Object)."}
+\end{center}
+\begin{itemize}
+    \item \textbf{Cấp phát tài nguyên} được thực hiện trong Constructor.
+    \item \textbf{Giải phóng tài nguyên} được ủy thác hoàn toàn tự động cho Destructor.
+\end{itemize}
+Nhờ cơ chế \textbf{Giải phóng Ngăn xếp (Stack Unwinding)}, cho dù hàm kết thúc bình thường qua lệnh \texttt{return} hay bị gián đoạn đột ngột bởi một ngoại lệ (\texttt{throw}), toàn bộ tài nguyên đều được dọn dẹp sạch sẽ 100\%, loại trừ hoàn toàn nguy cơ rò rỉ tài nguyên (\textit{Resource Leak})!\footnote{Nguồn: OOP3-Class\&Objec\_new.pdf - Trang 41-52: Destructor và triết lý quản trị tài nguyên RAII}
+\end{theorybox}
+
+\section{Thành Viên Static, Const và Kỹ Thuật Hàm Bạn (Friend)}
+
+\subsection{Thành Viên Tĩnh (Static Data \& Methods)}
+
+\begin{itemize}
+    \item \textbf{Biến thành viên tĩnh (\texttt{static}):} Không thuộc về bất kỳ đối tượng cụ thể nào của lớp. Nó chỉ tồn tại \textbf{DUY NHẤT MỘT BẢN SAO} trong toàn bộ tiến trình, được lưu trữ tại phân vùng \texttt{.data} hoặc \texttt{.bss}. Kích thước của đối tượng hoàn toàn không chứa biến \texttt{static}.
+    \item \textbf{Phương thức tĩnh (\texttt{static} methods):} Không nhận con trỏ ngầm định \texttt{this}. Do đó, phương thức tĩnh \textbf{không thể truy cập các biến thành viên phi tĩnh} và không thể gọi các phương thức phi tĩnh nếu không thông qua một đối tượng tường minh.
+\end{itemize}
+
+\subsection{Từ Khóa \texttt{mutable} --- Ngoại Lệ Trong Phương Thức Hằng}
+
+Một phương thức được đánh dấu \texttt{const} cam kết không làm thay đổi trạng thái quan sát được (\textit{Bitwise Constness}) của đối tượng. Tuy nhiên, trong một số kịch bản kỹ thuật (như đồng bộ hóa luồng qua \texttt{std::mutex}, lưu bộ nhớ đệm cache, đếm tần suất truy cập), ta cần biến đổi một số trường dữ liệu mà không làm thay đổi ngữ nghĩa logic của đối tượng. Từ khóa \textbf{\texttt{mutable}} cho phép một trường dữ liệu được phép sửa đổi ngay bên trong phương thức \texttt{const}:
+
+\begin{lstlisting}[language=C++]
+class DataCache {
+private:
+    std::string cachedValue;
+    mutable size_t accessCounter = 0; // Duoc phep bien doi trong const method
+
+public:
+    std::string readData() const {
+        ++accessCounter; // HOP LE nho tu khoa mutable!
+        return cachedValue;
+    }
+};
+\end{lstlisting}
+
+\subsection{Quan Hệ Bạn Bè (Friendship Architecture)}
+
+Từ khóa \texttt{friend} cho phép một hàm tự do hoặc một lớp khác có quyền truy cập vào các trường \texttt{private} và \texttt{protected} của lớp định nghĩa.
+
+\begin{theorybox}[Ba Định Đề Bất Biến Về Quan Hệ Bạn Bè (Friendship Postulates)]
+\begin{enumerate}
+    \item \textbf{Tính Không Đối Xứng (Not Symmetric):} Nếu lớp $A$ khai báo lớp $B$ là bạn, thì $B$ có quyền xem trường ẩn của $A$, nhưng $A$ hoàn toàn không có quyền xem trường ẩn của $B$.
+    \item \textbf{Tính Không Bắc Cầu (Not Transitive):} Nếu $A$ là bạn của $B$, và $B$ là bạn của $C$, thì $A$ hoàn toàn không mặc nhiên là bạn của $C$.
+    \item \textbf{Tính Không Kế Thừa (Not Inherited):} Lớp con của một lớp bạn không được thừa hưởng quyền bạn bè từ lớp cha.\footnote{Nguồn: OOP3-Class\&Objec\_new.pdf - Trang 53-65: Static, Const, Mutable và Quan hệ Friend}
+\end{enumerate}
+\end{theorybox}
+
+% ==============================================================================
+% CHƯƠNG 3: QUẢN TRỊ BỘ NHỚ & NẠP CHỒNG TOÁN TỬ (MEMORY & OVERLOADING)
+% ==============================================================================
+\chapter{Quản trị Bộ nhớ \& Nạp chồng Toán tử (Memory \& Overloading)}
+
+\begin{theorybox}[Nguyên Lý Quản Trị Tài Nguyên Bộ Nhớ]
+Khả năng kiểm soát bộ nhớ RAM ở cấp độ byte là phẩm chất định nghĩa nên uy lực của C++. Tuy nhiên, tự do đi liền với trách nhiệm: Một kiến trúc phần mềm chuẩn mực phải đảm bảo hai điều kiện biên bất biến:
+\begin{enumerate}
+    \item \textbf{Tính Toàn Vẹn Sở Hữu (Ownership Integrity):} Mỗi khối tài nguyên động trên Heap phải có một chủ sở hữu duy nhất hoặc một nhóm chủ sở hữu được kiểm soát nghiêm ngặt.
+    \item \textbf{Tính Bất Biến Về Vòng Đời (Lifecycle Invariant):} Tài nguyên phải được giải phóng đúng một lần duy nhất (\textit{Exactly-once Destruction}) ngay khi chủ sở hữu cuối cùng kết thúc vòng đời.\footnote{Nguồn: OOP4-OperatorOverloading\_new.pdf - Trang 2-10: Quản trị tài nguyên và nạp chồng toán tử}
+\end{enumerate}
+\end{theorybox}
+
+\section{Sao Chép Nông (Shallow Copy) vs Sao Chép Sâu (Deep Copy)}
+
+Khi lập trình viên không khai báo Copy Constructor hoặc Copy Assignment Operator, trình biên dịch sẽ tự động sinh ra một phiên bản mặc định thực hiện \textbf{Sao chép nông (Shallow Copy / Memberwise Copy)}. 
+
+\subsection{Cơ Chế Phá Hủy Bộ Nhớ Của Shallow Copy (Double-Free Disaster)}
+
+Xét một lớp quản lý một mảng động trên Heap:
+\begin{lstlisting}[language=C++]
+class RawArray {
+public:
+    int* data;
+    size_t size;
+
+    RawArray(size_t s) : size(s), data(new int[s]) {}
+    ~RawArray() { delete[] data; }
+    // No custom Copy Constructor -> Compiler generates shallow copy!
+};
+
+void catastrophicExecution() {
+    RawArray a(100);
+    RawArray b = a; // SHALLOW COPY: b.data gets the exact pointer value of a.data!
+} // Scope exits: SYSTEM CRASH HAPPENS HERE!
+\end{lstlisting}
+
+\begin{underhoodbox}[Giải Phẫu Thảm Họa Double-Free Dưới Tầng Bộ Nhớ]
+Hãy khảo sát chính xác trạng thái của thanh ghi và bộ nhớ trong hàm \texttt{catastrophicExecution()}:
+\begin{enumerate}
+    \item Khi \texttt{b = a} được thực thi, trình biên dịch chỉ đơn thuần sao chép giá trị số nguyên của con trỏ: \texttt{b.data = a.data}.
+    \item \textbf{Hiện tượng Con trỏ trùng lặp (Pointer Aliasing):} Cả \texttt{a.data} và \texttt{b.data} đều cùng trỏ vào \textbf{DUY NHẤT MỘT ĐỊA CHỈ HEAP} (ví dụ \texttt{0x00A01234}).
+    \item \textbf{Giai đoạn Hủy (Destruction):}
+    \begin{itemize}
+        \item Theo quy tắc LIFO của Stack, đối tượng \texttt{b} bị hủy trước. Destructor \texttt{\textasciitilde{}RawArray()} của \texttt{b} thực thi lệnh \texttt{delete[] b.data}, giải phóng khối bộ nhớ tại \texttt{0x00A01234} về cho hệ điều hành. Vùng nhớ này bị đánh dấu là \textit{Free Chunk}.
+        \item Ngay sau đó, đối tượng \texttt{a} bị hủy. Destructor của \texttt{a} tiếp tục gọi \texttt{delete[] a.data} trên cùng địa chỉ \texttt{0x00A01234}!
+    \end{itemize}
+    \item \textbf{Hậu quả hệ thống:} Việc giải phóng một vùng nhớ đã được giải phóng từ trước gọi là \textbf{Lỗi Double-Free}. C/C++ Memory Allocator lập tức phát hiện sự sai lệch trong danh sách liên kết của Heap và ném tín hiệu \textbf{\texttt{SIGABRT}} (hoặc \texttt{Heap Corruption Exception}), làm sập tiến trình ngay lập tức!\footnote{Nguồn: OOP4-OperatorOverloading\_new.pdf - Trang 11-18: Shallow copy vs Deep copy và lỗi Double-Free}
+\end{enumerate}
+\end{underhoodbox}
+
+\subsection{Giải Pháp Chuẩn Mực: Sao Chép Sâu (Deep Copy)}
+
+Sao chép sâu đòi hỏi việc cấp phát một khối bộ nhớ mới hoàn toàn độc lập trên Heap, sau đó sao chép toàn bộ nội dung dữ liệu từ nguồn sang đích:
+\begin{lstlisting}[language=C++]
+// Deep Copy Constructor
+RawArray::RawArray(const RawArray& other)
+    : size(other.size), data(new int[other.size]) {
+    for (size_t i = 0; i < size; ++i) {
+        data[i] = other.data[i];
+    }
+}
+\end{lstlisting}
+
+\section{Tiến Hóa Bộ Quy Tắc Quản Trị Tài Nguyên: Rule of 3, 5, 0}
+
+\subsection{Quy Tắc Bộ Ba Cổ Điển (The Rule of Three --- C++98)}
+
+\begin{theorybox}[Quy Tắc Bộ Ba (The Rule of Three)]
+Nếu một lớp đòi hỏi phải hiện thực hóa tường minh một trong ba phương thức sau:
+\begin{enumerate}
+    \item \textbf{Hàm Hủy (Destructor)}
+    \item \textbf{Hàm Tạo Sao Chép (Copy Constructor)}
+    \item \textbf{Toán Tử Gán Sao Chép (Copy Assignment Operator)}
+\end{enumerate}
+thì lớp đó \textbf{HẦU NHƯ CHẮC CHẮN PHẢI HIỆN THỰC HÓA CẢ BA PHƯƠNG THỨC}! Sự hiện diện của một hàm hủy tường minh chứng minh rằng lớp đang nắm giữ một tài nguyên thô (Raw Resource); do đó các phương thức sao chép mặc định sẽ gây ra lỗi Shallow Copy.\footnote{Nguồn: OOP4-OperatorOverloading\_new.pdf - Trang 19-25: Quy tắc Rule of Three trong C++98}
+\end{theorybox}
+
+\subsection{Quy Tắc Bộ Năm Hiện Đại (The Rule of Five --- C++11)}
+
+Sự xuất hiện của Ngữ nghĩa Di chuyển (Move Semantics) trong chuẩn C++11 mở rộng Rule of Three thành \textbf{Rule of Five}. Một lớp quản lý tài nguyên phải thiết lập 5 phương thức đặc biệt:
+\begin{enumerate}
+    \item \textbf{Destructor:} \texttt{\textasciitilde{}Resource()}
+    \item \textbf{Copy Constructor:} \texttt{Resource(const Resource\&)}
+    \item \textbf{Copy Assignment Operator:} \texttt{Resource\& operator=(const Resource\&)}
+    \item \textbf{Move Constructor:} \texttt{Resource(Resource\&\&) noexcept}
+    \item \textbf{Move Assignment Operator:} \texttt{Resource\& operator=(Resource\&\&) noexcept}
+\end{enumerate}
+
+\subsection{Thành Ngữ Copy-and-Swap (The Copy-and-Swap Idiom)}
+
+Để hiện thực hóa cả Copy Assignment và Move Assignment một cách thanh lịch, an toàn ngoại lệ tuyệt đối mà không lặp lại mã nguồn, kỹ sư C++ sử dụng kỹ thuật \textbf{Copy-and-Swap}:
+
+\begin{lstlisting}[language=C++]
+#include <utility>
+#include <algorithm>
+
+class ManagedBuffer {
+private:
+    size_t length;
+    char* buffer;
+
+public:
+    // 1. Constructor
+    ManagedBuffer(size_t len = 0)
+        : length(len), buffer(len ? new char[len] : nullptr) {}
+
+    // 2. Destructor
+    ~ManagedBuffer() { delete[] buffer; }
+
+    // 3. Copy Constructor (Deep Copy)
+    ManagedBuffer(const ManagedBuffer& other)
+        : length(other.length), buffer(other.length ? new char[other.length] : nullptr) {
+        std::copy(other.buffer, other.buffer + length, buffer);
+    }
+
+    // 4. Move Constructor (Zero Overhead Theft)
+    ManagedBuffer(ManagedBuffer&& other) noexcept
+        : ManagedBuffer() { // Delegate to Default Ctor
+        swap(*this, other);
+    }
+
+    // Friend swap function: No-fail guarantee
+    friend void swap(ManagedBuffer& first, ManagedBuffer& second) noexcept {
+        using std::swap;
+        swap(first.length, second.length);
+        swap(first.buffer, second.buffer);
+    }
+
+    // 5. UNIFIED ASSIGNMENT OPERATOR (Covers both Copy and Move!)
+    // Parameter passed BY VALUE triggers Copy Ctor for lvalue or Move Ctor for rvalue!
+    ManagedBuffer& operator=(ManagedBuffer other) noexcept {
+        swap(*this, other); // Swap internal state with temporary copy
+        return *this;
+    } // temporary 'other' is destroyed here, cleanly freeing old resource!
+};
+\end{lstlisting}
+
+\subsection{Quy Tắc Số Không (The Rule of Zero --- Modern C++)}
+
+\begin{theorybox}[Đỉnh Cao Thiết Kế: Quy Tắc Số Không (The Rule of Zero)]
+Trong kiến trúc hướng đối tượng C++ hiện đại, lập trình viên \textbf{KHÔNG NÊN TỰ VIẾT BẤT KỲ PHƯƠNG THỨC NÀO TRONG BỘ NĂM}. 
+
+Thay vì quản lý con trỏ thô, hãy ủy thác toàn bộ việc quản lý tài nguyên cho các lớp thư viện chuẩn đã đạt chuẩn RAII như \texttt{std::unique\_ptr}, \texttt{std::vector}, hoặc \texttt{std::string}. Khi đó, trình biên dịch sẽ tự động sinh ra toàn bộ các hàm tạo sao chép, di chuyển và hàm hủy với độ an toàn và hiệu năng tối ưu tuyệt đối!\footnote{Nguồn: OOP4-OperatorOverloading\_new.pdf - Trang 26-32: Rule of Five và Rule of Zero trong C++11}
+\end{theorybox}
+
+\section{Nạp Chồng Toán Tử Toàn Diện (Operator Overloading Deep Dive)}
+
+C++ cho phép lập trình viên định nghĩa lại ngữ nghĩa của các toán tử ngôn ngữ đối với các kiểu dữ liệu tự định nghĩa, biến mã nguồn trở nên tự nhiên và biểu cảm như các biểu thức toán học.
+
+\subsection{Các Định Đề Bất Biến Về Toán Tử}
+
+\begin{theorybox}[Ba Giới Hạn Cốt Tử Của Ngôn Ngữ Về Nạp Chồng Toán Tử]
+\begin{enumerate}
+    \item \textbf{Bất Biến Về Độ Ưu Tiên \& Kết Hợp:} Việc nạp chồng toán tử \textbf{tuyệt đối không thể làm thay đổi độ ưu tiên} (\textit{Precedence}) hoặc \textbf{tính kết hợp} (\textit{Associativity}) của toán tử (ví dụ: toán tử \texttt{*} luôn được thực thi trước toán tử \texttt{+}).
+    \item \textbf{Bất Biến Về Số Lượng Toán Hạng:} Không thể biến đổi toán tử hai ngôi thành một ngôi hoặc ngược lại.
+    \item \textbf{Cấm Khởi Tạo Toán Tử Mới:} Lập trình viên không thể tự chế tạo ra các ký tự toán tử mới không tồn tại trong ngữ pháp chuẩn C++ (như \texttt{**} hoặc \texttt{\%\%}).
+\end{enumerate}
+\end{theorybox}
+
+\textbf{Năm toán tử CẤM TUYỆT ĐỐI không được nạp chồng trong C++:}
+\begin{enumerate}
+    \item Toán tử truy cập thành viên trực tiếp: \textbf{\texttt{.}}
+    \item Toán tử con trỏ tới thành viên trực tiếp: \textbf{\texttt{.*}}
+    \item Toán tử phân giải phạm vi: \textbf{\texttt{::}}
+    \item Toán tử điều kiện tam phân: \textbf{\texttt{?:}}
+    \item Toán tử kích thước: \textbf{\texttt{sizeof}} (và toán tử nhận dạng kiểu \textbf{\texttt{typeid}}).
+\end{enumerate}
+
+\subsection{Lựa Chọn Thiết Kế: Member Method vs Non-member Friend}
+
+\begin{itemize}
+    \item \textbf{Toán tử bắt buộc phải là Phương thức Thành viên (Member Functions):}
+    Chuẩn C++ quy định 4 toán tử sau \textbf{bắt buộc 100\% phải là member}:
+    \begin{enumerate}
+        \item Toán tử gán: \texttt{operator=}
+        \item Toán tử chỉ mục mảng: \texttt{operator[]}
+        \item Toán tử gọi hàm: \texttt{operator()}
+        \item Toán tử truy cập gián tiếp con trỏ: \texttt{operator->}
+    \end{enumerate}
+    
+    \item \textbf{Tại sao toán tử xuất/nhập luồng (\texttt{<<} và \texttt{>>}) BẮT BUỘC phải là Non-member Function?}
+    Xét biểu thức: \texttt{std::cout << myObject;}.
+    Toán hạng bên trái là \texttt{std::cout} (có kiểu \texttt{std::ostream\&}). Nếu ta cài đặt dạng hàm thành viên, hàm đó bắt buộc phải nằm bên trong mã nguồn của lớp \texttt{std::ostream} thuộc thư viện chuẩn của trình biên dịch! Vì lập trình viên không thể can thiệp vào mã nguồn của \texttt{std::ostream}, ta bắt buộc phải nạp chồng \texttt{operator<<} dưới dạng \textbf{Hàm Tự Do Ngoài Lớp (Non-member Function)} và cấp quyền \texttt{friend} để truy cập trường ẩn:
+    \begin{lstlisting}[language=C++]
+    friend std::ostream& operator<<(std::ostream& os, const Complex& c) {
+        os << "(" << c.real << " + " << c.imag << "i)";
+        return os; // Tra ve ostream& de cho phep chain goi lien tiep
+    }
+    \end{lstlisting}
+\end{itemize}
+
+\subsection{Toán Tử Chỉ Mục \texttt{operator[]} \& Toán Tử Gọi Hàm \texttt{operator()}}
+
+Để bảo đảm tính toàn vẹn \textit{const-correctness}, toán tử chỉ mục luôn phải được viết thành \textbf{MỘT CẶP ĐỒNG BỘ}:
+\begin{lstlisting}[language=C++]
+class SafeVector {
+private:
+    int* elements;
+    size_t length;
+public:
+    // 1. Non-const version: Allows reading and writing
+    int& operator[](size_t index) {
+        return elements[index];
+    }
+
+    // 2. Const version: Allows reading from const instances
+    const int& operator[](size_t index) const {
+        return elements[index];
+    }
+};
+\end{lstlisting}
+
+\subsection{Toán Tử Tăng Giảm: Tiền Tố (Prefix) vs Hậu Tố (Postfix)}
+
+\begin{lstlisting}[language=C++]
+class Counter {
+private:
+    int value = 0;
+public:
+    // 1. PREFIX (++c): Increments and returns reference to self
+    Counter& operator++() {
+        ++value;
+        return *this; // Optimal performance: O(1), no temporary object
+    }
+
+    // 2. POSTFIX (c++): Takes dummy int parameter to differentiate
+    Counter operator++(int) {
+        Counter temp = *this; // MANDATORY: Must create a temporary copy!
+        ++value;              // Increment actual state
+        return temp;          // Return old value before increment
+    } // Overhead: Triggers Copy Constructor
+};
+\end{lstlisting}
+\textit{Hệ luận kỹ thuật:} Trong các vòng lặp thuật toán, luôn ưu tiên sử dụng toán tử tiền tố (\texttt{++it}) thay vì hậu tố (\texttt{it++}) để triệt tiêu chi phí khởi tạo đối tượng tạm thời.\footnote{Nguồn: OOP4-OperatorOverloading\_new.pdf - Trang 33-50: Kỹ thuật nạp chồng toán tử nâng cao}
+
+\section{Nạp Chồng Toán Tử new và delete \& Kỹ Thuật Placement New}
+
+\subsection{Nạp Chồng new/delete Cấp Lớp (Class-specific Allocators)}
+
+Các hệ thống giao dịch tần suất cao hoặc engine trò chơi thường không sử dụng bộ cấp phát tổng quát của hệ điều hành vì chi phí tìm kiếm vùng nhớ tự do quá lớn. C++ cho phép nạp chồng toán tử \texttt{new} và \texttt{delete} riêng cho từng lớp để lấy bộ nhớ từ một vùng nhớ được cấp phát tĩnh từ trước (\textit{Memory Pool}):
+
+\begin{lstlisting}[language=C++]
+class HighSpeedNode {
+public:
+    void* operator new(size_t bytes) {
+        // Fast allocate from custom memory pool in O(1)
+        return MemoryPool::allocateFast(bytes);
+    }
+
+    void operator delete(void* ptr) noexcept {
+        // Return block back to pool in O(1)
+        MemoryPool::deallocateFast(ptr);
+    }
+};
+\end{lstlisting}
+
+\subsection{Kỹ Thuật Khởi Tạo Tại Chỗ (Placement New)}
+
+Placement New cho phép lập trình viên khởi tạo một đối tượng trực tiếp trên một địa chỉ bộ nhớ đã được phân bổ sẵn mà \textbf{hoàn toàn không thực hiện bất kỳ lệnh xin cấp phát RAM nào}:
+
+\begin{lstlisting}[language=C++]
+#include <new> // Required for placement new
+
+alignas(SocketConnection) char arenaBuffer[sizeof(SocketConnection)];
+
+void testPlacementNew() {
+    // 1. Construct object directly on arenaBuffer:
+    SocketConnection* pConn = new (arenaBuffer) SocketConnection(9090);
+
+    // 2. DESTRUCTION RULE: STRICTLY FORBIDDEN TO CALL delete pConn!
+    // Since arenaBuffer is on Stack/Static, calling delete triggers a crash!
+    
+    // 3. MUST MANUALLY INVOKE DESTRUCTOR EXPLICITLY:
+    pConn->~SocketConnection();
+}
+\end{lstlisting}
+
+\section{Kiến Trúc Con Trỏ Thông Minh Chuẩn C++11 (Smart Pointers Architecture)}
+
+Để chấm dứt kỷ nguyên rò rỉ bộ nhớ của con trỏ thô (\textit{Raw Pointers}), chuẩn C++11 giới thiệu bộ ba con trỏ thông minh trong thư viện \texttt{<memory>}.
+
+\subsection{\texttt{std::unique\_ptr<T>} --- Quyền Sở Hữu Độc Quyền (Exclusive Ownership)}
+
+\begin{itemize}
+    \item \textbf{Đặc tính kiến trúc:} Quản lý một đối tượng duy nhất. Không thể sao chép (\texttt{Copy Constructor = delete}), chỉ có thể di dời quyền sở hữu thông qua Move Semantics (\texttt{std::move}).
+    \item \textbf{Hiệu năng:} Kích thước bộ nhớ của \texttt{std::unique\_ptr<T>} bằng chính xác \textbf{MỘT con trỏ thô} (\texttt{sizeof = 8 bytes} trên 64-bit). Mọi thao tác truy xuất đều được inline hóa 100\%, đạt hiệu năng ngang bằng con trỏ thô (\textbf{Zero Runtime Overhead})!
+\end{itemize}
+
+\subsection{\texttt{std::shared\_ptr<T>} --- Quyền Sở Hữu Chia Sẻ (Shared Ownership)}
+
+Nhiều con trỏ \texttt{shared\_ptr} có thể cùng trỏ tới một đối tượng. Đối tượng sẽ được tự động giải phóng khi con trỏ \texttt{shared\_ptr} cuối cùng bị hủy.
+
+\begin{figure}[htbp]
+\centering
+\resizebox{0.95\textwidth}{!}{%
+\begin{tikzpicture}[
+    box/.style={draw=primaryblue, thick, rounded corners=3pt, fill=white, inner sep=7pt, font=\small\sffamily, align=center},
+    ctrlbox/.style={draw=accentblue, thick, rounded corners=3pt, fill=bglighterblue, inner sep=7pt, font=\small\sffamily, align=center}
+]
+    % shared_ptr in Stack
+    \node[box, fill=bgsoftblue, text width=3.8cm] (sp1) at (0, 3) {\textbf{\texttt{std::shared\_ptr<T>}}\\(Trên Stack: 16 bytes)\\\footnotesize Con trỏ đối tượng: \texttt{T*}\\\footnotesize Con trỏ Control Block};
+
+    % Managed Object on Heap
+    \node[box, fill=white, draw=primaryblue, text width=4.0cm] (obj) at (6.5, 4.2) {\textbf{Đối Tượng Dữ Liệu T}\\(Cấp phát trên Heap)\\\footnotesize \texttt{sizeof(T)} bytes};
+
+    % Control block on Heap
+    \node[ctrlbox, text width=4.8cm] (cb) at (6.5, 1.8) {\textbf{Control Block (Heap)}\\\footnotesize Strong Ref Count: \texttt{1}\\\footnotesize Weak Ref Count: \texttt{0}\\\footnotesize Custom Deleter / Allocator};
+
+    % Pointer arrows
+    \draw[-{Stealth[length=2.5mm]}, thick, primaryblue] (sp1.east) -- ++(1.2, 0) |- (obj.west) node[near start, above=2pt, font=\footnotesize] {Trỏ dữ liệu};
+    \draw[-{Stealth[length=2.5mm]}, thick, accentblue] (sp1.east) -- ++(1.2, 0) |- (cb.west) node[near start, below=2pt, font=\footnotesize] {Quản lý vòng đời};
+\end{tikzpicture}%
+}
+\caption{Kiến trúc bộ nhớ hai con trỏ và Khối Điều Khiển (Control Block) của \texttt{std::shared\_ptr}.}
+\end{figure}
+
+\begin{underhoodbox}[Kiến Trúc Khối Điều Khiển (Control Block) Của \texttt{std::shared\_ptr}]
+Kích thước của một \texttt{std::shared\_ptr} gấp đôi con trỏ thô (16 bytes trên nền tảng 64-bit), bao gồm:
+\begin{enumerate}
+    \item \textbf{Con trỏ thứ nhất (8 bytes):} Trỏ thẳng tới đối tượng dữ liệu thực tế (\texttt{T*}).
+    \item \textbf{Con trỏ thứ hai (8 bytes):} Trỏ tới một cấu trúc cấp phát động độc lập gọi là \textbf{Khối Điều Khiển (Control Block)}.
+\end{enumerate}
+
+\textbf{Cấu trúc nội tại của Control Block:}
+\begin{itemize}
+    \item \textbf{Strong Reference Count (Bộ đếm tham chiếu mạnh):} Đếm số lượng \texttt{shared\_ptr} đang cùng sở hữu đối tượng. Mọi thao tác tăng/giảm biến đếm này đều sử dụng các chỉ lệnh khóa luồng mức máy (\textbf{Atomic Instructions} như \texttt{lock xadd} trên x86) để đảm bảo an toàn luồng (\textit{Thread-safety}).
+    \item \textbf{Weak Reference Count (Bộ đếm tham chiếu yếu):} Đếm số lượng \texttt{weak\_ptr} đang quan sát đối tượng.
+    \item \textbf{Custom Deleter \& Allocator:} Con trỏ hàm giải phóng tùy biến.
+\end{itemize}
+
+\textbf{Ưu thế vượt trội của \texttt{std::make\_shared<T>()}:}
+\begin{itemize}
+    \item Nếu dùng \texttt{std::shared\_ptr<T>(new T())}: Hệ điều hành phải thực hiện \textbf{HAI lần cấp phát bộ nhớ động riêng rẽ} (một lần cho \texttt{T}, một lần cho Control Block), làm phân mảnh bộ nhớ và suy giảm hiệu năng CPU Cache.
+    \item Nếu dùng \texttt{std::make\_shared<T>()}: Hệ điều hành cấp phát \textbf{DUY NHẤT MỘT KHỐI RAM LIÊN TỤC} chứa cả Control Block và Đối tượng dữ liệu. Tối ưu hóa tuyệt đối tính cục bộ bộ nhớ đệm (\textbf{Cache Locality})!\footnote{Nguồn: OOP4-OperatorOverloading\_new.pdf - Trang 51-68: Kiến trúc Smart Pointers và Control Block}
+\end{itemize}
+\end{underhoodbox}
+
+\subsection{\texttt{std::weak\_ptr<T>} --- Bẻ Gãy Vòng Lặp Tham Chiếu (Circular Reference)}
+
+Nếu hai đối tượng \texttt{A} và \texttt{B} cùng sở hữu \texttt{std::shared\_ptr} trỏ chéo lẫn nhau:
+$$\text{A} \xrightarrow{\text{shared\_ptr}} \text{B} \quad \text{và} \quad \text{B} \xrightarrow{\text{shared\_ptr}} \text{A}$$
+Bộ đếm Strong Reference Count của cả hai không bao giờ giảm về 0, dẫn tới toàn bộ mạng lưới đối tượng bị \textbf{rò rỉ vĩnh viễn trong RAM}!
+
+\textbf{Giải pháp:} Thay thế một trong hai liên kết bằng \textbf{\texttt{std::weak\_ptr<T>}}. \texttt{weak\_ptr} chỉ đóng vai trò là người quan sát: Nó không làm tăng Strong Reference Count. Khi muốn sử dụng dữ liệu, nó thăng hạng an toàn thành \texttt{shared\_ptr} thông qua phương thức \texttt{wp.lock()}; nếu đối tượng đã bị giải phóng, \texttt{lock()} trả về con trỏ rỗng an toàn.
+
+% ==============================================================================
+% CHƯƠNG 4: KẾ THỪA (INHERITANCE)
+% ==============================================================================
+\chapter{Kế thừa (Inheritance)}
+
+\begin{theorybox}[Định Nghĩa: Tính Kế Thừa (Inheritance)]
+\textbf{Kế thừa (Inheritance)} là cơ chế cho phép một lớp mới (\textbf{Lớp dẫn xuất / Lớp con --- Derived Class}) tiếp nhận lại toàn bộ cấu trúc dữ liệu và hành vi của một lớp đã tồn tại (\textbf{Lớp cơ sở / Lớp cha --- Base Class}), đồng thời mở rộng hoặc tái định nghĩa các hành vi chuyên biệt mà không cần viết lại mã nguồn ban đầu.\footnote{Nguồn: OOP5-Inheritance\_new.pdf - Trang 3-12: Khái niệm thừa kế và quan hệ kế thừa}
+\end{theorybox}
+
+\section{Bản Chất Quan Hệ IS-A và HAS-A}
+
+Trong thiết kế phần mềm, việc lựa chọn sai lầm giữa Kế thừa và Hợp thành là nguyên nhân hàng đầu dẫn đến các hệ thống giòn vỡ (\textit{Brittle Architecture}):
+
+\begin{itemize}
+    \item \textbf{Mối quan hệ IS-A (Là một):} Thể hiện tính phân loại bản thể luận. Ví dụ: \textit{"Hình tròn LÀ MỘT Hình học"} (\texttt{Circle IS-A Shape}). Mối quan hệ này phải được biểu diễn bằng \textbf{Kế thừa Công khai (Public Inheritance)}. Đối tượng lớp con phải thay thế được hoàn toàn cho đối tượng lớp cha trong mọi hoàn cảnh mà không phá vỡ tính đúng đắn của chương trình (Nguyên lý Thay thế Liskov - Liskov Substitution Principle).
+    \item \textbf{Mối quan hệ HAS-A (Có một / Sở hữu):} Thể hiện sự hợp thành của các thành phần. Ví dụ: \textit{"Ô tô CÓ MỘT Động cơ"} (\texttt{Car HAS-A Engine}). Mối quan hệ này bắt buộc phải được mô hình hóa bằng \textbf{Hợp Thành (Composition)} hoặc \textbf{Tụ Hợp (Aggregation)}: Đưa đối tượng thành viên vào trong lớp, tuyệt đối không dùng kế thừa!
+\end{itemize}
+
+\subsection{Bố Cục Bộ Nhớ Đối Tượng Kế Thừa Đơn (Single Inheritance Memory Layout)}
+
+Trong C++, lớp con kế thừa từ lớp cha được tổ chức theo nguyên lý lồng ghép cấu trúc nhị phân liên tục trong RAM:
+
+\begin{figure}[htbp]
+\centering
+\resizebox{0.92\textwidth}{!}{%
+\begin{tikzpicture}[every node/.style={font=\small\sffamily, align=center}]
+    % Outer container
+    \draw[thick, fill=bgsoftblue, draw=primaryblue, rounded corners=3pt] (0, 0) rectangle (11, 4.2);
+    \node[above, font=\bfseries\sffamily, primaryblue] at (5.5, 4.2) {Không Gian Bộ Nhớ Của Đối Tượng Phái Sinh (Derived Object)};
+
+    % Base subobject
+    \draw[thick, fill=white, draw=primaryblue, rounded corners=2pt] (2.2, 2.2) rectangle (10.5, 3.8);
+    \node at (6.35, 3.0) {\textbf{Base Class Subobject} (Bắt đầu tại Offset 0)\\Chứa các trường dữ liệu của Base Class (\texttt{int base\_id; double base\_val;})};
+
+    % Derived unique fields
+    \draw[thick, fill=bglighterblue, draw=accentblue, rounded corners=2pt] (2.2, 0.4) rectangle (10.5, 2.0);
+    \node at (6.35, 1.2) {\textbf{Derived Class Unique Fields} (Offset $+\text{sizeof(Base)}$)\\Chứa các trường thành viên bổ sung riêng của Derived Class};
+
+    % Left offset annotations
+    \node[font=\footnotesize\ttfamily, left, primaryblue] at (2.0, 3.0) {Offset 0x00};
+    \node[font=\footnotesize\ttfamily, left, accentblue] at (2.0, 1.2) {Offset +$\Delta$};
+\end{tikzpicture}%
+}
+\caption{Bố cục bộ nhớ nhị phân của đối tượng phái sinh trong Kế thừa Đơn.}
+\end{figure}
+
+\begin{underhoodbox}[Đặc Điểm Con Trỏ Trong Kế Thừa Đơn]
+Vì Subobject của Base nằm tại vị trí bắt đầu (Offset 0) của đối tượng Derived, nên:
+$$\texttt{\&derived == static\_cast<Base*>(\&derived)}$$
+Địa chỉ con trỏ của đối tượng con và địa chỉ con trỏ khi ép kiểu lên đối tượng cha là \textbf{hoàn toàn trùng khớp về mặt giá trị số nguyên}! Trình biên dịch không cần sinh thêm bất kỳ lệnh cộng trừ offset nào khi thực hiện phép Upcast trong kế thừa đơn.\footnote{Nguồn: OOP5-Inheritance\_new.pdf - Trang 13-22: Bố cục bộ nhớ đối tượng kế thừa}
+\end{underhoodbox}
+
+\section{Ma Trận Biến Đổi Quyền Truy Cập Trong Kế Thừa}
+
+Quyền truy cập của các thành viên kế thừa từ lớp cha vào lớp con phụ thuộc vào kiểu kế thừa:
+
+\begin{table}[htbp]
+\centering
+\caption{Ma trận biến đổi quyền truy cập các trường dữ liệu trong kế thừa}
+\vspace{0.2cm}
+\resizebox{0.95\textwidth}{!}{%
+\begin{tabular}{lccc}
+\toprule
+\textbf{Quyền Tại Lớp Base} & \textbf{Kế Thừa Public} & \textbf{Kế Thừa Protected} & \textbf{Kế Thừa Private} \\
+\midrule
+\texttt{public} & \texttt{public} & \texttt{protected} & \texttt{private} \\
+\texttt{protected} & \texttt{protected} & \texttt{protected} & \texttt{private} \\
+\texttt{private} & \textit{Bị ẩn hoàn toàn} & \textit{Bị ẩn hoàn toàn} & \textit{Bị ẩn hoàn toàn} \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\begin{itemize}
+    \item \textbf{Kế thừa Public:} Thiết lập mối quan hệ IS-A thực sự. Cho phép chuyển đổi con trỏ tự do từ con lên cha ở bất kỳ đâu.
+    \item \textbf{Kế thừa Private:} Thiết lập mối quan hệ \textit{"Được cài đặt bằng cách sử dụng"} (\textit{Implemented-in-terms-of}). Toàn bộ giao diện của cha bị đóng kín bên trong con.
+    \item \textbf{Tối ưu hóa Lớp Cơ sở Rỗng (Empty Base Optimization - EBO):}
+    Theo chuẩn C++, một lớp hoàn toàn rỗng không chứa biến thành viên vẫn phải có kích thước tối thiểu $\text{sizeof} = 1$ byte để đảm bảo mỗi đối tượng có một địa chỉ phân biệt. Tuy nhiên, khi kế thừa theo dạng \texttt{private}, trình biên dịch C++ áp dụng EBO để tiêu trừ byte này: Kích thước của lớp con \textbf{không bị tăng thêm 1 byte nào}! Kỹ thuật này được STL sử dụng triệt để trong các bộ nén con trỏ và bộ cấp phát tĩnh (\texttt{std::allocator}).
+\end{itemize}
+
+\section{Vòng Đời Khởi Tạo và Hủy Kế Thừa}
+
+\subsection{Trình Tự Thực Thi Khởi Tạo và Giải Phóng Bộ Nhớ}
+
+\begin{theorybox}[Định Đề Bất Biến Về Trình Tự Vòng Đời Kế Thừa]
+Khi khởi tạo một đối tượng lớp con:
+\begin{enumerate}
+    \item \textbf{Khởi tạo Lớp Cơ sở (Base First):} Constructor của lớp cha được thực thi đầu tiên để bảo đảm phần nền tảng được định hình vững chắc.
+    \item \textbf{Khởi tạo Các Thành Viên Lớp Con (Member Fields):} Các biến dữ liệu riêng của lớp con được khởi tạo theo thứ tự khai báo.
+    \item \textbf{Thực thi Thân Constructor Lớp Con (Derived Body):} Phần thân hàm tạo của lớp con hoàn thiện các nghiệp vụ cuối cùng.
+\end{enumerate}
+
+Khi đối tượng bị tiêu hủy:
+\begin{center}
+\textbf{Trình tự hủy diễn ra theo đúng quy tắc LIFO (Last-In, First-Out) ngược lại hoàn toàn:}\\
+Destructor Lớp Con chạy trước $\longrightarrow$ Dọn dẹp thành viên $\longrightarrow$ Destructor Lớp Cha chạy sau cùng!\footnote{Nguồn: OOP5-Inheritance\_new.pdf - Trang 23-38: Thứ tự thực thi Constructor và Destructor}
+\end{center}
+\end{theorybox}
+
+\begin{dangerbox}[Bẫy Tử Thần: Quên Gọi Base Copy Constructor]
+Khi lập trình viên tự tay viết Copy Constructor cho lớp con:
+\begin{lstlisting}[language=C++]
+class Base {
+public:
+    int baseVal;
+    Base(int v) : baseVal(v) {}
+    Base(const Base& other) : baseVal(other.baseVal) {
+        std::cout << "Base copied\n";
+    }
+};
+
+class Derived : public Base {
+public:
+    int derivedVal;
+    Derived(int b, int d) : Base(b), derivedVal(d) {}
+
+    // DANGEROUS ERROR: Forgot to invoke Base(other) in initializer list!
+    Derived(const Derived& other) : derivedVal(other.derivedVal) {
+        // Compiler will silently invoke Base::Base() default constructor!
+        // If Base has no default ctor -> Compilation error.
+        // If Base has default ctor -> baseVal is reset, losing copied data!
+    }
+
+    // CORRECT CANONICAL IMPLEMENTATION:
+    // Derived(const Derived& other) : Base(other), derivedVal(other.derivedVal) {}
+};
+\end{lstlisting}
+\end{dangerbox}
+
+\section{Hiện Tượng Che Khuất Tên (Name Hiding) vs Nạp Chồng}
+
+Trong C++, cơ chế phân giải tên (\textit{Name Lookup}) tuân theo nguyên tắc: \textbf{Dừng lại ở phạm vi gần nhất tìm thấy định danh trùng khớp}!
+
+\begin{lstlisting}[language=C++]
+class Base {
+public:
+    void process(int x) { std::cout << "Base::process(int)\n"; }
+    void process(double x) { std::cout << "Base::process(double)\n"; }
+};
+
+class Derived : public Base {
+public:
+    // Hides all Base::process overloads:
+    void process(std::string s) { std::cout << "Derived::process(string)\n"; }
+};
+
+void test() {
+    Derived d;
+    d.process("Hello"); // VALID: Calls Derived::process(string)
+    // d.process(10);   // COMPILATION ERROR: Compiler cannot find process(int)!
+}
+\end{lstlisting}
+
+\begin{underhoodbox}[Bản Chất Của Hiện Tượng Name Hiding]
+Tại sao \texttt{d.process(10)} không gọi \texttt{Base::process(int)}?
+\begin{enumerate}
+    \item Khi phân tích cú pháp biểu thức \texttt{d.process(10)}, trình biên dịch bắt đầu tìm kiếm tên định danh \texttt{process} từ phạm vi của lớp \texttt{Derived}.
+    \item Nó tìm thấy \texttt{void Derived::process(std::string)}.
+    \item \textbf{Cơ chế dừng tìm kiếm:} Khi đã tìm thấy ít nhất một tên khớp trong một phạm vi, trình biên dịch \textbf{DỪNG TÌM KIẾM NGAY LẬP TỨC} và không bao giờ quét tiếp lên phạm vi của lớp cha \texttt{Base}!
+    \item Sau đó, nó tiến hành phân giải nạp chồng (\textit{Overload Resolution}) trên tập hợp các hàm tìm được tại lớp con. Vì tập hợp này chỉ có phiên bản nhận \texttt{std::string}, việc truyền số nguyên \texttt{10} bị báo lỗi biên dịch!
+    \item \textbf{Giải pháp chuẩn mực:} Sử dụng từ khóa \textbf{\texttt{using}} để kéo toàn bộ họ hàm của cha vào lớp con:
+    \begin{lstlisting}[language=C++]
+    class Derived : public Base {
+    public:
+        using Base::process; // Pull all Base::process overloads into Derived scope
+        void process(std::string s);
+    };
+    \end{lstlisting}
+    Dòng lệnh \texttt{using Base::process} tái lập khả năng nạp chồng hoàn hảo giữa cha và con!\footnote{Nguồn: OOP5-Inheritance\_new.pdf - Trang 39-48: Hiện tượng Name Hiding và từ khóa using}
+\end{enumerate}
+\end{underhoodbox}
+
+\section{Upcasting, Downcasting và Hiểm Họa Cắt Xén Đối Tượng}
+
+\subsection{Cắt Xén Đối Tượng (Object Slicing)}
+
+\begin{dangerbox}[Thảm Họa Cắt Xén Đối Tượng Khi Truyền Tham Trị]
+Xét đoạn mã sau:
+\begin{lstlisting}[language=C++]
+void renderEntity(Base b) { // DANGEROUS: Passed by VALUE
+    // ...
+}
+
+void execution() {
+    Derived d(10, 20);
+    renderEntity(d); // OBJECT SLICING OCCURS HERE!
+}
+\end{lstlisting}
+
+\textbf{Giải phẫu cơ chế cắt xén dưới RAM:}
+\begin{enumerate}
+    \item Hàm \texttt{renderEntity} yêu cầu một biến có kích thước đúng bằng $\text{sizeof}(\text{Base})$ trên ngăn xếp Stack của nó.
+    \item Khi truyền đối tượng \texttt{d} vào, trình biên dịch gọi Copy Constructor của lớp cơ sở: \texttt{Base::Base(const Base\&)}.
+    \item Trình biên dịch sao chép chính xác phần Subobject của Base từ \texttt{d}, và \textbf{GỌT BỎ HOÀN TOÀN (SLICE OFF)} toàn bộ các trường dữ liệu riêng và bản chất đa hình của \texttt{Derived}!
+    \item Mọi hành vi đa hình và dữ liệu của lớp con bị tiêu biến hoàn toàn mà không có bất kỳ cảnh báo biên dịch nào!
+    \item \textbf{Quy tắc Vàng:} Trong hướng đối tượng, luôn luôn truyền đối tượng đa hình qua \textbf{Tham Chiếu Hằng (\texttt{const Base\&})} hoặc \textbf{Con Trỏ (\texttt{Base*})}, tuyệt đối cấm truyền theo giá trị!\footnote{Nguồn: OOP5-Inheritance\_new.pdf - Trang 49-62: Upcasting, Object Slicing và Downcasting}
+\end{enumerate}
+\end{dangerbox}
+
+\section{Đa Kế Thừa \& Bài Toán Kim Cương (Diamond Problem)}
+
+\subsection{Mô Hình Bài Toán Kim Cương}
+
+Đa kế thừa (\textit{Multiple Inheritance}) cho phép một lớp kế thừa từ nhiều lớp cha độc lập. Tuy nhiên, nó dẫn tới cấu trúc đồ thị hình thoi kinh điển:
+
+\begin{figure}[htbp]
+\centering
+\resizebox{0.65\textwidth}{!}{%
+\begin{tikzpicture}[
+    box/.style={draw=primaryblue, thick, rounded corners=3pt, fill=white, inner sep=6pt, font=\small\bfseries\sffamily, align=center, text width=3.2cm}
+]
+    \node[box, fill=bglighterblue] (A) at (0, 3.6) {Lớp Cơ Sở A\\\footnotesize\ttfamily int id;};
+    \node[box, fill=white] (B) at (-3.2, 1.8) {Lớp Con B};
+    \node[box, fill=white] (C) at (3.2, 1.8) {Lớp Con C};
+    \node[box, fill=bgsoftblue, draw=accentblue, line width=1.4pt] (D) at (0, 0) {Lớp Đa Kế Thừa D};
+
+    \draw[-{Stealth[length=2.5mm]}, thick, primaryblue] (B.north) -- (A.south west);
+    \draw[-{Stealth[length=2.5mm]}, thick, primaryblue] (C.north) -- (A.south east);
+    \draw[-{Stealth[length=2.5mm]}, thick, accentblue] (D.north west) -- (B.south);
+    \draw[-{Stealth[length=2.5mm]}, thick, accentblue] (D.north east) -- (C.south);
+\end{tikzpicture}%
+}
+\caption{Mô hình phân cấp kế thừa hình thoi (The Diamond Problem).}
+\end{figure}
+
+\begin{itemize}
+    \item \textbf{Nếu không có kế thừa ảo:} Đối tượng \texttt{D} trong RAM sẽ chứa \textbf{HAI BẢN SAO ĐỘC LẬP CỦA $A$} (một bản đi qua nhánh $B$, một bản đi qua nhánh $C$). Kích thước đối tượng bị nhân đôi, và lời gọi \texttt{d.id} bị trình biên dịch từ chối ngay lập tức vì không thể xác định đang truy cập \texttt{id} của nhánh $B$ hay nhánh $C$ (\textit{Ambiguity Error}).
+    \item \textbf{Giải pháp: Kế Thừa Ảo (\texttt{virtual public A}):}
+    \begin{lstlisting}[language=C++]
+    class A { public: int id; A(int x) : id(x) {} };
+    class B : virtual public A { public: B() : A(1) {} };
+    class C : virtual public A { public: C() : A(2) {} };
+    class D : public B, public C {
+    public:
+        // MOST-DERIVED CLASS EXCLUSIVE DUTY:
+        // D is directly responsible for initializing A, ignoring calls from B and C!
+        D() : A(100), B(), C() {}
+    };
+    \end{lstlisting}
+\end{itemize}
+
+\begin{underhoodbox}[Kiến Trúc Bộ Nhớ Kế Thừa Ảo (vbptr \& vbtbl)]
+Để đảm bảo trong lòng đối tượng $D$ chỉ tồn tại duy nhất \textbf{MỘT Subobject $A$ dùng chung}, trình biên dịch C++ thay đổi hoàn toàn kiến trúc bộ nhớ:
+\begin{enumerate}
+    \item Subobject $A$ ảo được đẩy xuống tận cùng của cấu trúc đối tượng $D$.
+    \item Các lớp trung gian $B$ và $C$ được chèn thêm một con trỏ cơ sở ảo: \textbf{\texttt{vbptr} (Virtual Base Pointer)}.
+    \item \texttt{vbptr} trỏ tới một bảng độ lệch \textbf{Virtual Base Table (vbtbl)}. Tại runtime, khi $B$ hoặc $C$ muốn truy cập thành viên của $A$, CPU đọc bảng \texttt{vbtbl} để tính toán khoảng dịch chuyển bộ nhớ động tới vị trí thực tế của $A$ trong $D$.
+    \item Do đó, kế thừa ảo làm tăng kích thước đối tượng thêm từ 8 đến 16 bytes (cho các con trỏ \texttt{vbptr}) và làm chậm tốc độ truy cập dữ liệu do phải qua thêm một bước gián tiếp.\footnote{Nguồn: OOP5-Inheritance\_new.pdf - Trang 71-76: Đa thừa kế, Sự mơ hồ \& Lớp cơ sở ảo}
+\end{enumerate}
+\end{underhoodbox}
+
+% ==============================================================================
+% CHƯƠNG 5: ĐA HÌNH & LIÊN KẾT ĐỘNG (POLYMORPHISM & DYNAMIC BINDING)
+% ==============================================================================
+\chapter{Đa hình \& Liên kết Động (Polymorphism \& Dynamic Binding)}
+
+\begin{theorybox}[Định Nghĩa: Tính Đa Hình (Polymorphism)]
+\textbf{Đa hình (Polymorphism)} --- xuất phát từ tiếng Hy Lạp cổ mang nghĩa "nhiều hình thái" --- là trụ cột thứ ba và là linh hồn của Lập trình Hướng Đối tượng. Đa hình cho phép một biến con trỏ hoặc tham chiếu thuộc lớp cơ sở (\texttt{Base}) có khả năng trỏ tới đối tượng của bất kỳ lớp phái sinh nào (\texttt{Derived}), và khi thực hiện lời gọi hàm thành viên, phiên bản hàm chính xác tương ứng với kiểu đối tượng thực tế sẽ được kích hoạt.\footnote{Nguồn: OOP6-Polymorphism\_new.pdf - Trang 3-7: Khái niệm tính đa hình trong lập trình hướng đối tượng}
+\end{theorybox}
+
+\section{Triết lý Đa hình \& Cơ chế Liên kết (Binding)}
+
+Để hiểu sâu sắc bản chất của Đa hình, ta phải phân tích sự khác biệt cốt tử giữa hai cơ chế liên kết lời gọi hàm với mã máy:
+
+\begin{enumerate}
+    \item \textbf{Liên kết Tĩnh (Early Binding / Static Binding):}
+    \begin{itemize}
+        \item Xảy ra tại \textbf{thời điểm biên dịch (Compile-time)}. Trình biên dịch dựa hoàn toàn vào \textbf{kiểu dữ liệu tĩnh (Static Type)} của biến hoặc con trỏ để xác định địa chỉ hàm cần thực thi.
+        \item Mã máy sinh ra là một lệnh nhảy trực tiếp: \texttt{call 0x004012A0}.
+        \item \textit{Ưu điểm:} Tốc độ thực thi cực nhanh, không tốn thêm bất kỳ byte bộ nhớ nào, cho phép trình biên dịch thực hiện tối ưu hóa nội dòng (\textbf{Function Inlining}).
+        \item \textit{Nhược điểm:} Thiếu sự linh hoạt, không thể thay đổi hành vi theo ngữ cảnh thời gian chạy.
+    \end{itemize}
+
+    \item \textbf{Liên kết Động (Late Binding / Dynamic Binding):}
+    \begin{itemize}
+        \item Xảy ra tại \textbf{thời điểm thực thi (Runtime)}. Việc quyết định gọi phiên bản hàm nào được hoãn lại cho tới khi chương trình đang chạy, dựa vào \textbf{kiểu dữ liệu thực tế (Dynamic Type)} của đối tượng mà con trỏ đang trỏ tới.
+        \item Mã máy sinh ra là một lệnh nhảy gián tiếp thông qua con trỏ bộ nhớ: \texttt{call qword ptr [rax + offset]}.
+        \item \textit{Ưu điểm:} Tạo ra kiến trúc phần mềm mở rộng cực kỳ mạnh mẽ (Open-Closed Principle: mở rộng bằng cách thêm lớp mới mà không cần sửa code cũ).
+        \item \textit{Nhược điểm:} Tốn chi phí gián tiếp (Indirection overhead), tăng kích thước đối tượng và vô hiệu hóa inlining.\footnote{Nguồn: OOP6-Polymorphism\_new.pdf - Trang 8-15: Early Binding vs Late Binding}
+    \end{itemize}
+\end{enumerate}
+
+\begin{theorybox}[Nguyên Lý Zero-Overhead Của C++]
+Trong các ngôn ngữ như Java hay C\#, mọi phương thức thành viên mặc định đều là \textbf{Dynamic Binding}. Ngược lại, triết lý thiết kế của C++ kiên định với tôn chỉ \textbf{Zero-Overhead Principle}: \textit{"Bạn không phải trả giá cho những gì bạn không sử dụng"}. 
+
+Do đó, trong C++, mọi hàm thành viên mặc định \textbf{100\% là Static Binding}. Chỉ khi lập trình viên chủ động gắn từ khóa \texttt{virtual}, trình biên dịch mới kích hoạt cơ chế Dynamic Binding!
+\end{theorybox}
+
+\section{Hàm Ảo, \texttt{override} và \texttt{final} trong C++11}
+
+\subsection{Cơ chế Hàm Ảo (\texttt{virtual})}
+
+Khi khai báo một phương thức với từ khóa \texttt{virtual} ở lớp cơ sở, ta đã thiết lập một "hợp đồng đa hình":
+\begin{lstlisting}[language=C++]
+class Shape {
+public:
+    virtual void draw() const {
+        std::cout << "Drawing generic shape\n";
+    }
+    virtual ~Shape() = default;
+};
+
+class Circle : public Shape {
+public:
+    void draw() const override { // Override virtual method
+        std::cout << "Drawing Circle\n";
+    }
+};
+\end{lstlisting}
+
+\textbf{Quy tắc lan truyền ảo (Virtual Propagation):} Một khi một phương thức đã được khai báo là \texttt{virtual} ở lớp cơ sở, nó sẽ \textbf{tự động mang tính ảo vĩnh viễn} trong toàn bộ cây thừa kế của các lớp con cháu, cho dù ở lớp con ta có viết lại từ khóa \texttt{virtual} hay không.\footnote{Nguồn: OOP6-Polymorphism\_new.pdf - Trang 16-22: Khai báo và ghi đè hàm ảo}
+
+\subsection{Bộ Đôi Từ Khóa Ngữ Cảnh C++11: \texttt{override} và \texttt{final}}
+
+Trước C++11, lỗi ngầm phổ biến nhất của lập trình viên là viết sai chữ ký hàm con dẫn đến việc vô tình tạo ra một hàm mới thay vì ghi đè hàm cha:
+\begin{lstlisting}[language=C++]
+class Base {
+public:
+    virtual void process(int x) const;
+};
+
+// C++98: Signature mismatch pitfall
+class Derived : public Base {
+public:
+    void process(long x) const; // LOGICAL FLAW: Overloads instead of overriding!
+    void process(int x);        // LOGICAL FLAW: Missing const qualifier!
+};
+\end{lstlisting}
+
+Để chấm dứt thảm họa này, chuẩn C++11 bổ sung hai từ khóa ngữ cảnh (\textit{contextual keywords}):
+
+\begin{itemize}
+    \item \textbf{\texttt{override}}: Yêu cầu trình biên dịch kiểm tra nghiêm ngặt xem hàm này có thực sự ghi đè một hàm ảo nào từ lớp cha hay không. Nếu chữ ký hàm, kiểu trả về, hoặc thuộc tính \texttt{const} không khớp 100\%, trình biên dịch lập tức báo lỗi biên dịch (\textit{Compilation Error}):
+    \begin{lstlisting}[language=C++]
+    class DerivedC11 : public Base {
+    public:
+        void process(int x) const override; // VALID: Perfectly matches Base signature
+        // void process(long x) const override; // COMPILATION ERROR: Detected immediately!
+    };
+    \end{lstlisting}
+
+    \item \textbf{\texttt{final}}: Mang hai mục đích kiểm soát kiến trúc:
+    \begin{enumerate}
+        \item Khóa không cho lớp con tiếp tục ghi đè phương thức ảo:
+        \begin{lstlisting}[language=C++]
+        virtual void process(int x) const override final; // Blocks further overriding
+        \end{lstlisting}
+        \item Khóa không cho phép bất kỳ lớp nào kế thừa từ lớp này nữa:
+        \begin{lstlisting}[language=C++]
+        class SecureKey final : public Base { /* ... */ }; // Prohibits inheritance
+        \end{lstlisting}
+    \end{enumerate}
+    \textit{Tối ưu hóa Devirtualization:} Khi trình biên dịch thấy một hàm hoặc lớp được đánh dấu \texttt{final}, nó có thể biến đổi các lời gọi gián tiếp thành lệnh gọi trực tiếp (\textbf{Direct Call}), loại bỏ hoàn toàn chi phí tra cứu bảng ảo!\footnote{Nguồn: OOP6-Polymorphism\_new.pdf - Trang 23-28: Từ khóa override và final trong C++11}
+\end{itemize}
+
+\section{Phân tích Dưới Gầm Máy: Bảng Ảo (VTable) \& Con trỏ vptr}
+
+Làm thế nào mà CPU có thể tìm ra đúng hàm \texttt{Circle::draw()} khi nó chỉ đang giữ một con trỏ kiểu \texttt{Shape*}? Đây là bí ẩn cấu trúc sâu sắc nhất của C++.
+
+\begin{figure}[htbp]
+\centering
+\resizebox{0.95\textwidth}{!}{%
+\begin{tikzpicture}[every node/.style={font=\small\sffamily, align=center}]
+    % Object RAM on left
+    \draw[thick, fill=bgsoftblue, draw=primaryblue, rounded corners=2pt] (0, 0) rectangle (4.2, 4.2);
+    \node[above, font=\bfseries\sffamily, primaryblue] at (2.1, 4.2) {Đối Tượng Circle (Stack/Heap)};
+
+    \draw[thick, fill=white, draw=primaryblue] (0.2, 3.1) rectangle (4.0, 3.9);
+    \node at (2.1, 3.5) {\textbf{\texttt{\_\_vptr}} (8 bytes con trỏ ẩn)};
+
+    \draw[thick, fill=white, draw=primaryblue] (0.2, 1.8) rectangle (4.0, 2.9);
+    \node at (2.1, 2.35) {\texttt{int id} (4 bytes)};
+
+    \draw[thick, fill=white, draw=primaryblue] (0.2, 0.4) rectangle (4.0, 1.6);
+    \node at (2.1, 1.0) {\texttt{double radius} (8 bytes)};
+
+    % VTable in .rodata on right
+    \draw[thick, fill=bglighterblue, draw=accentblue, rounded corners=2pt] (7.5, 0.4) rectangle (13.5, 4.2);
+    \node[above, font=\bfseries\sffamily, darkblue] at (10.5, 4.2) {VTable của Circle (.rodata)};
+
+    \draw[thick, fill=white, draw=accentblue] (7.8, 3.0) rectangle (13.2, 3.8);
+    \node at (10.5, 3.4) {\texttt{Slot [0]: \&Circle::draw()}};
+
+    \draw[thick, fill=white, draw=accentblue] (7.8, 2.0) rectangle (13.2, 2.8);
+    \node at (10.5, 2.4) {\texttt{Slot [1]: \&Circle::area()}};
+
+    \draw[thick, fill=white, draw=accentblue] (7.8, 0.8) rectangle (13.2, 1.6);
+    \node at (10.5, 1.2) {\texttt{Slot [2]: \&Circle::\textasciitilde{}Circle()}};
+
+    % Pointer arrow from __vptr to VTable
+    \draw[-{Stealth[length=3mm]}, ultra thick, accentblue] (4.0, 3.5) -- (7.5, 3.5) node[midway, above=2pt, font=\footnotesize\bfseries] {Trỏ bảng ảo};
+\end{tikzpicture}%
+}
+\caption{Cấu trúc nhị phân của Bảng Phương Thức Ảo (VTable) và con trỏ \texttt{\_\_vptr} trong bộ nhớ.}
+\end{figure}
+
+\begin{underhoodbox}[Kiến Trúc Bảng Ảo VTable và Con Trỏ vptr Dưới RAM]
+Để hiện thực hóa Dynamic Binding mà không phải trả giá bằng việc kiểm tra kiểu dạng chuỗi chậm chạp (\texttt{instanceof}), trình biên dịch C++ sử dụng một cấu trúc dữ liệu nhị phân nội tại:
+
+\begin{enumerate}
+    \item \textbf{Virtual Method Table (VTable):}
+    \begin{itemize}
+        \item Là một mảng tĩnh các con trỏ hàm (\texttt{const void*[]}), được trình biên dịch sinh ra duy nhất một bản cho \textbf{mỗi lớp có ít nhất một hàm ảo}.
+        \item VTable được lưu trữ trong phân vùng bộ nhớ chỉ đọc (\textbf{Read-Only Data Segment} --- \texttt{.rodata} trên Linux ELF hoặc \texttt{.rdata} trên Windows PE). Nó tồn tại suốt vòng đời của tiến trình.
+        \item Mỗi phần tử trong VTable chứa địa chỉ bắt đầu của mã máy của một phương thức ảo tương ứng theo thứ tự khai báo.
+    \end{itemize}
+
+    \item \textbf{Virtual Table Pointer (vptr):}
+    \begin{itemize}
+        \item Khi một lớp có hàm ảo, trình biên dịch âm thầm chèn thêm một trường dữ liệu ẩn vào đầu đối tượng: con trỏ \texttt{\_\_vptr} (kích thước 8 bytes trên nền tảng 64-bit).
+        \item Con trỏ \texttt{vptr} này trỏ thẳng tới bảng VTable tương ứng của lớp mà đối tượng thuộc về.
+        \item \texttt{vptr} được tự động thiết lập bởi mã máy của \textbf{Constructor} ngay khi đối tượng được sinh ra trong RAM.
+    \end{itemize}
+\end{enumerate}
+
+\textbf{Giải phẫu Lệnh Nhảy Gián Tiếp (Indirect Dispatching):}
+Khi thực thi dòng lệnh \texttt{pShape->draw()}:
+\begin{enumerate}
+    \item CPU lấy địa chỉ của đối tượng từ thanh ghi con trỏ \texttt{pShape} (ví dụ \texttt{RCX} hoặc \texttt{RDI}).
+    \item CPU giải tham chiếu offset 0 để lấy giá trị con trỏ \texttt{\_\_vptr}: \texttt{RAX = *(pShape)}.
+    \item CPU tra cứu mảng VTable tại vị trí của hàm \texttt{draw()} (ví dụ slot 0): \texttt{RDX = *(RAX + 0)}.
+    \item CPU thực hiện lệnh nhảy gián tiếp: \texttt{call RDX}, đồng thời truyền con trỏ đối tượng \texttt{pShape} làm con trỏ \texttt{this} ẩn.\footnote{Nguồn: OOP6-Polymorphism\_new.pdf - Trang 29-45: Kiến trúc VTable, vptr và Assembly Dispatch}
+\end{enumerate}
+\end{underhoodbox}
+
+\subsection{Cơ Chế Điều Chỉnh Con Trỏ Thunk (Adjustor Thunk)}
+
+Trong Đa kế thừa (Multiple Inheritance), khi một lớp \texttt{C} kế thừa từ cả \texttt{A} và \texttt{B}:
+\begin{lstlisting}[language=C++]
+class A { public: virtual void fa() {} };
+class B { public: virtual void fb() {} };
+class C : public A, public B {
+public:
+    void fa() override {}
+    void fb() override {}
+};
+\end{lstlisting}
+
+Trong lòng đối tượng \texttt{C}, Subobject \texttt{A} nằm ở offset 0, nhưng Subobject \texttt{B} nằm ở offset lệch đi một khoảng $\Delta$ (ví dụ $+8$ bytes). Khi ta gọi:
+\begin{lstlisting}[language=C++]
+B* pb = new C();
+pb->fb(); // Invokes virtual method of B on object C
+\end{lstlisting}
+
+Lúc này, thanh ghi con trỏ truyền vào hàm \texttt{C::fb()} đang trỏ vào Subobject \texttt{B} (tại offset $+8$), trong khi mã máy của \texttt{C::fb()} lại kỳ vọng con trỏ \texttt{this} trỏ vào đầu đối tượng toàn vẹn \texttt{C} (tại offset 0)!
+
+\textbf{Giải pháp Thunk:} Trình biên dịch sinh ra một đoạn mã đệm siêu nhỏ gọi là \textbf{Adjustor Thunk}. Trong VTable của Subobject \texttt{B}, địa chỉ hàm không trỏ thẳng vào \texttt{C::fb()}, mà trỏ vào Thunk:
+\begin{lstlisting}[language={[x86masm]Assembler}]
+__thunk_for_C_fb:
+    sub rcx, 8          ; Rewind this pointer to offset 0 of full object C
+    jmp C::fb           ; Direct jump to actual implementation
+\end{lstlisting}
+Đây là minh chứng tuyệt đỉnh cho sự tinh vi của các kỹ sư thiết kế trình biên dịch C++ để bảo đảm an toàn bộ nhớ tuyệt đối.
+
+\section{Hàm Thuần Ảo \& Lớp Cơ Sở Trừu Tượng (Abstract Base Classes)}
+
+\begin{theorybox}[Lớp Trừu Tượng (Abstract Base Class - ABC)]
+Một hàm ảo được gán cú pháp \texttt{= 0} ở cuối khai báo được gọi là một \textbf{Hàm thuần ảo (Pure Virtual Function)}.
+
+Một lớp chứa ít nhất một hàm thuần ảo được định nghĩa là một \textbf{Lớp Cơ sở Trừu tượng (Abstract Base Class)}. Đặc tính tối thượng của lớp trừu tượng là:
+\begin{itemize}
+    \item \textbf{Tuyệt đối không thể khởi tạo thực thể (Cannot instantiate)} trực tiếp trên Stack hoặc Heap. Cố tình viết \texttt{Shape s;} sẽ dẫn đến lỗi biên dịch ngay lập tức.
+    \item Lớp con kế thừa từ ABC bắt buộc phải ghi đè (\texttt{override}) và hiện thực hóa toàn bộ các hàm thuần ảo; nếu bỏ sót dù chỉ một hàm, lớp con đó tiếp tục bị coi là lớp trừu tượng!\footnote{Nguồn: OOP6-Polymorphism\_new.pdf - Trang 46-55: Hàm thuần ảo và lớp cơ sở trừu tượng}
+\end{itemize}
+\end{theorybox}
+
+\begin{lstlisting}[language=C++]
+class IDevice {
+public:
+    virtual void boot() = 0;      // Pure virtual function
+    virtual void shutdown() = 0;  // Pure virtual function
+    virtual ~IDevice() = default;
+};
+\end{lstlisting}
+
+\subsection{Bẫy Tinh Vi: Hàm Thuần Ảo Vẫn Có Thể Có Body!}
+
+Rất nhiều lập trình viên C++ nhầm tưởng rằng hàm thuần ảo (\texttt{= 0}) thì không được phép có phần thân code (body). Đây là một sai lầm phổ biến!
+
+Chuẩn C++ cho phép hoàn toàn việc viết định nghĩa (body) cho một hàm thuần ảo, miễn là phần định nghĩa đó nằm \textbf{bên ngoài khai báo của lớp}:
+\begin{lstlisting}[language=C++]
+class BaseAbstract {
+public:
+    virtual void logStatus() = 0; // Pure virtual, BaseAbstract is ABC!
+    virtual ~BaseAbstract() = default;
+};
+
+// Define body for pure virtual function OUTSIDE class declaration:
+void BaseAbstract::logStatus() {
+    std::cout << "[BASE AUDIT LOG] Standard audit log record\n";
+}
+
+class ConcreteChild : public BaseAbstract {
+public:
+    void logStatus() override {
+        // Reuse base default implementation, then add custom logic:
+        BaseAbstract::logStatus(); 
+        std::cout << "[CHILD LOG] Custom specialized processing\n";
+    }
+};
+\end{lstlisting}
+
+\textit{Ý nghĩa kiến trúc:} Kỹ thuật này cho phép kiến trúc sư hệ thống vừa \textbf{ép buộc lớp con phải chủ động override} (không thể vô tình quên), vừa \textbf{cung cấp sẵn mã nguồn mặc định tái sử dụng} cho các lớp con gọi khi cần thiết.
+
+\subsection{Pure Virtual Destructor: Phải Luôn Có Body!}
+
+Nếu bạn muốn tạo một Abstract Base Class nhưng lớp của bạn không có hàm nghiệp vụ nào để gán \texttt{= 0}, bạn có thể biến Destructor thành thuần ảo:
+\begin{lstlisting}[language=C++]
+class InterfaceOnly {
+public:
+    virtual ~InterfaceOnly() = 0; // Pure virtual destructor makes class ABC
+};
+
+// MANDATORY DEFINITION OUTSIDE CLASS BODY:
+InterfaceOnly::~InterfaceOnly() {} 
+\end{lstlisting}
+\begin{warningbox}
+Nếu bạn quên không viết định nghĩa rỗng \texttt{InterfaceOnly::\textasciitilde{}InterfaceOnly() \{\}}, trình biên dịch sẽ cho qua nhưng \textbf{Trình liên kết (Linker) sẽ báo lỗi sập hệ thống (Undefined Reference / LNK2019)} ngay khi bất kỳ lớp con nào bị hủy, bởi vì trong chuỗi hủy kế thừa, Destructor của lớp con luôn tự động gọi ngầm Destructor của lớp cha!
+\end{warningbox}
+
+\section{Destructor Ảo (Virtual Destructor) --- Luật Sống Còn}
+
+Đây là câu hỏi phỏng vấn kinh điển và là bẫy rò rỉ bộ nhớ phổ biến nhất trong các dự án C++ thực tế. Hãy quan sát đoạn mã thảm họa sau:
+
+\begin{lstlisting}[language=C++]
+class BaseResource {
+public:
+    BaseResource() { std::cout << "Base acquired\n"; }
+    ~BaseResource() { std::cout << "Base freed\n"; } // Non-virtual destructor!
+};
+
+class DerivedResource : public BaseResource {
+private:
+    int* largeBuffer;
+public:
+    DerivedResource() : largeBuffer(new int[1000000]) {
+        std::cout << "Derived allocated 4MB RAM\n";
+    }
+    ~DerivedResource() {
+        delete[] largeBuffer; // Free 4MB RAM
+        std::cout << "Derived buffer freed successfully\n";
+    }
+};
+
+void cleanup() {
+    BaseResource* ptr = new DerivedResource();
+    delete ptr; // THAM HOA RO RI BO NHO XAY RA TAI DAY!
+}
+\end{lstlisting}
+
+\begin{underhoodbox}[Phân Tích Cơ Chế Thảm Họa Khi Thiếu Virtual Destructor]
+Tại dòng lệnh \texttt{delete ptr;}:
+\begin{enumerate}
+    \item Con trỏ \texttt{ptr} có kiểu tĩnh là \texttt{BaseResource*}.
+    \item Vì Destructor \texttt{\textasciitilde{}BaseResource()} \textbf{KHÔNG CÓ TỪ KHÓA \texttt{virtual}}, trình biên dịch áp dụng cơ chế \textbf{Static Binding (Early Binding)}.
+    \item Trình biên dịch sinh mã máy gọi trực tiếp địa chỉ của hàm \texttt{BaseResource::\textasciitilde{}BaseResource()}.
+    \item \textbf{Hậu quả:} Hàm \texttt{DerivedResource::\textasciitilde{}DerivedResource()} \textbf{HOÀN TOÀN BỊ BỎ QUA}! Lệnh \texttt{delete[] largeBuffer} không bao giờ được chạy. Toàn bộ 4 Megabytes RAM bị rò rỉ vĩnh viễn trong không gian nhớ của hệ điều hành!
+    \item Tệ hơn nữa, chuẩn ISO C++11 quy định: Việc xóa một đối tượng phái sinh thông qua con trỏ lớp cơ sở không có virtual destructor dẫn đến \textbf{Hành Vi Không Xác Định (Undefined Behavior)}.\footnote{Nguồn: OOP6-Polymorphism\_new.pdf - Trang 59-65: Virtual Destructor và Hiểm họa rò rỉ bộ nhớ}
+\end{enumerate}
+\end{underhoodbox}
+
+\begin{theorybox}[Quy Tắc Vàng Của Scott Meyers Về Destructor]
+\begin{itemize}
+    \item \textbf{Quy tắc 1:} Bất kỳ lớp nào được thiết kế để làm lớp cơ sở có tính đa hình (\textit{Polymorphic Base Class}), Destructor của nó \textbf{BẮT BUỘC PHẢI LÀ \texttt{public virtual}}.
+    \item \textbf{Quy tắc 2:} Nếu một lớp không được thiết kế để làm lớp cha đa hình (hoặc không muốn cho phép người dùng xóa qua con trỏ lớp cơ sở), hãy khai báo Destructor là \textbf{\texttt{protected non-virtual}}. Cách này ngăn chặn hoàn toàn việc gọi \texttt{delete ptrBase} từ bên ngoài, triệt tiêu lỗi rò rỉ ngay tại compile-time!
+\end{itemize}
+\end{theorybox}
+
+\section{Bẫy Tử Thần: Gọi Hàm Ảo Trong Constructor \& Destructor}
+
+Trong các ngôn ngữ như Java hoặc C\#, gọi một phương thức ảo trong Constructor sẽ nhảy ngay tới phiên bản của lớp con. Tuy nhiên, trong C++, hành động này là một \textbf{Bẫy chết người} có thể làm sập toàn bộ ứng dụng!
+
+\begin{lstlisting}[language=C++]
+class Transaction {
+public:
+    Transaction() {
+        logCreation(); // Pitfall: Virtual call in Constructor!
+    }
+    virtual void logCreation() const {
+        std::cout << "Base Transaction logged\n";
+    }
+    virtual ~Transaction() = default;
+};
+
+class BuyTransaction : public Transaction {
+private:
+    std::string stockCode;
+public:
+    BuyTransaction(const std::string& code) : stockCode(code) {}
+    void logCreation() const override {
+        std::cout << "BuyTransaction logged for: " << stockCode << "\n";
+    }
+};
+\end{lstlisting}
+
+Khi ta thực thi lệnh: \texttt{BuyTransaction tx("AAPL");}, điều gì sẽ in ra màn hình?
+\begin{itemize}
+    \item Đa số lập trình viên mới nghĩ rằng nó sẽ in: \texttt{"BuyTransaction logged for: AAPL"}.
+    \item \textbf{KẾT QUẢ THỰC TẾ:} Màn hình in ra \texttt{"Base Transaction logged"}! Đa hình đã hoàn toàn biến mất!
+\end{itemize}
+
+\begin{underhoodbox}[Nguyên Nhân Gầm Máy: Sự Tiến Hóa Của vptr Trong Vòng Đời Đối Tượng]
+Hãy nhìn vào tiến trình khởi tạo bộ nhớ từng bước của CPU:
+\begin{enumerate}
+    \item Để khởi tạo \texttt{BuyTransaction}, trước hết Constructor của \texttt{Transaction} (lớp cha) phải được thực thi.
+    \item Tại thời điểm Constructor của \texttt{Transaction} đang chạy, \textbf{phần dữ liệu của \texttt{BuyTransaction} (chuỗi \texttt{stockCode}) CHƯA ĐƯỢC CẤP PHÁT VÀ CHƯA ĐƯỢC KHỞI TẠO}.
+    \item Do đó, con trỏ \texttt{\_\_vptr} của đối tượng lúc này \textbf{đang trỏ tới VTable của \texttt{Transaction}}, chứ CHƯA trỏ tới VTable của \texttt{BuyTransaction}!
+    \item Trình biên dịch C++ cố tình cô lập lời gọi này về dạng \textbf{Static Binding} của lớp cha để bảo vệ bạn: Nếu nó cho phép gọi \texttt{BuyTransaction::logCreation()}, hàm này sẽ truy cập vào biến \texttt{stockCode} chưa tồn tại, dẫn đến đọc rác bộ nhớ hoặc làm sập chương trình (Segmentation Fault)!
+\end{enumerate}
+
+\textbf{Thảm Họa Crash Runtime Với Hàm Thuần Ảo (\texttt{\_\_cxa\_pure\_virtual}):}
+Nếu phương thức ảo được gọi trong Constructor là \textbf{Hàm thuần ảo (\texttt{= 0})}:
+\begin{lstlisting}[language=C++]
+class Engine {
+public:
+    Engine() { start(); } // start() is pure virtual!
+    virtual void start() = 0;
+};
+\end{lstlisting}
+VTable của \texttt{Engine} tại slot của \texttt{start} chứa con trỏ trỏ tới hàm xử lý lỗi nội bộ của trình biên dịch: \texttt{\_\_cxa\_pure\_virtual}. Khi chương trình chạy qua dòng này, hệ điều hành lập tức chấm dứt tiến trình và ném lỗi kinh hoàng:\footnote{Nguồn: OOP6-Polymorphism\_new.pdf - Trang 66-72: Pitfall - Virtual Function in Constructor/Destructor}
+\begin{center}
+\textbf{\texttt{pure virtual method called - terminate called without an active exception (Aborted)}}
+\end{center}
+Điều tương tự diễn ra chính xác trong \textbf{Destructor}: Khi Destructor của lớp con chạy xong, đối tượng bị "hạ cấp" về lớp cha và \texttt{vptr} bị đổi ngược về VTable của lớp cha trước khi chạy Destructor của cha!
+\end{underhoodbox}
+
+% ==============================================================================
+% CHƯƠNG 6: KHUÔN MẪU & LẬP TRÌNH TỔNG QUÁT (TEMPLATES & GENERIC PROGRAMMING)
+% ==============================================================================
+\chapter{Khuôn mẫu \& Lập trình Tổng quát (Templates \& Generic Programming)}
+
+\begin{theorybox}[Định Nghĩa: Lập Trình Tổng Quát (Generic Programming)]
+\textbf{Lập trình Tổng quát (Generic Programming)} là hệ hình lập trình trong đó mã nguồn được viết một cách trừu tượng hóa, độc lập hoàn toàn với các kiểu dữ liệu cụ thể. Thay vì phải sao chép thuật toán tìm kiếm hay cấu trúc danh sách liên kết cho từng kiểu \texttt{int}, \texttt{double}, \texttt{Student}, lập trình viên sử dụng \textbf{Khuôn mẫu (Templates)} để biến \textbf{Kiểu dữ liệu thành Tham số (Type-as-a-Parameter)}.\footnote{Nguồn: OOP7-Template.pdf - Trang 2-9: Khái niệm khuôn mẫu hàm và khuôn mẫu lớp}
+\end{theorybox}
+
+\section{Khuôn Mẫu Hàm \& Khuôn Mẫu Lớp (Function \& Class Templates)}
+
+\subsection{Cú pháp và Sự tương đương giữa \texttt{typename} và \texttt{class}}
+
+\begin{lstlisting}[language=C++]
+// Generic swap function template
+template <typename T>
+void genericSwap(T& a, T& b) {
+    T temp = std::move(a);
+    a = std::move(b);
+    b = std::move(temp);
+}
+
+// Generic safe stack class template
+template <typename T>
+class SafeStack {
+private:
+    std::vector<T> elements;
+public:
+    void push(const T& val) { elements.push_back(val); }
+    void push(T&& val) { elements.push_back(std::move(val)); }
+    T pop() {
+        if (elements.empty()) throw std::out_of_range("Stack empty");
+        T val = std::move(elements.back());
+        elements.pop_back();
+        return val;
+    }
+};
+\end{lstlisting}
+
+\textit{Phân biệt \texttt{typename} và \texttt{class} trong khai báo template:}
+Trong danh sách tham số kiểu khuôn mẫu \texttt{template <typename T>} và \texttt{template <class T>}, hai từ khóa này \textbf{hoàn toàn đồng nghĩa 100\%} về mặt ngữ nghĩa ngữ pháp. Từ khóa \texttt{typename} được chuẩn hóa sau này để tránh gây hiểu lầm rằng kiểu truyền vào bắt buộc phải là một \texttt{class} (vì các kiểu nguyên thủy như \texttt{int}, \texttt{double}, con trỏ thô đều truyền vào được).
+
+\section{Quá Trình Biên Dịch Hai Pha (Two-Phase Lookup) \& Dependent Types}
+
+Một trong những cơ chế phức tạp nhất của trình biên dịch C++ khi xử lý template là quy trình phân giải tên hai pha:
+
+\begin{enumerate}
+    \item \textbf{Pha 1 (Pha định nghĩa khuôn mẫu - Parsing Phase):}
+    \begin{itemize}
+        \item Xảy ra khi trình biên dịch lần đầu tiên quét qua đoạn mã \texttt{template <typename T> ...}.
+        \item Trình biên dịch chỉ kiểm tra cú pháp cơ bản độc lập với kiểu (dấu chấm phẩy, đóng mở ngoặc, các biến không phụ thuộc vào \texttt{T}).
+    \end{itemize}
+    \item \textbf{Pha 2 (Pha tạo thực thể - Instantiation Phase):}
+    \begin{itemize}
+        \item Xảy ra khi lập trình viên thực sự sử dụng template với một kiểu cụ thể (ví dụ \texttt{SafeStack<int> s;}).
+        \item Trình biên dịch thay thế toàn bộ tham số \texttt{T} bằng \texttt{int} và tiến hành biên dịch mã máy thực tế, kiểm tra tính hợp lệ của các phép toán trên kiểu đó.\footnote{Nguồn: OOP7-Template.pdf - Trang 15-24: Quá trình biên dịch Template và Two-Phase Lookup}
+    \end{itemize}
+\end{enumerate}
+
+\subsection{Bắt Buộc Sử Dụng Từ Khóa \texttt{typename} Cho Kiểu Phụ Thuộc (Dependent Types)}
+
+Xét đoạn mã template kinh điển sau:
+\begin{lstlisting}[language=C++]
+template <typename Container>
+void printFirstElement(const Container& c) {
+    // COMPILATION ERROR IF MISSING 'typename':
+    typename Container::const_iterator it = c.begin();
+    if (it != c.end()) {
+        std::cout << *it << "\n";
+    }
+}
+\end{lstlisting}
+
+\begin{underhoodbox}[Tại Sao Bắt Buộc Viết \texttt{typename Container::const\_iterator}?]
+Trong Pha 1 của quá trình biên dịch, trình biên dịch chưa hề biết kiểu cụ thể của \texttt{Container} là gì.
+
+Xét biểu thức có dạng: \texttt{Container::foo * bar;}
+\begin{itemize}
+    \item \textbf{Trường hợp A:} Nếu \texttt{foo} là một \textbf{Kiểu dữ liệu} (Type), đây là dòng lệnh khai báo một con trỏ \texttt{bar} có kiểu là \texttt{Container::foo}.
+    \item \textbf{Trường hợp B:} Nếu \texttt{foo} là một \textbf{Biến tĩnh} (Static Data Member), đây là một \textbf{Phép nhân số học}: Lấy giá trị biến tĩnh \texttt{foo} nhân với biến \texttt{bar}!
+\end{itemize}
+Theo quy tắc chuẩn của ISO C++, khi đứng trước một tên phụ thuộc (\textit{Dependent Name}), trình biên dịch \textbf{mặc định coi đó là một biến tĩnh}. 
+
+Do đó, nếu \texttt{Container::const\_iterator} thực sự là một kiểu dữ liệu nội bộ (Nested Type), bạn \textbf{bắt buộc phải gắn từ khóa \texttt{typename} ở phía trước} để thông báo cho trình biên dịch: \textit{"Đây là một kiểu dữ liệu, hãy phân tích cú pháp theo ngữ cảnh khai báo kiểu!"}\footnote{Nguồn: OOP7-Template.pdf - Trang 25-28: Từ khóa typename cho dependent types}
+\end{underhoodbox}
+
+\section{Cơ Chế Tạo Thực Thể \& Hiện Tượng Phình To Mã (Code Bloat)}
+
+\subsection{Tại Sao Phải Viết Toàn Bộ Code Template Trong File Header (\texttt{.hpp})?}
+
+Đây là lỗi phổ biến nhất của sinh viên chuyển từ lập trình hướng thủ tục sang lập trình hướng đối tượng với template: Tách khai báo vào file \texttt{.h} và viết định nghĩa thân hàm vào file \texttt{.cpp}.
+
+\begin{lstlisting}[language=C++]
+// File: MyStack.h
+template <typename T>
+class MyStack {
+public:
+    void push(T val);
+};
+
+// File: MyStack.cpp
+#include "MyStack.h"
+template <typename T>
+void MyStack<T>::push(T val) { /* logic */ } // ERROR ARCHITECTURE!
+
+// File: main.cpp
+#include "MyStack.h"
+int main() {
+    MyStack<int> s;
+    s.push(10); // LINKER ERROR: undefined reference to MyStack<int>::push(int)
+}
+\end{lstlisting}
+
+\begin{underhoodbox}[Nguyên Nhân Gầm Máy: Mô Hình Biên Dịch Độc Lập (Separate Compilation)]
+\begin{enumerate}
+    \item C++ biên dịch từng file mã nguồn (\texttt{.cpp}) thành các đơn vị dịch độc lập (\textbf{Translation Units - TU}) để tạo ra các file đối tượng (\texttt{.obj} / \texttt{.o}).
+    \item Khi biên dịch file \texttt{MyStack.cpp}, trình biên dịch thấy template \texttt{MyStack<T>}, nhưng vì \textbf{không có mã nào gọi \texttt{MyStack<int>}} trong file này, trình biên dịch \textbf{không thể sinh ra một dòng mã máy nào}! File \texttt{MyStack.o} hoàn toàn trống rỗng!
+    \item Khi biên dịch file \texttt{main.cpp}, trình biên dịch thấy lệnh gọi \texttt{s.push(10)}, nhưng vì file \texttt{MyStack.h} chỉ chứa khai báo mà không có phần thân hàm, nó không thể sinh mã máy được. Nó tạm thời xuất ra một lời gọi hàm ngoại vi chưa phân giải.
+    \item Đến giai đoạn liên kết (\textbf{Linking}), Linker đi tìm mã máy của \texttt{MyStack<int>::push(int)} trong toàn bộ các file \texttt{.o} nhưng không tìm thấy ở đâu $\rightarrow$ Báo lỗi chết người: \textbf{LNK2019 / Undefined Reference}!
+    \item \textbf{Kết luận:} Template không phải là mã máy, template chỉ là \textbf{Bản Thiết Kế (Blueprint)}. Do đó, toàn bộ khai báo và định nghĩa của template \textbf{bắt buộc phải nằm trọn vẹn trong file Header (\texttt{.hpp})} để bất kỳ file \texttt{.cpp} nào gọi nó cũng có đầy đủ mã nguồn để tự sinh mã máy.\footnote{Nguồn: OOP7-Template.pdf - Trang 29-38: Template Compilation Model \& Header-only requirement}
+\end{enumerate}
+\end{underhoodbox}
+
+\subsection{Hiện Tượng Phình To Mã Nguồn (Code Bloat)}
+
+Khi chương trình gọi \texttt{SafeStack<int>}, \texttt{SafeStack<double>}, \texttt{SafeStack<std::string>}, và \texttt{SafeStack<void*>}, trình biên dịch sẽ sinh ra \textbf{4 bản sao mã máy nhị phân hoàn toàn riêng biệt}. Nếu template của bạn lớn, dung lượng file thực thi (\texttt{.exe}) sẽ tăng vọt theo cấp số nhân.
+
+\textbf{Giải pháp Thin Template Idiom của STL:}
+Đối với các kiểu con trỏ (\texttt{T*}), STL sử dụng một lớp cơ sở không phải template thao tác hoàn toàn trên \texttt{void*}. Sau đó, các template con trỏ chỉ đơn thuần kế thừa và ép kiểu an toàn:
+\begin{lstlisting}[language=C++]
+class RawPointerStack { // Compiled ONCE into machine code
+protected:
+    std::vector<void*> rawPtrs;
+    void pushRaw(void* ptr);
+    void* popRaw();
+};
+
+template <typename T>
+class PointerStack : private RawPointerStack { // Inlined, zero overhead
+public:
+    void push(T* ptr) { pushRaw(static_cast<void*>(ptr)); }
+    T* pop() { return static_cast<T*>(popRaw()); }
+};
+\end{lstlisting}
+
+\section{Tham Số Không Phải Kiểu (NTTP) \& Template Template Parameters}
+
+\subsection{Tham Số Không Phải Kiểu (Non-type Template Parameters - NTTP)}
+
+Template không chỉ nhận kiểu dữ liệu mà còn có thể nhận các giá trị hằng số nguyên, con trỏ, hoặc tham chiếu tại thời điểm biên dịch:
+\begin{lstlisting}[language=C++]
+// Memory optimization: Zero heap allocation
+template <typename T, std::size_t Capacity>
+class FixedCapacityArray {
+private:
+    T data[Capacity]; // Array allocated directly on STACK!
+    std::size_t size = 0;
+public:
+    constexpr std::size_t max_size() const { return Capacity; }
+    void push(const T& val) {
+        if (size >= Capacity) throw std::overflow_error("Buffer full");
+        data[size++] = val;
+    }
+};
+
+// Usage:
+FixedCapacityArray<int, 256> fastBuffer; // 1024 bytes on Stack, 0 ns alloc overhead!
+\end{lstlisting}
+Đây chính là nền tảng hoạt động của \texttt{std::array<T, N>} trong thư viện chuẩn C++11.\footnote{Nguồn: OOP7-Template.pdf - Trang 39-48: Non-type Template Parameters và ứng dụng}
+
+\section{Chuyên Biệt Hóa Khuôn Mẫu (Template Specialization) \& Bẫy Herb Sutter}
+
+Đôi khi, một thuật toán tổng quát không tối ưu cho một kiểu dữ liệu đặc thù. C++ cho phép ta cung cấp các phiên bản chuyên biệt hóa:
+
+\subsection{Chuyên Biệt Hóa Toàn Phần \& Một Phần (Full vs Partial Specialization)}
+
+\begin{lstlisting}[language=C++]
+// 1. Primary Template
+template <typename T, typename Allocator>
+class DynamicList { /* Generic implementation */ };
+
+// 2. Partial Specialization for pointer types:
+template <typename T, typename Allocator>
+class DynamicList<T*, Allocator> {
+    /* Specialized implementation for pointers */
+};
+
+// 3. Full / Explicit Specialization for bool:
+template <>
+class DynamicList<bool, std::allocator<bool>> {
+    /* Bit-packing optimization: 1 BIT per boolean instead of 1 BYTE! */
+};
+\end{lstlisting}
+
+\subsection{Bẫy Tử Thần Herb Sutter: Function Template Không Hỗ Trợ Partial Specialization!}
+
+Chuẩn C++ \textbf{TUYỆT ĐỐI CẤM} việc Chuyên biệt hóa một phần đối với Khuôn mẫu hàm (\textit{Function Template Partial Specialization is illegal}).
+
+Nhiều lập trình viên cố gắng kết hợp Nạp chồng hàm template (Function Template Overloading) với Chuyên biệt hóa toàn phần (Full Specialization), tạo ra các lỗi logic thảm họa:
+\begin{lstlisting}[language=C++]
+template <typename T> void process(T);       // (1) Primary template 1
+template <typename T> void process(T*);      // (2) Primary template 2 (Overload)
+
+template <> void process<int*>(int*);        // (3) Specialization of which?
+\end{lstlisting}
+
+\begin{underhoodbox}[Bẫy Sutter's Trap Dưới Lăng Kính Phân Giải Overload]
+Theo chuẩn ISO C++: \textbf{Quá trình phân giải nạp chồng (Overload Resolution) chỉ xem xét các Primary Templates!}
+\begin{enumerate}
+    \item Trình biên dịch xem xét (1) và (2) để chọn ra template phù hợp nhất.
+    \item Nếu hàm (3) được khai báo sau (2), nó là specialization của (2). Nhưng nếu nó khai báo trước (2), nó lại trở thành specialization của (1)!
+    \item Khi có sự xuất hiện của các chuyển đổi kiểu ngầm định, hàm specialization có thể bị bỏ qua hoàn toàn, dẫn đến trình biên dịch gọi một template mà lập trình viên không hề mong muốn.
+    \item \textbf{Quy Tắc Herb Sutter (C++ Guru):} \textit{"Không bao giờ chuyên biệt hóa khuôn mẫu hàm. Khi cần đa dạng hóa hành vi của hàm template, hãy nạp chồng hàm bình thường, hoặc ủy quyền (delegate) việc thực thi cho một Class Template nội bộ!"}\footnote{Nguồn: OOP7-Template.pdf - Trang 49-62: Chuyên biệt hóa khuôn mẫu và Bẫy nạp chồng Herb Sutter}
+\end{enumerate}
+\end{underhoodbox}
+
+\section{Các Tính Năng Khuôn Mẫu C++11 Hiện Đại}
+
+\subsection{Variadic Templates (Khuôn Mẫu Tham Số Biến Thiên)}
+
+Trước C++11, để viết một hàm in ra số lượng tham số tùy ý, lập trình viên phải viết hàng chục bản nạp chồng quá tải. C++11 giới thiệu \textbf{Variadic Templates} thông qua \textbf{Parameter Pack}:
+
+\begin{lstlisting}[language=C++]
+// 1. Base case to terminate compile-time recursion
+void printAll() {
+    std::cout << "\n";
+}
+
+// 2. Recursive pack expansion at COMPILE-TIME
+template <typename Head, typename... Tail>
+void printAll(const Head& head, const Tail&... tail) {
+    std::cout << head << " ";
+    printAll(tail...); // Unpack parameter pack recursively
+}
+
+// Usage:
+printAll(1, 3.14, "C++ Bible", 'A', true);
+\end{lstlisting}
+Cơ chế này hoàn toàn không dùng con trỏ ngăn xếp biến thiên kiểu C (\texttt{va\_list}), đảm bảo \textbf{Type-safety 100\%} và được tối ưu hóa inline hoàn toàn tại compile-time! Đây là nền tảng xây dựng nên \texttt{std::tuple} và phương thức \texttt{emplace\_back}.\footnote{Nguồn: OOP7-Template.pdf - Trang 63-70: C++11 Variadic Templates và Parameter Packs}
+
+\subsection{CRTP: Đa Hình Tĩnh (Static Polymorphism)}
+
+Làm thế nào để đạt được sức mạnh của Đa hình nhưng \textbf{không phải trả giá cho VTable, con trỏ vptr, và indirect jump}? Câu trả lời là kỹ thuật \textbf{Curiously Recurring Template Pattern (CRTP)}:
+
+\begin{figure}[htbp]
+\centering
+\resizebox{0.95\textwidth}{!}{%
+\begin{tikzpicture}[
+    box/.style={draw=primaryblue, thick, rounded corners=3pt, fill=white, inner sep=6pt, font=\small\sffamily, align=center},
+    stepbox/.style={draw=accentblue, thick, rounded corners=2pt, fill=bglighterblue, inner sep=5pt, font=\footnotesize\sffamily, align=center}
+]
+    % Dynamic Polymorphism branch
+    \node[box, fill=bgsoftblue, text width=6.2cm] (dyn_title) at (-3.6, 3.5) {\textbf{Đa Hình Động (Virtual Functions)}\\\footnotesize Chi Phí Thời Gian Thực Thi (Runtime)};
+    \node[stepbox, text width=5.6cm] (dyn_step1) at (-3.6, 2.2) {1. Lấy con trỏ ẩn \texttt{\_\_vptr} từ RAM đối tượng};
+    \node[stepbox, text width=5.6cm] (dyn_step2) at (-3.6, 1.1) {2. Tra cứu mảng VTable trong phân vùng \texttt{.rodata}};
+    \node[stepbox, text width=5.6cm] (dyn_step3) at (-3.6, 0.0) {3. Nhảy gián tiếp \texttt{call [rax+offset]} (Mất Inline)};
+
+    % Static Polymorphism branch
+    \node[box, fill=bgsoftblue, text width=6.2cm] (stat_title) at (3.6, 3.5) {\textbf{Đa Hình Tĩnh CRTP (\texttt{template})}\\\footnotesize Tối Ưu Compile-Time (Zero-Overhead)};
+    \node[stepbox, text width=5.6cm] (stat_step1) at (3.6, 2.2) {1. Phân giải kiểu \texttt{Derived} tại Compile-time};
+    \node[stepbox, text width=5.6cm] (stat_step2) at (3.6, 1.1) {2. Ép kiểu tĩnh \texttt{static\_cast<Derived*>(this)}};
+    \node[stepbox, text width=5.6cm] (stat_step3) at (3.6, 0.0) {3. Tối ưu hóa Inlining 100\% thành mã máy trực tiếp};
+
+    % Connections
+    \draw[-{Stealth[length=2mm]}, thick, primaryblue] (dyn_step1) -- (dyn_step2);
+    \draw[-{Stealth[length=2mm]}, thick, primaryblue] (dyn_step2) -- (dyn_step3);
+
+    \draw[-{Stealth[length=2mm]}, thick, accentblue] (stat_step1) -- (stat_step2);
+    \draw[-{Stealth[length=2mm]}, thick, accentblue] (stat_step2) -- (stat_step3);
+\end{tikzpicture}%
+}
+\caption{So sánh cơ chế phân giải giữa Đa hình động (VTable) và Đa hình tĩnh CRTP.}
+\end{figure}
+
+\begin{lstlisting}[language=C++]
+template <typename Derived>
+class BaseProcessor {
+public:
+    void execute() {
+        // Static downcast of this pointer to derived class at compile-time:
+        static_cast<Derived*>(this)->processImpl();
+    }
+};
+
+class FastNetworkProcessor : public BaseProcessor<FastNetworkProcessor> {
+public:
+    void processImpl() { // No virtual keyword needed!
+        std::cout << "High-speed zero-overhead processing\n";
+    }
+};
+
+template <typename T>
+void run(BaseProcessor<T>& proc) {
+    proc.execute(); // Fully inlined, maximum CPU clock execution speed!
+}
+\end{lstlisting}
+CRTP là vũ khí tối thượng được sử dụng trong các hệ thống giao dịch tài chính tần suất cao (High-Frequency Trading - HFT) và game engine, nơi từng phần tỉ giây (nanosecond) đều quý giá!
+
+% ==============================================================================
+% CHƯƠNG 7: XỬ LÝ NGOẠI LỆ & KIẾN TRÚC STL (EXCEPTIONS & MODERN STL)
+% ==============================================================================
+\chapter{Xử lý Ngoại lệ \& Thư viện Chuẩn STL (Exceptions \& Modern STL)}
+
+\begin{theorybox}[Triết Lý Xử Lý Lỗi Hiện Đại]
+Trong kỹ thuật lập trình hướng thủ tục cổ điển (như ngôn ngữ C), việc quản lý lỗi dựa hoàn toàn vào \textbf{Mã lỗi trả về (Return Error Codes)} và biến toàn cục \texttt{errno}. Cách tiếp cận này bộc lộ ba khiếm khuyết mang tính bản chất:
+\begin{enumerate}
+    \item \textbf{Nguy cơ bỏ quên lỗi:} Lập trình viên dễ dàng bỏ qua việc kiểm tra giá trị trả về của hàm, khiến trạng thái lỗi lan truyền âm thầm và phá hủy dữ liệu hệ thống ở những bước tiếp theo.
+    \item \textbf{Ô nhiễm chữ ký hàm:} Mã lỗi làm trộn lẫn giá trị trả về hợp lệ với trạng thái thất thường, làm phức tạp hóa cấu trúc logic của chương trình (\textit{Happy Path} bị chìm ngập trong các khối \texttt{if (err != 0)}).
+    \item \textbf{Sự bất lực trong Constructor:} \textbf{Constructor hoàn toàn không có kiểu trả về}! Do đó, mã lỗi hoàn toàn bất lực trong việc thông báo thất bại khi khởi tạo một đối tượng.\footnote{Nguồn: OOP8-Exception.pdf - Trang 2-12: Triết lý xử lý ngoại lệ và phân loại lỗi}
+\end{enumerate}
+\textbf{Cơ chế Ngoại lệ (Exception Handling)} tách bạch triệt để luồng thực thi nghiệp vụ bình thường ra khỏi luồng cứu vãn sự cố (\textit{Error Recovery Path}), tạo tiền đề cho các hệ thống phần mềm có độ tin cậy cấp công nghiệp.
+\end{theorybox}
+
+\section{Cơ Chế Bắt Ngoại Lệ \& Bẫy Object Slicing}
+
+Khi một đoạn mã phát hiện một tình huống bất thường vượt quá thẩm quyền xử lý nội bộ, nó kích hoạt ngoại lệ bằng lệnh \texttt{throw}:
+
+\begin{lstlisting}[language=C++]
+#include <iostream>
+#include <stdexcept>
+#include <string>
+
+void executeTransaction(int balance, int withdrawalAmount) {
+    if (withdrawalAmount > balance) {
+        throw std::runtime_error("Insufficient funds: Overdraft limit exceeded!");
+    }
+    std::cout << "[Banking] Withdrawal successful. Remaining: " << (balance - withdrawalAmount) << "\n";
+}
+
+void processAccount() {
+    try {
+        executeTransaction(500, 1000);
+    }
+    catch (const std::exception& e) { // STANDARD: Catch by const reference!
+        std::cerr << "[Exception Handler] Audit log: " << e.what() << "\n";
+    }
+}
+\end{lstlisting}
+
+\begin{dangerbox}[Bẫy Cắt Xén Đối Tượng Khi Bắt Ngoại Lệ Theo Giá Trị]
+Nếu khối bắt ngoại lệ được khai báo theo kiểu truyền giá trị (\textit{Pass-by-value}):
+\begin{lstlisting}[language=C++]
+catch (std::exception e) // CRITICAL PITFALL: Object Slicing!
+\end{lstlisting}
+
+\textbf{Giải phẫu cơ chế cắt xén dưới RAM:}
+\begin{enumerate}
+    \item Đối tượng ngoại lệ thực tế được ném ra là một thể hiện của lớp phái sinh \texttt{std::runtime\_error} (mang thông điệp mô tả lỗi chi tiết trong heap buffer nội bộ).
+    \item Vì khối catch nhận theo giá trị, trình biên dịch buộc phải gọi Copy Constructor của lớp cơ sở: \texttt{std::exception::std::exception(const std::exception\&)}.
+    \item Toàn bộ các trường dữ liệu và bản chất đa hình của lớp con bị \textbf{gọt bỏ hoàn toàn (Object Slicing)}.
+    \item Khi gọi \texttt{e.what()}, hàm ảo \texttt{what()} của \texttt{std::runtime\_error} không được kích hoạt, mà chỉ gọi phiên bản mặc định vô nghĩa của \texttt{std::exception}.
+    \item \textbf{Quy tắc Vàng:} \textbf{LUÔN LUÔN BẮT NGOẠI LỆ BẰNG THAM CHIẾU HẰNG (\texttt{const ExceptionType\& e})}.\footnote{Nguồn: OOP8-Exception.pdf - Trang 13-18: Bẫy Object Slicing khi bắt ngoại lệ}
+\end{enumerate}
+\end{dangerbox}
+
+\section{Giải Phóng Ngăn Xếp (Stack Unwinding) \& Liên Minh RAII}
+
+Điều gì thực sự diễn ra trong không gian địa chỉ bộ nhớ khi lệnh \texttt{throw} được kích hoạt?
+
+\begin{underhoodbox}[Cơ Chế Stack Unwinding \& Bảng Ngoại Lệ Zero-Cost]
+Trong các hệ thống C++ hiện đại (tuân thủ Itanium C++ ABI trên Linux hoặc Structured Exception Handling trên Windows), trình biên dịch áp dụng mô hình \textbf{Xử lý ngoại lệ Zero-Cost (Table-Driven Zero-Cost Exception Handling)}:
+\begin{enumerate}
+    \item \textbf{Tại thời điểm bình thường (Zero Runtime Overhead):} Không có bất kỳ chi phí thực thi nào cho các khối \texttt{try}. Không cần lưu vết con trỏ hàm hay gọi lệnh kiểm tra. Mã máy chạy với tốc độ tối đa $100\%$.
+    \item \textbf{Khi lệnh \texttt{throw} ném ra ngoại lệ:}
+    \begin{itemize}
+        \item Runtime C++ gọi hàm hỗ trợ nhân \texttt{\_Unwind\_RaiseException}.
+        \item Hệ thống thực hiện \textbf{Pha 1 (Search Phase):} Quét ngược Call Stack dựa trên bảng thông tin khung hàm \textbf{Call Frame Information (DWARF CFI trong phân vùng \texttt{.eh\_frame})} để kiểm tra xem có khối \texttt{catch} nào chấp nhận kiểu ngoại lệ này không mà \textit{chưa thực hiện giải phóng tài nguyên}.
+        \item Nếu tìm thấy khối catch hợp lệ, hệ thống thực hiện \textbf{Pha 2 (Cleanup / Unwind Phase):} Quét ngược lại Call Stack lần thứ hai. Tại mỗi khung hàm (Stack Frame) bị thoát ra, \textbf{MỌI ĐỐI TƯỢNG ĐỊA PHƯƠNG TRÊN STACK ĐỀU ĐƯỢC TỰ ĐỘNG GỌI DESTRUCTOR} theo thứ tự ngược lại chính xác với thứ tự khởi tạo (LIFO)!
+    \end{itemize}
+    \item \textbf{Liên minh hoàn hảo với RAII:} Nếu toàn bộ tài nguyên (RAM, File Handlers, Socket, Mutex) được bao bọc trong các đối tượng RAII (\texttt{std::unique\_ptr}, \texttt{std::ofstream}, \texttt{std::lock\_guard}), thì cho dù ngoại lệ có bay qua 10 tầng khung hàm, toàn bộ bộ nhớ và file đều được đóng sạch sẽ $100\%$, \textbf{không bao giờ bị rò rỉ bộ nhớ}!\footnote{Nguồn: OOP8-Exception.pdf - Trang 19-32: Stack Unwinding và cơ chế dọn dẹp bộ nhớ tự động}
+\end{enumerate}
+\end{underhoodbox}
+
+\section{Từ Khóa \texttt{noexcept} \& Tối Ưu Hóa STL Sống Còn Trong C++11}
+
+Chuẩn C++11 chính thức khai tử đặc tả ngoại lệ lỗi thời \texttt{throw(type)} và thay thế bằng từ khóa toàn năng \textbf{\texttt{noexcept}}.
+
+\subsection{Cam Kết Bất Biến \texttt{noexcept}}
+
+Khi một hàm được gắn nhãn \texttt{noexcept}, lập trình viên đưa ra một cam kết tuyệt đối với trình biên dịch và hệ thống rằng: \textit{Hàm này bảo đảm không bao giờ để bất kỳ ngoại lệ nào thoát ra ngoài ranh giới của nó}.
+
+\begin{lstlisting}[language=C++]
+void hardwareReset() noexcept {
+    // Guaranteed never to leak any exception to the outer caller
+}
+\end{lstlisting}
+
+\begin{warningbox}[Hậu Quả Khi Vi Phạm Cam Kết \texttt{noexcept}]
+Nếu một ngoại lệ bất ngờ xuất hiện bên trong một hàm \texttt{noexcept} mà không được xử lý nội bộ:
+\begin{itemize}
+    \item Hệ thống C++ \textbf{KHÔNG TIẾN HÀNH GIẢI PHÓNG STACK (Stack Unwinding)}.
+    \item Runtime lập tức gọi ngay hàm hủy diệt tiến trình: \textbf{\texttt{std::terminate()}}. 
+    \item Ứng dụng lập tức bị sập (Aborted). Điều này giúp trình biên dịch không cần sinh thêm bảng giải phóng ngoại lệ cho hàm đó, tối ưu hóa đáng kể dung lượng mã máy nhị phân.
+\end{itemize}
+\end{warningbox}
+
+\subsection{Bí Ẩn Tối Ưu Hiệu Năng Của \texttt{std::vector} Trong C++11}
+
+Tại sao việc thiếu từ khóa \texttt{noexcept} trên Move Constructor có thể làm giảm sút hiệu năng của cấu trúc dữ liệu STL nghiêm trọng?
+
+\begin{underhoodbox}[Toán Tử \texttt{noexcept(expr)} Và Chiến Lược Tái Cấp Phát Của \texttt{std::vector}]
+Xét kịch bản \texttt{std::vector<Widget>} bị đầy dung lượng (\texttt{size == capacity}) và phải cấp phát một vùng nhớ mới có dung lượng gấp đôi trên Heap:
+\begin{enumerate}
+    \item Để đáp ứng \textbf{Cam Kết An Toàn Ngoại Lệ Mạnh Mẽ (Strong Exception Guarantee)}: Nếu có lỗi xảy ra trong quá trình di dời dữ liệu, trạng thái của vector cũ phải được bảo toàn nguyên vẹn $100\%$ như trước khi gọi hàm.
+    \item Trình biên dịch sử dụng toán tử kiểm tra compile-time: \texttt{noexcept(Widget(std::declval<Widget\&\&>()))} (hoặc type trait \texttt{std::is\_nothrow\_move\_constructible<Widget>}).
+    \item \textbf{Kịch bản 1 (Move Constructor CÓ \texttt{noexcept}):} Vector hoàn toàn yên tâm sử dụng Move Constructor để di dời từng phần tử từ vùng nhớ cũ sang vùng nhớ mới với chi phí hoán đổi con trỏ $O(1)$.
+    \item \textbf{Kịch bản 2 (Move Constructor THIẾU \texttt{noexcept}):} Vector lo sợ rằng nếu đang move dở chừng đến phần tử thứ 5 mà ngoại lệ xảy ra, các phần tử trước đó đã bị "đánh cắp" dữ liệu không thể khôi phục lại trạng thái ban đầu được! Do đó, \textbf{Vector BẮT BUỘC PHẢI DÙNG COPY CONSTRUCTOR}!
+    \item \textbf{Hậu quả:} Toàn bộ dữ liệu bị sao chép sâu chậm chạp qua nhiều thao tác cấp phát RAM phụ trợ, triệt tiêu hoàn toàn lợi thế tốc độ của C++11!\footnote{Nguồn: OOP8-Exception.pdf - Trang 33-45: noexcept specifier và sự tương tác với STL Vector}
+\end{enumerate}
+\end{underhoodbox}
+
+\section{Ngoại Lệ Trong Constructor \& Destructor --- Những Vùng Đất Cấm}
+
+\subsection{Ngoại Lệ Trong Constructor: Hiểm Họa Rò Rỉ Con Trỏ Thô}
+
+Quy tắc pháp lập của C++: \textbf{Một đối tượng chỉ được coi là "đã tồn tại" sau khi Constructor của nó thực thi xong dòng lệnh cuối cùng!}
+
+Nếu một ngoại lệ bị ném ra bên trong Constructor:
+\begin{lstlisting}[language=C++]
+class VulnerableDevice {
+private:
+    int* rawMemoryBuffer;
+    int portId;
+public:
+    VulnerableDevice(int port) : portId(port) {
+        rawMemoryBuffer = new int[10000]; // Raw memory allocation
+        if (port < 0) {
+            throw std::invalid_argument("Invalid port configuration");
+        }
+    }
+
+    ~VulnerableDevice() {
+        delete[] rawMemoryBuffer; // NEVER CALLED IF CONSTRUCTOR THROWS!
+    }
+};
+\end{lstlisting}
+
+\begin{dangerbox}[Thảm Họa Rò Rỉ Vĩnh Viễn Trong Constructor]
+Vì ngoại lệ xảy ra khi Constructor chưa hoàn tất, đối tượng \texttt{VulnerableDevice} được coi là \textbf{chưa từng sinh ra}!
+\begin{itemize}
+    \item Hệ thống \textbf{SẼ KHÔNG BAO GIỜ GỌI DESTRUCTOR \texttt{\textasciitilde{}VulnerableDevice()}}!
+    \item Hậu quả: Dòng lệnh \texttt{delete[] rawMemoryBuffer} vĩnh viễn không được thực thi. Vùng nhớ 40 KB bị rò rỉ hoàn toàn trong RAM.
+    \item \textbf{Giải Pháp Chuẩn Mực Tuyệt Đối:} Không bao giờ nắm giữ tài nguyên bằng con trỏ thô bên trong lớp. Luôn sử dụng Smart Pointer (\texttt{std::unique\_ptr<int[]> rawMemoryBuffer}). Khi đó, cơ chế Stack Unwinding sẽ tự động kích hoạt Destructor của các thành viên con đã khởi tạo thành công trước đó!\footnote{Nguồn: OOP8-Exception.pdf - Trang 46-52: Ngoại lệ trong Constructor và kỹ thuật phòng vệ}
+\end{itemize}
+\end{dangerbox}
+
+\subsection{Kỹ Thuật Function Try Block Trong Constructor}
+
+Làm thế nào để bắt được ngoại lệ xảy ra ngay bên trong Member Initializer List của Constructor? C++ cung cấp cú pháp \textbf{Function Try Block}:
+
+\begin{lstlisting}[language=C++]
+class ServerNode {
+private:
+    DatabaseConnection dbConn;
+public:
+    // Function Try Block covers the member initializer list!
+    ServerNode(const std::string& connString)
+    try : dbConn(connString) {
+        // Constructor body
+    }
+    catch (const std::exception& e) {
+        std::cerr << "[Initialization Error] Database connection failed: " << e.what() << "\n";
+        // ISO C++ RULE: At the end of catch block in Constructor,
+        // the exception is AUTOMATICALLY RE-THROWN! You cannot suppress it!
+    }
+};
+\end{lstlisting}
+
+\subsection{Luật Cấm Tuyệt Đối: Ngoại Lệ Thoát Ra Khỏi Destructor}
+
+Trong C++11, mọi Destructor mặc định tự động mang thuộc tính ngầm định là \textbf{\texttt{noexcept(true)}}.
+
+\begin{dangerbox}[Lý Do Hệ Thống Bị Tiêu Diệt Tức Thì (Two Active Exceptions Collision)]
+Giả sử một ngoại lệ đang bay lên và Call Stack đang tiến hành dọn dẹp (\textit{Stack Unwinding}). Trong quá trình đó, Destructor của một đối tượng địa phương trên Stack được kích hoạt.
+
+Nếu Destructor đó lại bất cẩn để một ngoại lệ thứ hai thoát ra ngoài:
+\begin{itemize}
+    \item Hệ điều hành C++ rơi vào tình huống nghịch lý không thể giải quyết: \textbf{Tồn tại đồng thời HAI ngoại lệ đang hoạt động song song}.
+    \item C++ không cho phép hai ngoại lệ cùng bay trên Call Stack. Runtime lập tức gọi ngay \textbf{\texttt{std::terminate()}} để hủy diệt tiến trình ngay tại chỗ!\footnote{Nguồn: OOP8-Exception.pdf - Trang 53-58: Luật cấm ngoại lệ trong Destructor}
+\end{itemize}
+\textbf{Quy tắc Bất Biến:} Destructor phải bắt và nuốt trọn mọi ngoại lệ nội bộ bên trong một khối \texttt{try-catch}, tuyệt đối không để bất kỳ lỗi nào lọt ra ngoài!
+\end{dangerbox}
+
+\section{Ba Cấp Độ Cam Kết An Toàn Ngoại Lệ (Exception Safety Guarantees)}
+
+Một hệ thống phần mềm C++ chuẩn mực phải phân định rõ ba cấp độ an toàn ngoại lệ theo phân loại của David Abrahams:
+
+\begin{enumerate}
+    \item \textbf{Cam Kết Cơ Bản (Basic Guarantee):}
+    Nếu một ngoại lệ xảy ra, hệ thống bảo đảm \textbf{không có tài nguyên nào bị rò rỉ} (không rò rỉ RAM, handle file, hay socket) và tất cả các đối tượng đều ở trạng thái hợp lệ nội tại (\textit{Valid Invariants}), dù dữ liệu có thể bị biến đổi so với ban đầu.
+    
+    \item \textbf{Cam Kết Mạnh Mẽ (Strong Guarantee / Commit-or-Rollback):}
+    Thao tác mang tính nguyên tử (\textit{Atomic}): Hoặc là thành công trọn vẹn, hoặc nếu có ngoại lệ xảy ra thì trạng thái của toàn bộ hệ thống được phục hồi nguyên vẹn chính xác $100\%$ như trước khi gọi hàm!
+    \begin{itemize}
+        \item \textit{Phương pháp hiện thực hóa kinh điển:} Thao tác trên một bản sao tạm thời trước; chỉ cập nhật vào trạng thái thật bằng các phép toán \texttt{noexcept} sau khi mọi rủi ro đã vượt qua an toàn (Copy-and-Swap).
+    \end{itemize}
+
+    \item \textbf{Cam Kết Không Bao Giờ Thất Bại (Nothrow / No-fail Guarantee):}
+    Hàm cam đoan $100\%$ thành công và không bao giờ ném ra bất kỳ ngoại lệ nào. Đây là cam kết bắt buộc đối với:
+    \begin{itemize}
+        \item Mọi Destructor.
+        \item Các hàm giải phóng tài nguyên hệ thống (\texttt{free}, \texttt{delete}, \texttt{close}).
+        \item Các hàm hoán vị dữ liệu (\texttt{std::swap}) và Move Constructors.\footnote{Nguồn: OOP8-Exception.pdf - Trang 59-68: Ba cấp độ an toàn ngoại lệ của David Abrahams}
+    \end{itemize}
+\end{enumerate}
+
+\subsection{Nghiên Cứu Điển Hình Kiến Trúc: Tại Sao \texttt{std::stack::pop()} Trả Về \texttt{void}?}
+
+Tại sao trong thư viện STL, hàm \texttt{std::stack::pop()} chỉ đơn thuần xóa phần tử đỉnh mà không trả về giá trị của phần tử đó (buộc lập trình viên phải gọi \texttt{top()} trước rồi mới gọi \texttt{pop()})?
+
+\begin{underhoodbox}[Lý Do Đằng Sau Thiết Kế \texttt{std::stack::pop()}]
+Giả sử ta thiết kế hàm \texttt{T pop()} trả về đối tượng theo giá trị:
+\begin{lstlisting}[language=C++]
+template <typename T>
+T Stack<T>::pop() {
+    T result = elements.top();
+    elements.pop_internal(); // Element removed from stack
+    return result; // RETURN BY VALUE TRIGGERS COPY CONSTRUCTOR!
+}
+\end{lstlisting}
+\textbf{Kịch bản thảm họa:}
+\begin{enumerate}
+    \item Phần tử đỉnh đã bị xóa khỏi Stack.
+    \item Khi trả về cho hàm gọi, phép sao chép \texttt{return result;} kích hoạt Copy Constructor của kiểu \texttt{T}.
+    \item Nếu kiểu \texttt{T} bị cạn kiệt bộ nhớ và ném ra ngoại lệ \texttt{std::bad\_alloc}: Phần tử đã bị xóa mất khỏi Stack, nhưng hàm gọi chưa hề nhận được dữ liệu!
+    \item Dữ liệu bị \textbf{mất trắng vĩnh viễn}! Không thể khôi phục lại trạng thái cũ $\rightarrow$ \textbf{Cam Kết An Toàn Mạnh Mẽ bị phá vỡ hoàn toàn!}
+    \item \textbf{Kết luận:} Bằng cách tách biệt \texttt{top()} (chỉ đọc tham chiếu) và \texttt{pop()} (xóa \texttt{noexcept}), STL bảo đảm trọn vẹn Cam Kết An Toàn Mạnh Mẽ!
+\end{enumerate}
+\end{underhoodbox}
+
+\section{Kiến Trúc Tách Rời Trong Thư Viện Chuẩn C++ (STL)}
+
+Thư viện Chuẩn C++ (\textbf{Standard Template Library --- STL}) do Alexander Stepanov sáng tạo là kiệt tác vĩ đại nhất của sự kết hợp giữa Lập trình Tổng quát và Tư duy Hướng Đối tượng.
+
+\subsection{Kiến Trúc Tách Rời (Decoupled Architecture)}
+
+Trong các thư viện hướng đối tượng cổ điển, thuật toán thường được đóng gói trực tiếp vào bên trong các lớp thùng chứa (\texttt{Container::sort()}). Stepanov nhận ra rằng thiết kế này dẫn đến sự bùng nổ tổ hợp: Với $N$ cấu trúc dữ liệu và $M$ thuật toán, ta sẽ phải hiện thực hóa $N \times M$ phương thức riêng biệt!
+
+\begin{figure}[htbp]
+\centering
+\resizebox{0.95\textwidth}{!}{%
+\begin{tikzpicture}[
+    box/.style={draw=primaryblue, thick, rounded corners=4pt, fill=white, inner sep=8pt, font=\small\sffamily, align=center},
+    arrowstyle/.style={<->, line width=1.5pt, primaryblue}
+]
+    % Containers
+    \node[box, fill=bgsoftblue, text width=4.5cm] (C) at (0, 0) {
+        \textbf{Containers (Thùng Chứa)}\\[2pt]
+        \footnotesize \texttt{vector, list, deque, map}\\
+        \scriptsize Quản lý lưu trữ bộ nhớ vật lý
+    };
+
+    % Iterators
+    \node[box, fill=bglighterblue, draw=accentblue, text width=4.8cm] (I) at (6.0, 0) {
+        \textbf{Iterators (Bộ Lặp Chuẩn)}\\[2pt]
+        \footnotesize Cầu nối trừu tượng tổng quát\\
+        \scriptsize Che giấu cấu trúc dữ liệu nội tại
+    };
+
+    % Algorithms
+    \node[box, fill=bgsoftblue, text width=4.5cm] (A) at (12.0, 0) {
+        \textbf{Algorithms (Thuật Toán)}\\[2pt]
+        \footnotesize \texttt{sort, find, transform, count}\\
+        \scriptsize Thao tác thuần túy trên dải bộ lặp
+    };
+
+    % Arrows
+    \draw[arrowstyle] (C.east) -- (I.west) node[midway, above=3pt, font=\footnotesize\bfseries, accentblue] {Cung cấp};
+    \draw[arrowstyle] (I.east) -- (A.west) node[midway, above=3pt, font=\footnotesize\bfseries, accentblue] {Vận hành};
+\end{tikzpicture}%
+}
+\caption{Kiến trúc ba tầng tách rời (Decoupled Architecture) của Alexander Stepanov trong STL.}
+\end{figure}
+
+Bằng cách phân tách hoàn toàn Thuật toán và Cấu trúc dữ liệu thông qua giao diện trung gian là \textbf{Bộ lặp (Iterators)}, $N$ cấu trúc dữ liệu và $M$ thuật toán chỉ đòi hỏi đúng $N + M$ thành phần độc lập!
+
+\subsection{Năm Hạng Bộ Lặp \& Kỹ Thuật Tag Dispatching}
+
+STL phân loại Bộ lặp thành 5 hạng dựa trên năng lực truy cập bộ nhớ phần cứng:
+
+\begin{enumerate}
+    \item \texttt{std::input\_iterator\_tag}: Đọc tuần tự một chiều một lần (ví dụ: luồng dữ liệu \texttt{std::cin}).
+    \item \texttt{std::output\_iterator\_tag}: Ghi tuần tự một chiều một lần (ví dụ: luồng dữ liệu \texttt{std::cout}).
+    \item \texttt{std::forward\_iterator\_tag}: Đọc/ghi tuần tự nhiều lần (\texttt{std::forward\_list}).
+    \item \texttt{std::bidirectional\_iterator\_tag}: Di chuyển tiến và lùi tuần tự (\texttt{std::list}, \texttt{std::map}, \texttt{std::set}).
+    \item \texttt{std::random\_access\_iterator\_tag}: Nhảy tới bất kỳ vị trí nào với độ phức tạp $O(1)$ (\texttt{std::vector}, \texttt{std::deque}, mảng thô).
+\end{enumerate}
+
+\textbf{Kỹ Thuật Tag Dispatching Tại Compile-Time:}
+Khi gọi hàm dịch chuyển bộ lặp \texttt{std::advance(it, n)}, STL sử dụng cơ chế nạp chồng dựa trên tag để chọn thuật toán tối ưu nhất mà \textbf{hoàn toàn không tốn một chu kỳ CPU nào tại runtime}:
+
+\begin{lstlisting}[language=C++]
+// Optimal implementation for Random Access Iterator: Single CPU instruction in O(1)
+template <typename RandomAccessIterator, typename Distance>
+void advance_impl(RandomAccessIterator& it, Distance n, std::random_access_iterator_tag) {
+    it += n; 
+}
+
+// Fallback implementation for Bidirectional Iterator: Iterative step in O(N)
+template <typename BidirectionalIterator, typename Distance>
+void advance_impl(BidirectionalIterator& it, Distance n, std::bidirectional_iterator_tag) {
+    while (n > 0) { ++it; --n; }
+    while (n < 0) { --it; ++n; }
+}
+
+template <typename Iterator, typename Distance>
+void advance(Iterator& it, Distance n) {
+    // Compile-time tag lookup selects the exact overload with ZERO runtime branch overhead:
+    advance_impl(it, n, typename std::iterator_traits<Iterator>::iterator_category());
+}
+\end{lstlisting}
+
+\subsection{Kiến Trúc Quản Trị Bộ Nhớ: Bộ Cấp Phát Tùy Biến (Allocators \& Rebind)}
+
+Một thùng chứa STL như \texttt{std::list<T>} không cấp phát trực tiếp các đối tượng \texttt{T} rời rạc. Trong thực tế, nó cần cấp phát các nút danh sách:
+\begin{lstlisting}[language=C++]
+template <typename T>
+struct ListNode {
+    ListNode* next;
+    ListNode* prev;
+    T data;
+};
+\end{lstlisting}
+
+Nếu người dùng truyền vào một bộ cấp phát kiểu \texttt{std::allocator<T>}, làm thế nào để thùng chứa có thể cấp phát bộ nhớ cho \texttt{ListNode<T>}? 
+
+Câu trả lời nằm ở \textbf{Cơ Chế Tái Liên Kết (The Rebind Mechanism)}:
+\begin{lstlisting}[language=C++]
+template <typename T, typename Allocator = std::allocator<T>>
+class CustomList {
+    // Rebind Allocator from type T to ListNode<T>:
+    using NodeAlloc = typename std::allocator_traits<Allocator>::template rebind_alloc<ListNode<T>>;
+    NodeAlloc nodeAllocator;
+};
+\end{lstlisting}
+Đây là minh chứng đỉnh cao cho sự trừu tượng hóa toàn vẹn của C++: Quản trị bộ nhớ vật lý được phân tách hoàn toàn khỏi cấu trúc dữ liệu và logic thuật toán.\footnote{Nguồn: Thingking in C++ vol 2 - Bruce Eckel.pdf - Part 2: Standard C++ Library \& STL Architecture}
+
+% ==============================================================================
+% LỜI KẾT & TỔNG KẾT
+% ==============================================================================
+\chapter*{Lời Kết: Con Đường Làm Chủ C++ Hiện Đại}
+\addcontentsline{toc}{chapter}{Lời Kết: Con Đường Làm Chủ C++ Hiện Đại}
+
+Trải qua 7 chương sách kinh điển của \textbf{"The OOP C++ Bible"}, chúng ta đã cùng nhau du hành từ tầng kiến trúc bộ nhớ vật lý thấp nhất (Stack, Heap, Cache, Calling Conventions, ABI Assembly Dispatching, VTable) lên đến những tầng trừu tượng thanh lịch nhất của khoa học máy tính hiện đại (RAII, Move Semantics, Variadic Templates, CRTP, SFINAE, và Exception Safety Guarantees).
+
+C++ không phải là một ngôn ngữ dễ dãi. Nó không che giấu sự phức tạp của máy tính sau một máy ảo chậm chạp. Nó trao toàn bộ quyền kiểm soát tối thượng vào tay lập trình viên, và như Bjarne Stroustrup từng đúc kết:
+\begin{center}
+\textit{"C makes it easy to shoot yourself in the foot; C++ makes it harder, but when you do, it blows your whole leg off."}
+\end{center}
+
+Nhưng khi bạn đã nắm vững các nguyên lý "dưới gầm máy" được trình bày trong cuốn sách này, bạn không còn sợ hãi những bẫy ngầm của bộ nhớ nữa. Bạn đã nắm trong tay sức mạnh để kiến tạo nên những hệ thống phần mềm có hiệu năng vô song, an toàn tuyệt đối và trường tồn cùng thời gian.
+
+Chúc các bạn luôn giữ vững niềm đam mê và tự hào trên con đường trở thành một \textbf{C++ Master}!
+
+\end{document}
