@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999997 (MiKTeX 25.12) (preloaded format=xelatex 2026.9.20)  3 NOV 2026 01:54
+This is XeTeX, Version 3.141592653-2.6-0.999997 (MiKTeX 25.12) (preloaded format=xelatex 2026.9.20)  3 NOV 2026 18:33
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1120,18 +1120,23 @@ Package hyperref Info: Link coloring ON on input line 190.
 \@outlinefile=\write4
 \openout4 = `The_OOP_C_Bible.out'.
 
+File: cover_page.jpg Graphic file (type bmp)
+<cover_page.jpg>
+ [1
 
+
+]
 
 LaTeX Font Warning: Font shape `TU/LatinModernRoman(0)/m/sc' undefined
-(Font)              using `TU/LatinModernRoman(0)/m/n' instead on input line 19
-9.
+(Font)              using `TU/LatinModernRoman(0)/m/n' instead on input line 21
+4.
 
-LaTeX Font Info:    Trying to load font information for U+msa on input line 216
+LaTeX Font Info:    Trying to load font information for U+msa on input line 231
 .
 (C:\Users\LAPTOP\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 216
+LaTeX Font Info:    Trying to load font information for U+msb on input line 231
 .
 
 (C:\Users\LAPTOP\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsb.fd
@@ -1142,7 +1147,7 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 
 ] (The_OOP_C_Bible.toc
 LaTeX Font Info:    Font shape `TU/Consolas(0)/m/n' will be
-(Font)              scaled to size 11.03998pt on input line 8.
+(Font)              scaled to size 11.03998pt on input line 16.
  [1
 
 
@@ -1157,23 +1162,17 @@ Chapter 1.
 
 ]
 LaTeX Font Info:    Font shape `TU/Consolas(0)/m/n' will be
-(Font)              scaled to size 10.07397pt on input line 302.
+(Font)              scaled to size 9.19998pt on input line 330.
 LaTeX Font Info:    Font shape `TU/Consolas(0)/m/n' will be
-(Font)              scaled to size 9.19998pt on input line 302.
+(Font)              scaled to size 7.35999pt on input line 330.
 LaTeX Font Info:    Font shape `TU/Consolas(0)/b/n' will be
-(Font)              scaled to size 11.03998pt on input line 309.
+(Font)              scaled to size 11.03998pt on input line 337.
  [2]
 LaTeX Font Info:    Font shape `TU/Consolas(0)/b/n' will be
-(Font)              scaled to size 9.19998pt on input line 324.
- [3]
+(Font)              scaled to size 9.19998pt on input line 352.
 LaTeX Font Info:    Font shape `TU/Consolas(0)/m/it' will be
-(Font)              scaled to size 9.19998pt on input line 343.
- [4]
-Overfull \hbox (4.99641pt too wide) in paragraph at lines 381--381
-|[]\TU/LatinModernRoman(0)/b/n/17.28 Con Trỏ, Tham Chiếu và Cuộc Cách Mạng Move
-
- []
-
+(Font)              scaled to size 9.19998pt on input line 371.
+ [3] [4]
 (C:\Users\LAPTOP\AppData\Local\Programs\MiKTeX\tex/latex/listings\lstlang1.sty
 File: lstlang1.sty 2025/11/14 1.11b listings language file
 ) (C:\Users\LAPTOP\AppData\Local\Programs\MiKTeX\tex/latex/listings\lstlang2.st
@@ -1182,162 +1181,110 @@ File: lstlang2.sty 2025/11/14 1.11b listings language file
 )
 (C:\Users\LAPTOP\AppData\Local\Programs\MiKTeX\tex/latex/listings\lstlang3.sty
 File: lstlang3.sty 2025/11/14 1.11b listings language file
-) [5]
-LaTeX Font Info:    Font shape `TU/Consolas(0)/b/n' will be
-(Font)              scaled to size 13.24796pt on input line 454.
- [6] [7] [8]
+) [5] [6]
 Chapter 2.
-[9
+[7
 
-] [10] [11] [12] [13] [14] [15]
+] [8] [9] [10]
+LaTeX Font Info:    Font shape `TU/Consolas(0)/b/n' will be
+(Font)              scaled to size 13.24796pt on input line 630.
+ [11] [12] [13]
 Chapter 3.
-[16
+[14
 
-] [17]
-Overfull \hbox (0.6436pt too wide) in paragraph at lines 867--868
+] [15]
+Overfull \hbox (2.97554pt too wide) in paragraph at lines 771--771
+|[]\TU/LatinModernRoman(0)/b/n/14.4 Phân Loại Giá Trị Chuẩn Quốc Tế ISO/IEC 148
+82 (Value
+ []
+
+[16] [17]
+Overfull \hbox (0.6436pt too wide) in paragraph at lines 894--895
 []\TU/LatinModernRoman(0)/b/n/12 Move Assignment Operator: \TU/Consolas(0)/m/n/
 12 Resource& operator=(Resource&&) noexcept 
  []
 
 [18] [19]
-Overfull \hbox (2.59448pt too wide) in paragraph at lines 927--927
+Overfull \hbox (2.59448pt too wide) in paragraph at lines 966--966
 |[]\TU/LatinModernRoman(0)/b/n/17.28 Nạp Chồng Toán Tử Toàn Diện (Operator Over
 -
  []
 
 [20]
-Overfull \hbox (27.47719pt too wide) in paragraph at lines 973--973
-|[]\TU/LatinModernRoman(0)/b/n/14.4 Toán Tử Chỉ Mục \TU/Consolas(0)/b/n/14.4 op
-erator[] \TU/LatinModernRoman(0)/b/n/14.4 & Toán Tử Gọi Hàm \TU/Consolas(0)/b/n
-/14.4 operator()| 
- []
-
-[21] [22]
 LaTeX Font Info:    Font shape `TU/Consolas(0)/b/n' will be
-(Font)              scaled to size 10.07397pt on input line 1094.
- [23] [24]
+(Font)              scaled to size 10.07397pt on input line 1058.
+ [21] [22]
 Chapter 4.
-[25
+[23
 
-] [26] [27] [28] [29] [30] [31]
+] [24] [25] [26] [27] [28] [29]
 Chapter 5.
-[32
+[30
 
 ]
 LaTeX Font Info:    Font shape `TU/Consolas(0)/b/n' will be
-(Font)              scaled to size 15.89755pt on input line 1415.
- [33] [34] [35] [36] [37]
-Overfull \hbox (10.6124pt too wide) in paragraph at lines 1647--1647
-|[]\TU/LatinModernRoman(0)/b/n/17.28 Destructor Ảo (Virtual Destructor) — Luật 
-Sống
+(Font)              scaled to size 15.89755pt on input line 1384.
+ [31]
+LaTeX Font Info:    Font shape `TU/Consolas(0)/m/n' will be
+(Font)              scaled to size 10.07397pt on input line 1478.
+ [32] [33]
+Overfull \hbox (16.17654pt too wide) in paragraph at lines 1515--1515
+|[]\TU/LatinModernRoman(0)/b/n/17.28 Kiểu Trả Về Đồng Biến (Covariant Return Ty
+pes)| 
  []
 
-[38]
-Underfull \hbox (badness 3460) in paragraph at lines 1682--1683
-[]\TU/LatinModernRoman(0)/m/n/12 Trình biên dịch sinh mã máy gọi trực tiếp địa 
-chỉ của hàm
- []
-
-
-Underfull \hbox (badness 3635) in paragraph at lines 1683--1684
-[]\TU/LatinModernRoman(0)/b/n/12 Hậu quả: \TU/LatinModernRoman(0)/m/n/12 Hàm \T
-U/Consolas(0)/m/n/12 DerivedResource::~DerivedResource() \TU/LatinModernRoman(0
-)/b/n/12 HOÀN
- []
-
-[39]
-Underfull \hbox (badness 1009) in paragraph at lines 1734--1735
-[]\TU/LatinModernRoman(0)/m/n/12 Trình biên dịch C++ cố tình cô lập lời gọi này
- về dạng \TU/LatinModernRoman(0)/b/n/12 Static
- []
-
-
-Underfull \hbox (badness 3098) in paragraph at lines 1734--1735
-\TU/LatinModernRoman(0)/b/n/12 Binding \TU/LatinModernRoman(0)/m/n/12 của lớp c
-ha để bảo vệ bạn: Nếu nó cho phép gọi
- []
-
-
-Underfull \hbox (badness 2809) in paragraph at lines 1734--1735
-\TU/Consolas(0)/m/n/12 BuyTransaction::logCreation()\TU/LatinModernRoman(0)/m/n
-/12 , hàm này sẽ truy cập vào biến
- []
-
-[40] [41]
+[34] [35]
 Chapter 6.
-[42
+[36
+
+] [37] [38] [39]
+Chapter 7.
+[40
 
 ]
-LaTeX Font Info:    Font shape `TU/Consolas(0)/m/it' will be
-(Font)              scaled to size 11.03998pt on input line 1792.
-
-Overfull \hbox (25.14487pt too wide) in paragraph at lines 1795--1795
-|[]\TU/LatinModernRoman(0)/b/n/17.28 Quá Trình Biên Dịch Hai Pha (Two-Phase Loo
-kup)
+Underfull \hbox (badness 1735) in paragraph at lines 1819--1820
+\TU/LatinModernRoman(0)/m/n/12 bọc trong các đối tượng RAII (\TU/Consolas(0)/m/
+n/12 std::unique_ptr\TU/LatinModernRoman(0)/m/n/12 , \TU/Consolas(0)/m/n/12 std
+::ofstream\TU/LatinModernRoman(0)/m/n/12 ,
  []
 
-
-Overfull \hbox (9.59526pt too wide) in paragraph at lines 1802--1803
-[]\TU/LatinModernRoman(0)/m/n/12 Xảy ra khi trình biên dịch lần đầu tiên quét q
-ua đoạn mã \TU/Consolas(0)/m/n/12 template <typename
- []
-
-[43] [44]
-Underfull \hbox (badness 2662) in paragraph at lines 1871--1872
-[]\TU/LatinModernRoman(0)/m/n/12 Đến giai đoạn liên kết (\TU/LatinModernRoman(0
-)/b/n/12 Linking\TU/LatinModernRoman(0)/m/n/12 ), Linker đi tìm mã máy của
- []
-
-
-Overfull \hbox (2.285pt too wide) in paragraph at lines 1878--1879
-\TU/LatinModernRoman(0)/m/n/12 Khi chương trình gọi \TU/Consolas(0)/m/n/12 Safe
-Stack<int>\TU/LatinModernRoman(0)/m/n/12 , \TU/Consolas(0)/m/n/12 SafeStack<dou
-ble>\TU/LatinModernRoman(0)/m/n/12 , \TU/Consolas(0)/m/n/12 SafeStack<std::stri
-ng>\TU/LatinModernRoman(0)/m/n/12 ,
- []
-
-[45] [46] [47] [48] [49]
-Chapter 7.
-[50
-
-] [51] [52]
-Underfull \hbox (badness 1715) in paragraph at lines 2153--2153
+[41]
+Underfull \hbox (badness 1715) in paragraph at lines 1831--1831
 []\TU/LatinModernSans(0)/b/n/12 Khảo Sát Kiến Trúc Phần Cứng & Trình Biên Dịch:
  Toán Tử
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 2157--2158
-[]\TU/LatinModernRoman(0)/m/n/12 Trình biên dịch sử dụng toán tử kiểm tra compi
-le-time:
+Underfull \hbox (badness 10000) in paragraph at lines 1835--1836
+[]\TU/LatinModernRoman(0)/m/n/12 Trình biên dịch sử dụng toán tử compile-time:
  []
 
-
-Underfull \hbox (badness 10000) in paragraph at lines 2157--2158
-\TU/Consolas(0)/m/n/12 noexcept(Widget(std::declval<Widget&&>())) \TU/LatinMode
-rnRoman(0)/m/n/12 (hoặc type trait
- []
-
-[53]
-Underfull \hbox (badness 5878) in paragraph at lines 2193--2194
-[]\TU/LatinModernRoman(0)/m/n/12 Hệ thống \TU/LatinModernRoman(0)/b/n/12 SẼ KHÔ
-NG BAO GIỜ GỌI DESTRUCTOR
- []
-
-[54] [55]
-Overfull \hbox (29.00418pt too wide) in paragraph at lines 2259--2259
-|[]\TU/LatinModernRoman(0)/b/n/14.4 Nghiên Cứu Điển Hình Kiến Trúc: Tại Sao \TU
-/Consolas(0)/b/n/14.4 std::stack::pop()
- []
-
-
-Overfull \hbox (4.58105pt too wide) in paragraph at lines 2285--2286
+[42]
+Overfull \hbox (4.58105pt too wide) in paragraph at lines 1862--1863
 \TU/LatinModernRoman(0)/m/n/12 Thư viện Chuẩn C++ (\TU/LatinModernRoman(0)/b/n/
 12 Standard Template Library — STL\TU/LatinModernRoman(0)/m/n/12 ) do Alexander
  Stepanov
  []
 
-[56] [57] [58] [59
+[43] [44]
+Chapter 8.
+
+Overfull \hbox (2.63654pt too wide) in paragraph at lines 1960--1960
+|[]\TU/LatinModernRoman(0)/b/n/14.4 1. Single Responsibility Principle (Nguyên 
+Lý Đơn Trách
+ []
+
+[45
+
+] [46] [47]
+Overfull \hbox (3.97095pt too wide) in paragraph at lines 2063--2063
+|[]\TU/LatinModernRoman(0)/b/n/14.4 Mẫu Nhà Máy (Factory Method Pattern) Kết Hợ
+p Smart
+ []
+
+[48] [49] [50
+
+] [51
 
 ] (The_OOP_C_Bible.aux)
  ***********
@@ -1349,15 +1296,15 @@ L3 programming layer <2025-12-24>
 LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
 Package rerunfilecheck Info: File `The_OOP_C_Bible.out' has not changed.
-(rerunfilecheck)             Checksum: 300CCAA5037A7DC4C52E2ED913458E69;39199.
+(rerunfilecheck)             Checksum: B3FC5593CA42F91701EFC9DF087CD6FE;37544.
  ) 
 Here is how much of TeX's memory you used:
- 32162 strings out of 402987
- 658210 string characters out of 5448317
- 1604361 words of memory out of 5000000
- 60365 multiletter control sequences out of 15000+600000
- 636573 words of font info for 148 fonts, out of 8000000 for 9000
+ 32241 strings out of 402987
+ 660213 string characters out of 5448317
+ 1636159 words of memory out of 5000000
+ 60443 multiletter control sequences out of 15000+600000
+ 635511 words of font info for 142 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
- 98i,13n,108p,1206b,2004s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 98i,13n,108p,1206b,2006s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on The_OOP_C_Bible.pdf (63 pages).
+Output written on The_OOP_C_Bible.pdf (56 pages).

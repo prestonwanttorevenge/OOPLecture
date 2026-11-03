@@ -2,15 +2,15 @@
 
 chap3_text = r"""
 % ==============================================================================
-% CHƯƠNG 3: QUẢN TRỊ BỘ NHỚ & NẠP CHỒNG TOÁN TỬ (MEMORY & OVERLOADING)
+% CHƯƠNG 3: QUẢN TRỊ BỘ NHỚ, MOVE SEMANTICS & NẠP CHỒNG TOÁN TỬ
 % ==============================================================================
-\chapter{Quản trị Bộ nhớ \& Nạp chồng Toán tử (Memory \& Overloading)}
+\chapter{Quản trị Bộ nhớ, Move Semantics \& Nạp chồng Toán tử (Memory \& Overloading)}
 
 \begin{theorybox}[Nguyên Lý Quản Trị Tài Nguyên Bộ Nhớ]
 Khả năng kiểm soát bộ nhớ RAM ở cấp độ byte là phẩm chất định nghĩa nên uy lực của C++. Tuy nhiên, tự do đi liền với trách nhiệm: Một kiến trúc phần mềm chuẩn mực phải đảm bảo hai điều kiện biên bất biến:
 \begin{enumerate}
     \item \textbf{Tính Toàn Vẹn Sở Hữu (Ownership Integrity):} Mỗi khối tài nguyên động trên Heap phải có một chủ sở hữu duy nhất hoặc một nhóm chủ sở hữu được kiểm soát nghiêm ngặt.
-    \item \textbf{Tính Bất Biến Về Vòng Đời (Lifecycle Invariant):} Tài nguyên phải được giải phóng đúng một lần duy nhất (\textit{Exactly-once Destruction}) ngay khi chủ sở hữu cuối cùng kết thúc vòng đời.\footnote{Nguồn: OOP4-OperatorOverloading\_new.pdf - Trang 2-10: Quản trị tài nguyên và nạp chồng toán tử}
+    \item \textbf{Tính Bất Biến Về Vòng Đời (Lifecycle Invariant):} Tài nguyên phải được giải phóng đúng một lần duy nhất (\textit{Exactly-once Destruction}) ngay khi chủ sở hữu cuối cùng kết thúc vòng đời.
 \end{enumerate}
 \end{theorybox}
 
@@ -18,7 +18,7 @@ Khả năng kiểm soát bộ nhớ RAM ở cấp độ byte là phẩm chất �
 
 Khi lập trình viên không khai báo Copy Constructor hoặc Copy Assignment Operator, trình biên dịch sẽ tự động sinh ra một phiên bản mặc định thực hiện \textbf{Sao chép nông (Shallow Copy / Memberwise Copy)}. 
 
-\subsection{Cơ Chế Phá Hủy Bộ Nhớ Của Shallow Copy (Double-Free Disaster)}
+\subsection{Cơ Chế Phá Hủy Bộ Nhớ Của Shallow Copy (Double-Free Hazard)}
 
 Xét một lớp quản lý một mảng động trên Heap:
 \begin{lstlisting}[language=C++]
@@ -32,14 +32,14 @@ public:
     // No custom Copy Constructor -> Compiler generates shallow copy!
 };
 
-void catastrophicExecution() {
+void defectiveExecution() {
     RawArray a(100);
     RawArray b = a; // SHALLOW COPY: b.data gets the exact pointer value of a.data!
-} // Scope exits: SYSTEM CRASH HAPPENS HERE!
+} // Scope exits: Double-free error occurs here!
 \end{lstlisting}
 
-\begin{underhoodbox}[Giải Phẫu Thảm Họa Double-Free Dưới Tầng Bộ Nhớ]
-Hãy khảo sát chính xác trạng thái của thanh ghi và bộ nhớ trong hàm \texttt{catastrophicExecution()}:
+\begin{underhoodbox}[Giải Phẫu Hiện Tượng Double-Free Dưới Tầng Bộ Nhớ]
+Hãy khảo sát trạng thái của bộ nhớ trong hàm \texttt{defectiveExecution()}:
 \begin{enumerate}
     \item Khi \texttt{b = a} được thực thi, trình biên dịch chỉ đơn thuần sao chép giá trị số nguyên của con trỏ: \texttt{b.data = a.data}.
     \item \textbf{Hiện tượng Con trỏ trùng lặp (Pointer Aliasing):} Cả \texttt{a.data} và \texttt{b.data} đều cùng trỏ vào \textbf{DUY NHẤT MỘT ĐỊA CHỈ HEAP} (ví dụ \texttt{0x00A01234}).
@@ -48,7 +48,7 @@ Hãy khảo sát chính xác trạng thái của thanh ghi và bộ nhớ trong 
         \item Theo quy tắc LIFO của Stack, đối tượng \texttt{b} bị hủy trước. Destructor \texttt{\textasciitilde{}RawArray()} của \texttt{b} thực thi lệnh \texttt{delete[] b.data}, giải phóng khối bộ nhớ tại \texttt{0x00A01234} về cho hệ điều hành. Vùng nhớ này bị đánh dấu là \textit{Free Chunk}.
         \item Ngay sau đó, đối tượng \texttt{a} bị hủy. Destructor của \texttt{a} tiếp tục gọi \texttt{delete[] a.data} trên cùng địa chỉ \texttt{0x00A01234}!
     \end{itemize}
-    \item \textbf{Hậu quả hệ thống:} Việc giải phóng một vùng nhớ đã được giải phóng từ trước gọi là \textbf{Lỗi Double-Free}. C/C++ Memory Allocator lập tức phát hiện sự sai lệch trong danh sách liên kết của Heap và ném tín hiệu \textbf{\texttt{SIGABRT}} (hoặc \texttt{Heap Corruption Exception}), làm sập tiến trình ngay lập tức!\footnote{Nguồn: OOP4-OperatorOverloading\_new.pdf - Trang 11-18: Shallow copy vs Deep copy và lỗi Double-Free}
+    \item \textbf{Hậu quả hệ thống:} Việc giải phóng một vùng nhớ đã được giải phóng từ trước gọi là \textbf{Lỗi Double-Free}. C/C++ Memory Allocator phát hiện sự sai lệch trong danh sách liên kết của Heap và ném tín hiệu \textbf{\texttt{SIGABRT}}, đình chỉ tiến trình ngay tức khắc.
 \end{enumerate}
 \end{underhoodbox}
 
@@ -65,6 +65,109 @@ RawArray::RawArray(const RawArray& other)
 }
 \end{lstlisting}
 
+\section{Hệ Thống Phân Loại Giá Trị \& Ngữ Nghĩa Di Dời (Move Semantics)}
+
+\subsection{Phân Loại Giá Trị Chuẩn Quốc Tế ISO/IEC 14882 (Value Categories)}
+
+Trong chuẩn C++11, để hỗ trợ việc chuyển giao quyền sở hữu tài nguyên mà không cần sao chép, ủy ban ISO đã thiết lập cây phân loại giá trị (\textit{Value Categories}) dựa trên hai tiêu chí độc lập:
+\begin{enumerate}
+    \item \textbf{Có Định Danh Bộ Nhớ (Has Identity):} Chương trình có thể xác định được địa chỉ bộ nhớ cụ thể (\texttt{\&expr}) của đối tượng.
+    \item \textbf{Có Thể Di Dời Tài Nguyên (Can be Moved):} Trạng thái nội tại của đối tượng có thể được chuyển nhượng cho đối tượng khác một cách an toàn mà không phá vỡ tính bất biến của chương trình.
+\end{enumerate}
+
+\begin{figure}[htbp]
+\centering
+\resizebox{0.92\textwidth}{!}{%
+\begin{tikzpicture}[
+    box/.style={draw=primaryblue, thick, rounded corners=4pt, fill=white, inner sep=6pt, font=\small\bfseries\sffamily, align=center},
+    catbox/.style={draw=accentblue, thick, rounded corners=4pt, fill=bgsoftblue, inner sep=6pt, font=\small\bfseries\sffamily, align=center},
+    leafbox/.style={draw=primaryblue, thick, rounded corners=4pt, fill=white, inner sep=6pt, font=\small\bfseries\sffamily, align=center}
+]
+    % Top expression banner
+    \node[box, fill=bglighterblue, text width=11.4cm] (expr) at (0, 4.2) {Tất Cả Các Biểu Thức Trong C++11/14/17 (Expressions)};
+
+    % Intermediate glvalue and rvalue categories (width = 5.2cm, zero hyphenation)
+    \node[catbox, text width=5.2cm] (glval) at (-3.7, 2.4) {\textbf{glvalue (Generalized lvalue)}\\[2pt]\footnotesize Có Identity (Định danh bộ nhớ)};
+    \node[catbox, text width=5.2cm] (rval) at (3.7, 2.4) {\textbf{rvalue}\\[2pt]\footnotesize Có thể di dời tài nguyên (Movable)};
+
+    % Leaf categories: lvalue, xvalue, prvalue
+    \node[leafbox, text width=3.3cm] (lval) at (-4.7, 0.0) {\textbf{lvalue}\\[2pt]\footnotesize Có Identity\\[1pt]\scriptsize Không di dời};
+    \node[leafbox, fill=bglighterblue, draw=accentblue, line width=1.5pt, text width=3.8cm] (xval) at (0.0, 0.0) {\textbf{xvalue (eXpiring)}\\[2pt]\footnotesize Có Identity\\\footnotesize Di dời được (Giao điểm)};
+    \node[leafbox, text width=3.3cm] (prval) at (4.7, 0.0) {\textbf{prvalue (Pure rvalue)}\\[2pt]\footnotesize Không Identity\\[1pt]\scriptsize Di dời được};
+
+    % Top orthogonal tree branching (downward arrows only)
+    \draw[thick, primaryblue] (0, 3.8) -- (0, 3.4) -- (-3.7, 3.4);
+    \draw[-{Stealth[length=2.5mm]}, thick, primaryblue] (-3.7, 3.4) -- (glval.north);
+    
+    \draw[thick, primaryblue] (0, 3.4) -- (3.7, 3.4);
+    \draw[-{Stealth[length=2.5mm]}, thick, primaryblue] (3.7, 3.4) -- (rval.north);
+
+    % glvalue branches down to lvalue and xvalue
+    \draw[thick, accentblue] (glval.south) -- (-3.7, 1.3) -- (-4.7, 1.3);
+    \draw[-{Stealth[length=2.5mm]}, thick, accentblue] (-4.7, 1.3) -- (lval.north);
+
+    \draw[thick, accentblue] (-3.7, 1.3) -- (-1.1, 1.3);
+    \draw[-{Stealth[length=2.5mm]}, thick, accentblue] (-1.1, 1.3) -- (-1.1, 0.85);
+
+    % rvalue branches down to xvalue and prvalue
+    \draw[thick, accentblue] (rval.south) -- (3.7, 1.3) -- (4.7, 1.3);
+    \draw[-{Stealth[length=2.5mm]}, thick, accentblue] (4.7, 1.3) -- (prval.north);
+
+    \draw[thick, accentblue] (3.7, 1.3) -- (1.1, 1.3);
+    \draw[-{Stealth[length=2.5mm]}, thick, accentblue] (1.1, 1.3) -- (1.1, 0.85);
+\end{tikzpicture}%
+}
+\caption{Cây phân loại giá trị chuẩn mực quốc tế ISO/IEC 14882 (Value Categories).}
+\end{figure}
+
+\begin{itemize}
+    \item \textbf{lvalue (Locator Value):} Đại diện cho một đối tượng có vị trí bộ nhớ xác định và có tên (ví dụ: tên biến, hàm trả về tham chiếu lvalue \texttt{T\&}).
+    \item \textbf{prvalue (Pure Rvalue):} Đại diện cho các giá trị tạm thời tính toán tức thời hoặc hằng số nguyên thủy (ví dụ: số \texttt{42}, kết quả biểu thức \texttt{a + b}, hàm trả về theo giá trị \texttt{T}). Từ C++17, prvalue được định nghĩa lại là \textit{công thức khởi tạo đối tượng}, kích hoạt cơ chế \textbf{Triệt tiêu Sao chép Bảo đảm (Guaranteed Copy Elision)}.
+    \item \textbf{xvalue (eXpiring Value):} Đại diện cho một đối tượng có danh tính bộ nhớ nhưng vòng đời sắp kết thúc, cho phép chuyển giao tài nguyên (ví dụ: kết quả của \texttt{std::move(var)}).
+\end{itemize}
+
+\subsection{Tham Chiếu Rvalue (\texttt{T\&\&}) \& Ngữ Nghĩa Di Dời (Move Semantics)}
+
+Trong C++98, việc truyền các đối tượng lớn (chuỗi ký tự, mảng động, ma trận) ra khỏi hàm luôn đòi hỏi một phép sao chép sâu vô cùng đắt đỏ. Chuẩn C++11 giải quyết triệt để vấn đề này thông qua \textbf{Tham chiếu Rvalue (\texttt{T\&\&})}:
+
+\begin{lstlisting}[language=C++]
+#include <iostream>
+#include <utility>
+
+class HeavyBuffer {
+public:
+    size_t size;
+    int* data;
+
+    // 1. Constructor
+    HeavyBuffer(size_t s) : size(s), data(new int[s]) {}
+
+    // 2. Destructor
+    ~HeavyBuffer() { delete[] data; }
+
+    // 3. Copy Constructor (Deep Copy - O(N))
+    HeavyBuffer(const HeavyBuffer& other) : size(other.size), data(new int[other.size]) {
+        for (size_t i = 0; i < size; ++i) data[i] = other.data[i];
+    }
+
+    // 4. Move Constructor (Resource Transfer - O(1))
+    HeavyBuffer(HeavyBuffer&& other) noexcept : size(other.size), data(other.data) {
+        // Chuyen giao con tro va vo hieu hoa doi tuong nguon
+        other.data = nullptr;
+        other.size = 0;
+    }
+};
+\end{lstlisting}
+
+\begin{underhoodbox}[Bản Chất Của \texttt{std::move} Dưới Tầng Trình Biên Dịch]
+Rất nhiều kỹ sư ngộ nhận rằng hàm \texttt{std::move} thực hiện thao tác di dời dữ liệu trong bộ nhớ. \textbf{Đây là một hiểu lầm tai hại}!
+
+Dưới góc nhìn mã máy, \texttt{std::move} hoàn toàn \textbf{KHÔNG SINH RA BẤT KỲ DÒNG MÃ THỰC THI NÀO}! Về bản chất, \texttt{std::move} chỉ là một phép \textbf{Ép Kiểu Tĩnh Không Điều Kiện (Unconditional Static Cast)}:
+$$\texttt{static\_cast<typename std::remove\_reference<T>::type\&\&>(t)}$$
+
+Mục đích duy nhất của \texttt{std::move} là biến đổi một \textbf{lvalue} thành một \textbf{xvalue}, thông báo cho cơ chế giải quyết nạp chồng (\textit{Overload Resolution}) của trình biên dịch ưu tiên lựa chọn Move Constructor hoặc Move Assignment Operator thay vì Copy Constructor.
+\end{underhoodbox}
+
 \section{Tiến Hóa Bộ Quy Tắc Quản Trị Tài Nguyên: Rule of 3, 5, 0}
 
 \subsection{Quy Tắc Bộ Ba Cổ Điển (The Rule of Three --- C++98)}
@@ -76,12 +179,12 @@ Nếu một lớp đòi hỏi phải hiện thực hóa tường minh một tron
     \item \textbf{Hàm Tạo Sao Chép (Copy Constructor)}
     \item \textbf{Toán Tử Gán Sao Chép (Copy Assignment Operator)}
 \end{enumerate}
-thì lớp đó \textbf{HẦU NHƯ CHẮC CHẮN PHẢI HIỆN THỰC HÓA CẢ BA PHƯƠNG THỨC}! Sự hiện diện của một hàm hủy tường minh chứng minh rằng lớp đang nắm giữ một tài nguyên thô (Raw Resource); do đó các phương thức sao chép mặc định sẽ gây ra lỗi Shallow Copy.\footnote{Nguồn: OOP4-OperatorOverloading\_new.pdf - Trang 19-25: Quy tắc Rule of Three trong C++98}
+thì lớp đó \textbf{HẦU NHƯ CHẮC CHẮN PHẢI HIỆN THỰC HÓA CẢ BA PHƯƠNG THỨC}. Sự hiện diện của một hàm hủy tường minh chứng minh rằng lớp đang nắm giữ một tài nguyên thô; do đó các phương thức sao chép mặc định sẽ gây ra lỗi Shallow Copy.
 \end{theorybox}
 
 \subsection{Quy Tắc Bộ Năm Hiện Đại (The Rule of Five --- C++11)}
 
-Sự xuất hiện của Ngữ nghĩa Di chuyển (Move Semantics) trong chuẩn C++11 mở rộng Rule of Three thành \textbf{Rule of Five}. Một lớp quản lý tài nguyên phải thiết lập 5 phương thức đặc biệt:
+Sự xuất hiện của Ngữ nghĩa Di dời trong chuẩn C++11 mở rộng Rule of Three thành \textbf{Rule of Five}. Một lớp quản lý tài nguyên phải thiết lập 5 phương thức đặc biệt:
 \begin{enumerate}
     \item \textbf{Destructor:} \texttt{\textasciitilde{}Resource()}
     \item \textbf{Copy Constructor:} \texttt{Resource(const Resource\&)}
@@ -90,7 +193,17 @@ Sự xuất hiện của Ngữ nghĩa Di chuyển (Move Semantics) trong chuẩn
     \item \textbf{Move Assignment Operator:} \texttt{Resource\& operator=(Resource\&\&) noexcept}
 \end{enumerate}
 
-\subsection{Thành Ngữ Copy-and-Swap (The Copy-and-Swap Idiom)}
+\begin{warningbox}[Quy Tắc Vô Hiệu Hóa Hàm Di Dời Ngầm Định (Move Generation Inhibition)]
+Theo chuẩn ISO C++: Nếu lập trình viên khai báo bất kỳ hàm nào trong số \textbf{Destructor, Copy Constructor, hoặc Copy Assignment Operator}, trình biên dịch sẽ \textbf{TỰ ĐỘNG KHÓA VÀ KHÔNG SINH RA Move Constructor và Move Assignment Operator ngầm định}!
+
+Hậu quả là các lời gọi \texttt{std::move(obj)} sẽ \textbf{âm thầm thoái hóa thành phép sao chép sâu} (\textit{Silent Fallback to Deep Copy}) mà không hề có bất kỳ cảnh báo biên dịch nào! Để khôi phục, lập trình viên bắt buộc phải yêu cầu trình biên dịch sinh tường minh:
+\begin{lstlisting}[language=C++]
+Resource(Resource&&) noexcept = default;
+Resource& operator=(Resource&&) noexcept = default;
+\end{lstlisting}
+\end{warningbox}
+
+\subsection{Thành Ngữ Sao Chép và Hoán Vị (The Copy-and-Swap Idiom)}
 
 Để hiện thực hóa cả Copy Assignment và Move Assignment một cách thanh lịch, an toàn ngoại lệ tuyệt đối mà không lặp lại mã nguồn, kỹ sư C++ sử dụng kỹ thuật \textbf{Copy-and-Swap}:
 
@@ -111,13 +224,15 @@ public:
     // 2. Destructor
     ~ManagedBuffer() { delete[] buffer; }
 
-    // 3. Copy Constructor (Deep Copy)
+    // 3. Copy Constructor (Deep Copy - Protected against nullptr UB)
     ManagedBuffer(const ManagedBuffer& other)
         : length(other.length), buffer(other.length ? new char[other.length] : nullptr) {
-        std::copy(other.buffer, other.buffer + length, buffer);
+        if (length > 0) {
+            std::copy(other.buffer, other.buffer + length, buffer);
+        }
     }
 
-    // 4. Move Constructor (Zero Overhead Theft)
+    // 4. Move Constructor (Zero Overhead Transfer)
     ManagedBuffer(ManagedBuffer&& other) noexcept
         : ManagedBuffer() { // Delegate to Default Ctor
         swap(*this, other);
@@ -135,7 +250,7 @@ public:
     ManagedBuffer& operator=(ManagedBuffer other) noexcept {
         swap(*this, other); // Swap internal state with temporary copy
         return *this;
-    } // temporary 'other' is destroyed here, cleanly freeing old resource!
+    } // temporary other is destroyed here, cleanly freeing old resource
 };
 \end{lstlisting}
 
@@ -144,121 +259,35 @@ public:
 \begin{theorybox}[Đỉnh Cao Thiết Kế: Quy Tắc Số Không (The Rule of Zero)]
 Trong kiến trúc hướng đối tượng C++ hiện đại, lập trình viên \textbf{KHÔNG NÊN TỰ VIẾT BẤT KỲ PHƯƠNG THỨC NÀO TRONG BỘ NĂM}. 
 
-Thay vì quản lý con trỏ thô, hãy ủy thác toàn bộ việc quản lý tài nguyên cho các lớp thư viện chuẩn đã đạt chuẩn RAII như \texttt{std::unique\_ptr}, \texttt{std::vector}, hoặc \texttt{std::string}. Khi đó, trình biên dịch sẽ tự động sinh ra toàn bộ các hàm tạo sao chép, di chuyển và hàm hủy với độ an toàn và hiệu năng tối ưu tuyệt đối!\footnote{Nguồn: OOP4-OperatorOverloading\_new.pdf - Trang 26-32: Rule of Five và Rule of Zero trong C++11}
+Thay vì quản lý con trỏ thô, hãy ủy thác toàn bộ việc quản lý tài nguyên cho các lớp thư viện chuẩn đã đạt chuẩn RAII như \texttt{std::unique\_ptr}, \texttt{std::vector}, hoặc \texttt{std::string}. Khi đó, trình biên dịch sẽ tự động sinh ra toàn bộ các hàm tạo sao chép, di chuyển và hàm hủy với độ an toàn và hiệu năng tối ưu tuyệt đối.
 \end{theorybox}
 
 \section{Nạp Chồng Toán Tử Toàn Diện (Operator Overloading Deep Dive)}
 
-C++ cho phép lập trình viên định nghĩa lại ngữ nghĩa của các toán tử ngôn ngữ đối với các kiểu dữ liệu tự định nghĩa, biến mã nguồn trở nên tự nhiên và biểu cảm như các biểu thức toán học.
-
-\subsection{Các Định Đề Bất Biến Về Toán Tử}
-
-\begin{theorybox}[Ba Giới Hạn Cốt Tử Của Ngôn Ngữ Về Nạp Chồng Toán Tử]
-\begin{enumerate}
-    \item \textbf{Bất Biến Về Độ Ưu Tiên \& Kết Hợp:} Việc nạp chồng toán tử \textbf{tuyệt đối không thể làm thay đổi độ ưu tiên} (\textit{Precedence}) hoặc \textbf{tính kết hợp} (\textit{Associativity}) của toán tử (ví dụ: toán tử \texttt{*} luôn được thực thi trước toán tử \texttt{+}).
-    \item \textbf{Bất Biến Về Số Lượng Toán Hạng:} Không thể biến đổi toán tử hai ngôi thành một ngôi hoặc ngược lại.
-    \item \textbf{Cấm Khởi Tạo Toán Tử Mới:} Lập trình viên không thể tự chế tạo ra các ký tự toán tử mới không tồn tại trong ngữ pháp chuẩn C++ (như \texttt{**} hoặc \texttt{\%\%}).
-\end{enumerate}
-\end{theorybox}
-
-\textbf{Năm toán tử CẤM TUYỆT ĐỐI không được nạp chồng trong C++:}
-\begin{enumerate}
-    \item Toán tử truy cập thành viên trực tiếp: \textbf{\texttt{.}}
-    \item Toán tử con trỏ tới thành viên trực tiếp: \textbf{\texttt{.*}}
-    \item Toán tử phân giải phạm vi: \textbf{\texttt{::}}
-    \item Toán tử điều kiện tam phân: \textbf{\texttt{?:}}
-    \item Toán tử kích thước: \textbf{\texttt{sizeof}} (và toán tử nhận dạng kiểu \textbf{\texttt{typeid}}).
-\end{enumerate}
-
-\subsection{Lựa Chọn Thiết Kế: Member Method vs Non-member Friend}
-
-\begin{itemize}
-    \item \textbf{Toán tử bắt buộc phải là Phương thức Thành viên (Member Functions):}
-    Chuẩn C++ quy định 4 toán tử sau \textbf{bắt buộc 100\% phải là member}:
-    \begin{enumerate}
-        \item Toán tử gán: \texttt{operator=}
-        \item Toán tử chỉ mục mảng: \texttt{operator[]}
-        \item Toán tử gọi hàm: \texttt{operator()}
-        \item Toán tử truy cập gián tiếp con trỏ: \texttt{operator->}
-    \end{enumerate}
-    
-    \item \textbf{Tại sao toán tử xuất/nhập luồng (\texttt{<<} và \texttt{>>}) BẮT BUỘC phải là Non-member Function?}
-    Xét biểu thức: \texttt{std::cout << myObject;}.
-    Toán hạng bên trái là \texttt{std::cout} (có kiểu \texttt{std::ostream\&}). Nếu ta cài đặt dạng hàm thành viên, hàm đó bắt buộc phải nằm bên trong mã nguồn của lớp \texttt{std::ostream} thuộc thư viện chuẩn của trình biên dịch! Vì lập trình viên không thể can thiệp vào mã nguồn của \texttt{std::ostream}, ta bắt buộc phải nạp chồng \texttt{operator<<} dưới dạng \textbf{Hàm Tự Do Ngoài Lớp (Non-member Function)} và cấp quyền \texttt{friend} để truy cập trường ẩn:
-    \begin{lstlisting}[language=C++]
-    friend std::ostream& operator<<(std::ostream& os, const Complex& c) {
-        os << "(" << c.real << " + " << c.imag << "i)";
-        return os; // Tra ve ostream& de cho phep chain goi lien tiep
-    }
-    \end{lstlisting}
-\end{itemize}
-
-\subsection{Toán Tử Chỉ Mục \texttt{operator[]} \& Toán Tử Gọi Hàm \texttt{operator()}}
-
-Để bảo đảm tính toàn vẹn \textit{const-correctness}, toán tử chỉ mục luôn phải được viết thành \textbf{MỘT CẶP ĐỒNG BỘ}:
-\begin{lstlisting}[language=C++]
-class SafeVector {
-private:
-    int* elements;
-    size_t length;
-public:
-    // 1. Non-const version: Allows reading and writing
-    int& operator[](size_t index) {
-        return elements[index];
-    }
-
-    // 2. Const version: Allows reading from const instances
-    const int& operator[](size_t index) const {
-        return elements[index];
-    }
-};
-\end{lstlisting}
-
-\subsection{Toán Tử Tăng Giảm: Tiền Tố (Prefix) vs Hậu Tố (Postfix)}
+\subsection{Toán Tử Tiền Tố (++x) vs Hậu Tố (x++)}
 
 \begin{lstlisting}[language=C++]
 class Counter {
 private:
     int value = 0;
 public:
-    // 1. PREFIX (++c): Increments and returns reference to self
+    // 1. PREFIX (++c): Returns reference to current instance
     Counter& operator++() {
         ++value;
-        return *this; // Optimal performance: O(1), no temporary object
+        return *this; // Optimal: No temporary object created
     }
 
     // 2. POSTFIX (c++): Takes dummy int parameter to differentiate
     Counter operator++(int) {
-        Counter temp = *this; // MANDATORY: Must create a temporary copy!
+        Counter temp = *this; // Mandatory: Must create a temporary copy
         ++value;              // Increment actual state
         return temp;          // Return old value before increment
     } // Overhead: Triggers Copy Constructor
 };
 \end{lstlisting}
-\textit{Hệ luận kỹ thuật:} Trong các vòng lặp thuật toán, luôn ưu tiên sử dụng toán tử tiền tố (\texttt{++it}) thay vì hậu tố (\texttt{it++}) để triệt tiêu chi phí khởi tạo đối tượng tạm thời.\footnote{Nguồn: OOP4-OperatorOverloading\_new.pdf - Trang 33-50: Kỹ thuật nạp chồng toán tử nâng cao}
+\textit{Hệ luận kỹ thuật:} Trong các vòng lặp thuật toán, luôn ưu tiên sử dụng toán tử tiền tố (\texttt{++it}) thay vì hậu tố (\texttt{it++}) để triệt tiêu chi phí khởi tạo đối tượng tạm thời.
 
-\section{Nạp Chồng Toán Tử new và delete \& Kỹ Thuật Placement New}
-
-\subsection{Nạp Chồng new/delete Cấp Lớp (Class-specific Allocators)}
-
-Các hệ thống giao dịch tần suất cao hoặc engine trò chơi thường không sử dụng bộ cấp phát tổng quát của hệ điều hành vì chi phí tìm kiếm vùng nhớ tự do quá lớn. C++ cho phép nạp chồng toán tử \texttt{new} và \texttt{delete} riêng cho từng lớp để lấy bộ nhớ từ một vùng nhớ được cấp phát tĩnh từ trước (\textit{Memory Pool}):
-
-\begin{lstlisting}[language=C++]
-class HighSpeedNode {
-public:
-    void* operator new(size_t bytes) {
-        // Fast allocate from custom memory pool in O(1)
-        return MemoryPool::allocateFast(bytes);
-    }
-
-    void operator delete(void* ptr) noexcept {
-        // Return block back to pool in O(1)
-        MemoryPool::deallocateFast(ptr);
-    }
-};
-\end{lstlisting}
-
-\subsection{Kỹ Thuật Khởi Tạo Tại Chỗ (Placement New)}
+\subsection{Nạp Chồng new/delete Cấp Lớp (Class-specific Allocators) \& Placement New}
 
 Placement New cho phép lập trình viên khởi tạo một đối tượng trực tiếp trên một địa chỉ bộ nhớ đã được phân bổ sẵn mà \textbf{hoàn toàn không thực hiện bất kỳ lệnh xin cấp phát RAM nào}:
 
@@ -287,7 +316,7 @@ void testPlacementNew() {
 
 \begin{itemize}
     \item \textbf{Đặc tính kiến trúc:} Quản lý một đối tượng duy nhất. Không thể sao chép (\texttt{Copy Constructor = delete}), chỉ có thể di dời quyền sở hữu thông qua Move Semantics (\texttt{std::move}).
-    \item \textbf{Hiệu năng:} Kích thước bộ nhớ của \texttt{std::unique\_ptr<T>} bằng chính xác \textbf{MỘT con trỏ thô} (\texttt{sizeof = 8 bytes} trên 64-bit). Mọi thao tác truy xuất đều được inline hóa 100\%, đạt hiệu năng ngang bằng con trỏ thô (\textbf{Zero Runtime Overhead})!
+    \item \textbf{Hiệu năng và Tối ưu hóa Lớp Cơ sở Rỗng (EBO):} Khi sử dụng bộ giải phóng mặc định (\texttt{std::default\_delete<T>}), trình biên dịch áp dụng EBO để kích thước của \texttt{std::unique\_ptr<T>} đúng bằng \textbf{MỘT con trỏ thô} (8 bytes trên 64-bit). Tuy nhiên, nếu truyền vào một con trỏ hàm giải phóng tùy biến (\texttt{void(*)(T*)}), kích thước của nó sẽ tăng gấp đôi lên \textbf{16 bytes}.
 \end{itemize}
 
 \subsection{\texttt{std::shared\_ptr<T>} --- Quyền Sở Hữu Chia Sẻ (Shared Ownership)}
@@ -297,53 +326,56 @@ Nhiều con trỏ \texttt{shared\_ptr} có thể cùng trỏ tới một đối 
 \begin{figure}[htbp]
 \centering
 \resizebox{0.95\textwidth}{!}{%
-\begin{tikzpicture}[
-    box/.style={draw=primaryblue, thick, rounded corners=3pt, fill=white, inner sep=7pt, font=\small\sffamily, align=center},
-    ctrlbox/.style={draw=accentblue, thick, rounded corners=3pt, fill=bglighterblue, inner sep=7pt, font=\small\sffamily, align=center}
-]
-    % shared_ptr in Stack
-    \node[box, fill=bgsoftblue, text width=3.8cm] (sp1) at (0, 3) {\textbf{\texttt{std::shared\_ptr<T>}}\\(Trên Stack: 16 bytes)\\\footnotesize Con trỏ đối tượng: \texttt{T*}\\\footnotesize Con trỏ Control Block};
+\begin{tikzpicture}[every node/.style={font=\small\sffamily, align=center}]
+    % Outer container for shared_ptr in Stack (x from 0 to 5.8, y from 0 to 4.0)
+    \draw[thick, fill=bgsoftblue, draw=primaryblue, rounded corners=4pt] (0, 0) rectangle (5.8, 4.0);
+    \node[above=2pt, font=\bfseries\sffamily, primaryblue] at (2.9, 4.0) {\texttt{std::shared\_ptr<T>} (Stack)};
+    \node[font=\scriptsize\sffamily, commentgray] at (2.9, 3.55) {Kích thước: 16 bytes (Double Pointer)};
 
-    % Managed Object on Heap
-    \node[box, fill=white, draw=primaryblue, text width=4.0cm] (obj) at (6.5, 4.2) {\textbf{Đối Tượng Dữ Liệu T}\\(Cấp phát trên Heap)\\\footnotesize \texttt{sizeof(T)} bytes};
+    % Two slots inside shared_ptr
+    \draw[thick, fill=white, draw=primaryblue, rounded corners=3pt] (0.4, 1.9) rectangle (5.4, 3.2);
+    \node at (2.9, 2.55) {\textbf{\texttt{T* ptr}}\\[1pt]\scriptsize Con trỏ dữ liệu đối tượng (8 bytes)};
 
-    % Control block on Heap
-    \node[ctrlbox, text width=4.8cm] (cb) at (6.5, 1.8) {\textbf{Control Block (Heap)}\\\footnotesize Strong Ref Count: \texttt{1}\\\footnotesize Weak Ref Count: \texttt{0}\\\footnotesize Custom Deleter / Allocator};
+    \draw[thick, fill=bglighterblue, draw=accentblue, rounded corners=3pt] (0.4, 0.4) rectangle (5.4, 1.7);
+    \node at (2.9, 1.05) {\textbf{\texttt{ControlBlock* cb}}\\[1pt]\scriptsize Con trỏ khối điều khiển (8 bytes)};
 
-    % Pointer arrows
-    \draw[-{Stealth[length=2.5mm]}, thick, primaryblue] (sp1.east) -- ++(1.2, 0) |- (obj.west) node[near start, above=2pt, font=\footnotesize] {Trỏ dữ liệu};
-    \draw[-{Stealth[length=2.5mm]}, thick, accentblue] (sp1.east) -- ++(1.2, 0) |- (cb.west) node[near start, below=2pt, font=\footnotesize] {Quản lý vòng đời};
+    % Managed Object on Heap (Top Right: x from 10.2 to 15.8, y from 1.9 to 3.2)
+    \draw[thick, fill=white, draw=primaryblue, rounded corners=3pt] (10.2, 1.9) rectangle (15.8, 3.2);
+    \node at (13.0, 2.55) {\textbf{Đối Tượng Dữ Liệu T (Heap)}\\[1pt]\scriptsize Cấp phát \texttt{sizeof(T)} bytes};
+
+    % Control block on Heap (Bottom Right: x from 10.2 to 15.8, y from 0.4 to 1.7)
+    \draw[thick, fill=bglighterblue, draw=accentblue, rounded corners=3pt] (10.2, 0.4) rectangle (15.8, 1.7);
+    \node at (13.0, 1.05) {\textbf{Control Block (Heap)}\\[1pt]\scriptsize Strong: N $\mid$ Weak: M $\mid$ Deleter};
+
+    % Horizontal straight parallel arrows in 4.8cm wide clear gap
+    \draw[-{Stealth[length=3mm]}, thick, primaryblue] (5.4, 2.55) -- (10.2, 2.55)
+        node[midway, above=4pt, font=\footnotesize\bfseries, primaryblue] {Trỏ tới instance};
+
+    \draw[-{Stealth[length=3mm]}, thick, accentblue] (5.4, 1.05) -- (10.2, 1.05)
+        node[midway, above=4pt, font=\footnotesize\bfseries, accentblue] {Quản lý vòng đời};
 \end{tikzpicture}%
 }
 \caption{Kiến trúc bộ nhớ hai con trỏ và Khối Điều Khiển (Control Block) của \texttt{std::shared\_ptr}.}
 \end{figure}
 
-\begin{underhoodbox}[Kiến Trúc Khối Điều Khiển (Control Block) Của \texttt{std::shared\_ptr}]
-Kích thước của một \texttt{std::shared\_ptr} gấp đôi con trỏ thô (16 bytes trên nền tảng 64-bit), bao gồm:
+\begin{underhoodbox}[Kiến Trúc Khối Điều Khiển (Control Block) \& Cạm Bẫy Ghim Bộ Nhớ Của \texttt{std::make\_shared}]
+Kích thước của một \texttt{std::shared\_ptr} gấp đôi con trỏ thô (16 bytes trên nền tảng 64-bit), bao gồm một con trỏ trỏ tới dữ liệu và một con trỏ trỏ tới Khối Điều Khiển (\textit{Control Block}).
+
+\textbf{So sánh giữa \texttt{std::make\_shared} và cấp phát hai lần:}
 \begin{enumerate}
-    \item \textbf{Con trỏ thứ nhất (8 bytes):} Trỏ thẳng tới đối tượng dữ liệu thực tế (\texttt{T*}).
-    \item \textbf{Con trỏ thứ hai (8 bytes):} Trỏ tới một cấu trúc cấp phát động độc lập gọi là \textbf{Khối Điều Khiển (Control Block)}.
+    \item \textbf{Lợi thế của \texttt{std::make\_shared<T>()}:} Cấp phát duy nhất một khối RAM liên tục chứa cả Control Block và Đối tượng dữ liệu. Tối ưu hóa tính cục bộ bộ nhớ đệm (\textit{Cache Locality}) và loại trừ chi phí gọi allocator hai lần.
+    \item \textbf{Cạm bẫy ghim bộ nhớ (Memory Retention Trap):} Vì đối tượng \texttt{T} và Control Block nằm chung trên một khối nhớ Heap duy nhất:
+    \begin{itemize}
+        \item Khi Strong Reference Count giảm về 0, Destructor của \texttt{T} được thực thi ngay lập tức.
+        \item Tuy nhiên, \textbf{TOÀN BỘ KHỐI BỘ NHỚ HEAP KHÔNG THỂ ĐƯỢC GIẢI PHÓNG} chừng nào Weak Reference Count vẫn còn lớn hơn 0!
+        \item Nếu đối tượng \texttt{T} có kích thước lớn (ví dụ ma trận 50 MB) và có một đối tượng quan sát nắm giữ \texttt{std::weak\_ptr} trong thời gian dài, toàn bộ 50 MB RAM sẽ bị ghim chặt trong bộ nhớ! Trong kịch bản này, sử dụng \texttt{std::shared\_ptr<T>(new T())} là lựa chọn an toàn hơn vì vùng nhớ 50 MB của \texttt{T} được giải phóng ngay khi strong ref về 0.
+    \end{itemize}
 \end{enumerate}
-
-\textbf{Cấu trúc nội tại của Control Block:}
-\begin{itemize}
-    \item \textbf{Strong Reference Count (Bộ đếm tham chiếu mạnh):} Đếm số lượng \texttt{shared\_ptr} đang cùng sở hữu đối tượng. Mọi thao tác tăng/giảm biến đếm này đều sử dụng các chỉ lệnh khóa luồng mức máy (\textbf{Atomic Instructions} như \texttt{lock xadd} trên x86) để đảm bảo an toàn luồng (\textit{Thread-safety}).
-    \item \textbf{Weak Reference Count (Bộ đếm tham chiếu yếu):} Đếm số lượng \texttt{weak\_ptr} đang quan sát đối tượng.
-    \item \textbf{Custom Deleter \& Allocator:} Con trỏ hàm giải phóng tùy biến.
-\end{itemize}
-
-\textbf{Ưu thế vượt trội của \texttt{std::make\_shared<T>()}:}
-\begin{itemize}
-    \item Nếu dùng \texttt{std::shared\_ptr<T>(new T())}: Hệ điều hành phải thực hiện \textbf{HAI lần cấp phát bộ nhớ động riêng rẽ} (một lần cho \texttt{T}, một lần cho Control Block), làm phân mảnh bộ nhớ và suy giảm hiệu năng CPU Cache.
-    \item Nếu dùng \texttt{std::make\_shared<T>()}: Hệ điều hành cấp phát \textbf{DUY NHẤT MỘT KHỐI RAM LIÊN TỤC} chứa cả Control Block và Đối tượng dữ liệu. Tối ưu hóa tuyệt đối tính cục bộ bộ nhớ đệm (\textbf{Cache Locality})!\footnote{Nguồn: OOP4-OperatorOverloading\_new.pdf - Trang 51-68: Kiến trúc Smart Pointers và Control Block}
-\end{itemize}
 \end{underhoodbox}
 
-\subsection{\texttt{std::weak\_ptr<T>} --- Bẻ Gãy Vòng Lặp Tham Chiếu (Circular Reference)}
+\subsection{\texttt{std::weak\_ptr<T>} --- Phá Vỡ Vòng Lặp Tham Chiếu (Circular Reference)}
 
-Nếu hai đối tượng \texttt{A} và \texttt{B} cùng sở hữu \texttt{std::shared\_ptr} trỏ chéo lẫn nhau:
-$$\text{A} \xrightarrow{\text{shared\_ptr}} \text{B} \quad \text{và} \quad \text{B} \xrightarrow{\text{shared\_ptr}} \text{A}$$
-Bộ đếm Strong Reference Count của cả hai không bao giờ giảm về 0, dẫn tới toàn bộ mạng lưới đối tượng bị \textbf{rò rỉ vĩnh viễn trong RAM}!
+Nếu hai đối tượng \texttt{A} và \texttt{B} cùng sở hữu \texttt{std::shared\_ptr} trỏ chéo lẫn nhau, bộ đếm Strong Reference Count của cả hai không bao giờ giảm về 0, dẫn tới rò rỉ bộ nhớ vĩnh viễn.
 
-\textbf{Giải pháp:} Thay thế một trong hai liên kết bằng \textbf{\texttt{std::weak\_ptr<T>}}. \texttt{weak\_ptr} chỉ đóng vai trò là người quan sát: Nó không làm tăng Strong Reference Count. Khi muốn sử dụng dữ liệu, nó thăng hạng an toàn thành \texttt{shared\_ptr} thông qua phương thức \texttt{wp.lock()}; nếu đối tượng đã bị giải phóng, \texttt{lock()} trả về con trỏ rỗng an toàn.
+\textbf{Giải pháp:} Thay thế một trong hai liên kết bằng \textbf{\texttt{std::weak\_ptr<T>}}. \texttt{weak\_ptr} không làm tăng Strong Reference Count. Khi muốn sử dụng dữ liệu, nó thăng hạng an toàn thành \texttt{shared\_ptr} thông qua phương thức \texttt{wp.lock()}; nếu đối tượng đã bị giải phóng, \texttt{lock()} trả về con trỏ rỗng an toàn.
 """

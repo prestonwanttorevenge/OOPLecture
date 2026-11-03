@@ -1,100 +1,92 @@
-\contentsline {chapter}{\numberline {1}Triết lý \& Nền tảng (Philosophy \& Foundations)}{1}{chapter.1}%
-\contentsline {section}{\numberline {1.1}Sự Tiến Hóa Hệ Hình: Từ Ngôn Ngữ C Sang C++}{1}{section.1.1}%
+\contentsline {chapter}{\numberline {1}Triết lý Hệ hình \& Không gian Bộ nhớ Máy tính (Philosophy \& Memory Model)}{1}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Ma Trận So Sánh Kiến Trúc: C vs C++}{1}{section.1.1}%
 \contentsline {section}{\numberline {1.2}Kiến Trúc Bộ Nhớ Tiến Trình (Process Memory Layout)}{2}{section.1.2}%
 \contentsline {section}{\numberline {1.3}Quản Lý Bộ Nhớ Động: So Sánh Đối Kháng malloc/free và new/delete}{3}{section.1.3}%
-\contentsline {section}{\numberline {1.4}Con Trỏ, Tham Chiếu và Cuộc Cách Mạng Move Semantics (C++11)}{5}{section.1.4}%
-\contentsline {subsection}{\numberline {1.4.1}Bản Chất Dưới Gầm Máy: Tham Chiếu Lvalue (Lvalue Reference)}{5}{subsection.1.4.1}%
-\contentsline {subsection}{\numberline {1.4.2}Hệ Thống Phân Loại Giá Trị (Value Categories) Trong C++11}{5}{subsection.1.4.2}%
-\contentsline {subsection}{\numberline {1.4.3}Tham Chiếu Rvalue (\texttt {T\&\&}) và Ngữ Nghĩa Di Chuyển (Move Semantics)}{6}{subsection.1.4.3}%
-\contentsline {subsection}{\numberline {1.4.4}Quy Tắc Sụp Đổ Tham Chiếu (Reference Collapsing Rules)}{7}{subsection.1.4.4}%
-\contentsline {section}{\numberline {1.5}Hệ Thống Ép Kiểu An Toàn Chuẩn C++11}{8}{section.1.5}%
-\contentsline {chapter}{\numberline {2}Lớp \& Đối tượng (Classes \& Objects)}{9}{chapter.2}%
-\contentsline {section}{\numberline {2.1}Tính Đóng Gói (Encapsulation) \& Bộ Chỉ Định Quyền Truy Cập}{9}{section.2.1}%
-\contentsline {subsection}{\numberline {2.1.1}Cơ Chế Phân Quyền Truy Cập}{9}{subsection.2.1.1}%
-\contentsline {subsection}{\numberline {2.1.2}Khảo Sát Bộ Nhớ: Sự Căn Chỉnh Dữ Liệu (Memory Alignment \& Padding)}{10}{subsection.2.1.2}%
-\contentsline {section}{\numberline {2.2}Bản Chất Con Trỏ this Dưới Tầng RAM \& ABI Gọi Hàm}{11}{section.2.2}%
-\contentsline {section}{\numberline {2.3}Vòng Đời Khởi Tạo Đối Tượng (Constructors Architecture)}{12}{section.2.3}%
-\contentsline {subsection}{\numberline {2.3.1}Member Initializer List vs Phép Gán Trong Thân Constructor}{12}{subsection.2.3.1}%
-\contentsline {subsection}{\numberline {2.3.2}Ngăn Chặn Ép Kiểu Ngầm Định Với Từ Khóa \texttt {explicit}}{13}{subsection.2.3.2}%
-\contentsline {section}{\numberline {2.4}Hàm Hủy (Destructor) \& Triết Lý Thiết Kế RAII}{14}{section.2.4}%
-\contentsline {section}{\numberline {2.5}Thành Viên Static, Const và Kỹ Thuật Hàm Bạn (Friend)}{14}{section.2.5}%
-\contentsline {subsection}{\numberline {2.5.1}Thành Viên Tĩnh (Static Data \& Methods)}{14}{subsection.2.5.1}%
-\contentsline {subsection}{\numberline {2.5.2}Từ Khóa \texttt {mutable} --- Ngoại Lệ Trong Phương Thức Hằng}{14}{subsection.2.5.2}%
-\contentsline {subsection}{\numberline {2.5.3}Quan Hệ Bạn Bè (Friendship Architecture)}{15}{subsection.2.5.3}%
-\contentsline {chapter}{\numberline {3}Quản trị Bộ nhớ \& Nạp chồng Toán tử (Memory \& Overloading)}{16}{chapter.3}%
-\contentsline {section}{\numberline {3.1}Sao Chép Nông (Shallow Copy) vs Sao Chép Sâu (Deep Copy)}{16}{section.3.1}%
-\contentsline {subsection}{\numberline {3.1.1}Cơ Chế Phá Hủy Bộ Nhớ Của Shallow Copy (Double-Free Disaster)}{16}{subsection.3.1.1}%
-\contentsline {subsection}{\numberline {3.1.2}Giải Pháp Chuẩn Mực: Sao Chép Sâu (Deep Copy)}{17}{subsection.3.1.2}%
-\contentsline {section}{\numberline {3.2}Tiến Hóa Bộ Quy Tắc Quản Trị Tài Nguyên: Rule of 3, 5, 0}{18}{section.3.2}%
-\contentsline {subsection}{\numberline {3.2.1}Quy Tắc Bộ Ba Cổ Điển (The Rule of Three --- C++98)}{18}{subsection.3.2.1}%
-\contentsline {subsection}{\numberline {3.2.2}Quy Tắc Bộ Năm Hiện Đại (The Rule of Five --- C++11)}{18}{subsection.3.2.2}%
-\contentsline {subsection}{\numberline {3.2.3}Thành Ngữ Copy-and-Swap (The Copy-and-Swap Idiom)}{18}{subsection.3.2.3}%
-\contentsline {subsection}{\numberline {3.2.4}Quy Tắc Số Không (The Rule of Zero --- Modern C++)}{19}{subsection.3.2.4}%
-\contentsline {section}{\numberline {3.3}Nạp Chồng Toán Tử Toàn Diện (Operator Overloading Deep Dive)}{20}{section.3.3}%
-\contentsline {subsection}{\numberline {3.3.1}Các Định Đề Bất Biến Về Toán Tử}{20}{subsection.3.3.1}%
-\contentsline {subsection}{\numberline {3.3.2}Lựa Chọn Thiết Kế: Member Method vs Non-member Friend}{20}{subsection.3.3.2}%
-\contentsline {subsection}{\numberline {3.3.3}Toán Tử Chỉ Mục \texttt {operator[]} \& Toán Tử Gọi Hàm \texttt {operator()}}{21}{subsection.3.3.3}%
-\contentsline {subsection}{\numberline {3.3.4}Toán Tử Tăng Giảm: Tiền Tố (Prefix) vs Hậu Tố (Postfix)}{21}{subsection.3.3.4}%
-\contentsline {section}{\numberline {3.4}Nạp Chồng Toán Tử new và delete \& Kỹ Thuật Placement New}{22}{section.3.4}%
-\contentsline {subsection}{\numberline {3.4.1}Nạp Chồng new/delete Cấp Lớp (Class-specific Allocators)}{22}{subsection.3.4.1}%
-\contentsline {subsection}{\numberline {3.4.2}Kỹ Thuật Khởi Tạo Tại Chỗ (Placement New)}{22}{subsection.3.4.2}%
-\contentsline {section}{\numberline {3.5}Kiến Trúc Con Trỏ Thông Minh Chuẩn C++11 (Smart Pointers Architecture)}{23}{section.3.5}%
-\contentsline {subsection}{\numberline {3.5.1}\texttt {std::unique\_ptr<T>} --- Quyền Sở Hữu Độc Quyền (Exclusive Ownership)}{23}{subsection.3.5.1}%
-\contentsline {subsection}{\numberline {3.5.2}\texttt {std::shared\_ptr<T>} --- Quyền Sở Hữu Chia Sẻ (Shared Ownership)}{23}{subsection.3.5.2}%
-\contentsline {subsection}{\numberline {3.5.3}\texttt {std::weak\_ptr<T>} --- Bẻ Gãy Vòng Lặp Tham Chiếu (Circular Reference)}{24}{subsection.3.5.3}%
-\contentsline {chapter}{\numberline {4}Kế thừa (Inheritance)}{25}{chapter.4}%
-\contentsline {section}{\numberline {4.1}Bản Chất Quan Hệ IS-A và HAS-A}{25}{section.4.1}%
-\contentsline {subsection}{\numberline {4.1.1}Bố Cục Bộ Nhớ Đối Tượng Kế Thừa Đơn (Single Inheritance Memory Layout)}{26}{subsection.4.1.1}%
-\contentsline {section}{\numberline {4.2}Ma Trận Biến Đổi Quyền Truy Cập Trong Kế Thừa}{26}{section.4.2}%
-\contentsline {section}{\numberline {4.3}Vòng Đời Khởi Tạo và Hủy Kế Thừa}{27}{section.4.3}%
-\contentsline {subsection}{\numberline {4.3.1}Trình Tự Thực Thi Khởi Tạo và Giải Phóng Bộ Nhớ}{27}{subsection.4.3.1}%
-\contentsline {section}{\numberline {4.4}Hiện Tượng Che Khuất Tên (Name Hiding) vs Nạp Chồng}{28}{section.4.4}%
-\contentsline {section}{\numberline {4.5}Upcasting, Downcasting và Hiểm Họa Cắt Xén Đối Tượng}{29}{section.4.5}%
-\contentsline {subsection}{\numberline {4.5.1}Cắt Xén Đối Tượng (Object Slicing)}{29}{subsection.4.5.1}%
-\contentsline {section}{\numberline {4.6}Đa Kế Thừa \& Bài Toán Kim Cương (Diamond Problem)}{30}{section.4.6}%
-\contentsline {subsection}{\numberline {4.6.1}Mô Hình Bài Toán Kim Cương}{30}{subsection.4.6.1}%
-\contentsline {chapter}{\numberline {5}Đa hình \& Liên kết Động (Polymorphism \& Dynamic Binding)}{32}{chapter.5}%
-\contentsline {section}{\numberline {5.1}Triết lý Đa hình \& Cơ chế Liên kết (Binding)}{32}{section.5.1}%
-\contentsline {section}{\numberline {5.2}Hàm Ảo, \texttt {override} và \texttt {final} trong C++11}{33}{section.5.2}%
-\contentsline {subsection}{\numberline {5.2.1}Cơ chế Hàm Ảo (\texttt {virtual})}{33}{subsection.5.2.1}%
-\contentsline {subsection}{\numberline {5.2.2}Bộ Đôi Từ Khóa Ngữ Cảnh C++11: \texttt {override} và \texttt {final}}{34}{subsection.5.2.2}%
-\contentsline {section}{\numberline {5.3}Phân tích Dưới Gầm Máy: Bảng Ảo (VTable) \& Con trỏ vptr}{35}{section.5.3}%
-\contentsline {subsection}{\numberline {5.3.1}Cơ Chế Điều Chỉnh Con Trỏ Thunk (Adjustor Thunk)}{36}{subsection.5.3.1}%
-\contentsline {section}{\numberline {5.4}Hàm Thuần Ảo \& Lớp Cơ Sở Trừu Tượng (Abstract Base Classes)}{37}{section.5.4}%
-\contentsline {subsection}{\numberline {5.4.1}Bẫy Tinh Vi: Hàm Thuần Ảo Vẫn Có Thể Có Body!}{37}{subsection.5.4.1}%
-\contentsline {subsection}{\numberline {5.4.2}Pure Virtual Destructor: Phải Luôn Có Body!}{38}{subsection.5.4.2}%
-\contentsline {section}{\numberline {5.5}Destructor Ảo (Virtual Destructor) --- Luật Sống Còn}{38}{section.5.5}%
-\contentsline {section}{\numberline {5.6}Bẫy Tử Thần: Gọi Hàm Ảo Trong Constructor \& Destructor}{40}{section.5.6}%
-\contentsline {chapter}{\numberline {6}Khuôn mẫu \& Lập trình Tổng quát (Templates \& Generic Programming)}{42}{chapter.6}%
-\contentsline {section}{\numberline {6.1}Khuôn Mẫu Hàm \& Khuôn Mẫu Lớp (Function \& Class Templates)}{42}{section.6.1}%
-\contentsline {subsection}{\numberline {6.1.1}Cú pháp và Sự tương đương giữa \texttt {typename} và \texttt {class}}{42}{subsection.6.1.1}%
-\contentsline {section}{\numberline {6.2}Quá Trình Biên Dịch Hai Pha (Two-Phase Lookup) \& Dependent Types}{43}{section.6.2}%
-\contentsline {subsection}{\numberline {6.2.1}Bắt Buộc Sử Dụng Từ Khóa \texttt {typename} Cho Kiểu Phụ Thuộc (Dependent Types)}{43}{subsection.6.2.1}%
-\contentsline {section}{\numberline {6.3}Cơ Chế Tạo Thực Thể \& Hiện Tượng Phình To Mã (Code Bloat)}{44}{section.6.3}%
-\contentsline {subsection}{\numberline {6.3.1}Tại Sao Phải Viết Toàn Bộ Code Template Trong File Header (\texttt {.hpp})?}{44}{subsection.6.3.1}%
-\contentsline {subsection}{\numberline {6.3.2}Hiện Tượng Phình To Mã Nguồn (Code Bloat)}{45}{subsection.6.3.2}%
-\contentsline {section}{\numberline {6.4}Tham Số Không Phải Kiểu (NTTP) \& Template Template Parameters}{46}{section.6.4}%
-\contentsline {subsection}{\numberline {6.4.1}Tham Số Không Phải Kiểu (Non-type Template Parameters - NTTP)}{46}{subsection.6.4.1}%
-\contentsline {section}{\numberline {6.5}Chuyên Biệt Hóa Khuôn Mẫu (Template Specialization) \& Bẫy Herb Sutter}{46}{section.6.5}%
-\contentsline {subsection}{\numberline {6.5.1}Chuyên Biệt Hóa Toàn Phần \& Một Phần (Full vs Partial Specialization)}{46}{subsection.6.5.1}%
-\contentsline {subsection}{\numberline {6.5.2}Bẫy Tử Thần Herb Sutter: Function Template Không Hỗ Trợ Partial Specialization!}{47}{subsection.6.5.2}%
-\contentsline {section}{\numberline {6.6}Các Tính Năng Khuôn Mẫu C++11 Hiện Đại}{47}{section.6.6}%
-\contentsline {subsection}{\numberline {6.6.1}Variadic Templates (Khuôn Mẫu Tham Số Biến Thiên)}{47}{subsection.6.6.1}%
-\contentsline {subsection}{\numberline {6.6.2}CRTP: Đa Hình Tĩnh (Static Polymorphism)}{48}{subsection.6.6.2}%
-\contentsline {chapter}{\numberline {7}Xử lý Ngoại lệ \& Thư viện Chuẩn STL (Exceptions \& Modern STL)}{50}{chapter.7}%
-\contentsline {section}{\numberline {7.1}Cơ Chế Bắt Ngoại Lệ \& Bẫy Object Slicing}{50}{section.7.1}%
-\contentsline {section}{\numberline {7.2}Giải Phóng Ngăn Xếp (Stack Unwinding) \& Liên Minh RAII}{51}{section.7.2}%
-\contentsline {section}{\numberline {7.3}Từ Khóa \texttt {noexcept} \& Tối Ưu Hóa STL Sống Còn Trong C++11}{52}{section.7.3}%
-\contentsline {subsection}{\numberline {7.3.1}Cam Kết Bất Biến \texttt {noexcept}}{52}{subsection.7.3.1}%
-\contentsline {subsection}{\numberline {7.3.2}Bí Ẩn Tối Ưu Hiệu Năng Của \texttt {std::vector} Trong C++11}{53}{subsection.7.3.2}%
-\contentsline {section}{\numberline {7.4}Ngoại Lệ Trong Constructor \& Destructor --- Những Vùng Đất Cấm}{53}{section.7.4}%
-\contentsline {subsection}{\numberline {7.4.1}Ngoại Lệ Trong Constructor: Hiểm Họa Rò Rỉ Con Trỏ Thô}{54}{subsection.7.4.1}%
-\contentsline {subsection}{\numberline {7.4.2}Kỹ Thuật Function Try Block Trong Constructor}{54}{subsection.7.4.2}%
-\contentsline {subsection}{\numberline {7.4.3}Luật Cấm Tuyệt Đối: Ngoại Lệ Thoát Ra Khỏi Destructor}{55}{subsection.7.4.3}%
-\contentsline {section}{\numberline {7.5}Ba Cấp Độ Cam Kết An Toàn Ngoại Lệ (Exception Safety Guarantees)}{55}{section.7.5}%
-\contentsline {subsection}{\numberline {7.5.1}Nghiên Cứu Điển Hình Kiến Trúc: Tại Sao \texttt {std::stack::pop()} Trả Về \texttt {void}?}{56}{subsection.7.5.1}%
-\contentsline {section}{\numberline {7.6}Kiến Trúc Tách Rời Trong Thư Viện Chuẩn C++ (STL)}{57}{section.7.6}%
-\contentsline {subsection}{\numberline {7.6.1}Kiến Trúc Tách Rời (Decoupled Architecture)}{57}{subsection.7.6.1}%
-\contentsline {subsection}{\numberline {7.6.2}Năm Hạng Bộ Lặp \& Kỹ Thuật Tag Dispatching}{57}{subsection.7.6.2}%
-\contentsline {subsection}{\numberline {7.6.3}Kiến Trúc Quản Trị Bộ Nhớ: Bộ Cấp Phát Tùy Biến (Allocators \& Rebind)}{58}{subsection.7.6.3}%
-\contentsline {chapter}{Lời Kết: Con Đường Làm Chủ C++ Hiện Đại}{59}{chapter*.2}%
+\contentsline {section}{\numberline {1.4}Con Trỏ, Tham Chiếu và Các Toán Tử Ép Kiểu Chuẩn Mực}{4}{section.1.4}%
+\contentsline {subsection}{\numberline {1.4.1}Bản Chất Dưới Tầng Hợp Ngữ: Tham Chiếu Lvalue (Lvalue Reference)}{4}{subsection.1.4.1}%
+\contentsline {subsection}{\numberline {1.4.2}Hệ Thống Bốn Toán Tử Ép Kiểu An Toàn (C++ Named Casts)}{5}{subsection.1.4.2}%
+\contentsline {chapter}{\numberline {2}Lớp, Đối tượng \& Cơ chế Khởi tạo Thực thể (Classes \& Objects)}{7}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Tính Đóng Gói (Encapsulation) \& Bộ Chỉ Định Quyền Truy Cập}{7}{section.2.1}%
+\contentsline {subsection}{\numberline {2.1.1}Cơ Chế Phân Quyền Truy Cập}{7}{subsection.2.1.1}%
+\contentsline {subsection}{\numberline {2.1.2}Khảo Sát Bộ Nhớ: Sự Căn Chỉnh Dữ Liệu (Memory Alignment \& Padding)}{8}{subsection.2.1.2}%
+\contentsline {section}{\numberline {2.2}Bản Chất Con Trỏ Bản Thể (this Pointer) Dưới Tầng RAM \& ABI Gọi Hàm}{9}{section.2.2}%
+\contentsline {section}{\numberline {2.3}Vòng Đời Khởi Tạo Đối Tượng (Constructors Architecture)}{10}{section.2.3}%
+\contentsline {subsection}{\numberline {2.3.1}Member Initializer List vs Phép Gán Trong Thân Constructor}{10}{subsection.2.3.1}%
+\contentsline {subsection}{\numberline {2.3.2}Hàm Tạo Ủy Quyền \& Khởi Tạo Thành Viên Mặc Định (C++11)}{11}{subsection.2.3.2}%
+\contentsline {subsection}{\numberline {2.3.3}Ngăn Chặn Ép Kiểu Ngầm Định Với Từ Khóa \texttt {explicit}}{11}{subsection.2.3.3}%
+\contentsline {section}{\numberline {2.4}Hàm Hủy (Destructor) \& Triết Lý Thiết Kế RAII}{12}{section.2.4}%
+\contentsline {section}{\numberline {2.5}Thành Viên Static, Const và Kỹ Thuật Hàm Bạn (Friend)}{12}{section.2.5}%
+\contentsline {subsection}{\numberline {2.5.1}Thành Viên Tĩnh (Static Data \& Methods)}{12}{subsection.2.5.1}%
+\contentsline {subsection}{\numberline {2.5.2}Từ Khóa \texttt {mutable} --- Ngoại Lệ Trong Phương Thức Hằng}{13}{subsection.2.5.2}%
+\contentsline {subsection}{\numberline {2.5.3}Quan Hệ Bạn Bè (Friendship Architecture)}{13}{subsection.2.5.3}%
+\contentsline {chapter}{\numberline {3}Quản trị Bộ nhớ, Move Semantics \& Nạp chồng Toán tử (Memory \& Overloading)}{14}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Sao Chép Nông (Shallow Copy) vs Sao Chép Sâu (Deep Copy)}{14}{section.3.1}%
+\contentsline {subsection}{\numberline {3.1.1}Cơ Chế Phá Hủy Bộ Nhớ Của Shallow Copy (Double-Free Hazard)}{14}{subsection.3.1.1}%
+\contentsline {subsection}{\numberline {3.1.2}Giải Pháp Chuẩn Mực: Sao Chép Sâu (Deep Copy)}{15}{subsection.3.1.2}%
+\contentsline {section}{\numberline {3.2}Hệ Thống Phân Loại Giá Trị \& Ngữ Nghĩa Di Dời (Move Semantics)}{16}{section.3.2}%
+\contentsline {subsection}{\numberline {3.2.1}Phân Loại Giá Trị Chuẩn Quốc Tế ISO/IEC 14882 (Value Categories)}{16}{subsection.3.2.1}%
+\contentsline {subsection}{\numberline {3.2.2}Tham Chiếu Rvalue (\texttt {T\&\&}) \& Ngữ Nghĩa Di Dời (Move Semantics)}{17}{subsection.3.2.2}%
+\contentsline {section}{\numberline {3.3}Tiến Hóa Bộ Quy Tắc Quản Trị Tài Nguyên: Rule of 3, 5, 0}{18}{section.3.3}%
+\contentsline {subsection}{\numberline {3.3.1}Quy Tắc Bộ Ba Cổ Điển (The Rule of Three --- C++98)}{18}{subsection.3.3.1}%
+\contentsline {subsection}{\numberline {3.3.2}Quy Tắc Bộ Năm Hiện Đại (The Rule of Five --- C++11)}{18}{subsection.3.3.2}%
+\contentsline {subsection}{\numberline {3.3.3}Thành Ngữ Sao Chép và Hoán Vị (The Copy-and-Swap Idiom)}{19}{subsection.3.3.3}%
+\contentsline {subsection}{\numberline {3.3.4}Quy Tắc Số Không (The Rule of Zero --- Modern C++)}{20}{subsection.3.3.4}%
+\contentsline {section}{\numberline {3.4}Nạp Chồng Toán Tử Toàn Diện (Operator Overloading Deep Dive)}{20}{section.3.4}%
+\contentsline {subsection}{\numberline {3.4.1}Toán Tử Tiền Tố (++x) vs Hậu Tố (x++)}{20}{subsection.3.4.1}%
+\contentsline {subsection}{\numberline {3.4.2}Nạp Chồng new/delete Cấp Lớp (Class-specific Allocators) \& Placement New}{20}{subsection.3.4.2}%
+\contentsline {section}{\numberline {3.5}Kiến Trúc Con Trỏ Thông Minh Chuẩn C++11 (Smart Pointers Architecture)}{21}{section.3.5}%
+\contentsline {subsection}{\numberline {3.5.1}\texttt {std::unique\_ptr<T>} --- Quyền Sở Hữu Độc Quyền (Exclusive Ownership)}{21}{subsection.3.5.1}%
+\contentsline {subsection}{\numberline {3.5.2}\texttt {std::shared\_ptr<T>} --- Quyền Sở Hữu Chia Sẻ (Shared Ownership)}{21}{subsection.3.5.2}%
+\contentsline {subsection}{\numberline {3.5.3}\texttt {std::weak\_ptr<T>} --- Phá Vỡ Vòng Lặp Tham Chiếu (Circular Reference)}{22}{subsection.3.5.3}%
+\contentsline {chapter}{\numberline {4}Kế thừa, Bố cục Bộ nhớ Nhị phân \& Mô hình hóa UML (Inheritance)}{23}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Bản Chất Quan Hệ Hướng Đối Tượng \& Ký Hiệu UML}{23}{section.4.1}%
+\contentsline {subsection}{\numberline {4.1.1}Bố Cục Bộ Nhớ Đối Tượng Kế Thừa Đơn (Single Inheritance Memory Layout)}{24}{subsection.4.1.1}%
+\contentsline {section}{\numberline {4.2}Ma Trận Biến Đổi Quyền Truy Cập Trong Kế Thừa}{24}{section.4.2}%
+\contentsline {section}{\numberline {4.3}Vòng Đời Khởi Tạo và Hủy Kế Thừa}{25}{section.4.3}%
+\contentsline {section}{\numberline {4.4}Hiện Tượng Che Khuất Tên (Name Hiding) vs Nạp Chồng}{26}{section.4.4}%
+\contentsline {section}{\numberline {4.5}Cắt Xén Đối Tượng Đa Hình (Polymorphic Object Slicing)}{27}{section.4.5}%
+\contentsline {section}{\numberline {4.6}Đa Kế Thừa, Bài Toán Kim Cương \& Kế Thừa Ảo}{28}{section.4.6}%
+\contentsline {subsection}{\numberline {4.6.1}Mô Hình Bài Toán Kim Cương (The Diamond Problem)}{28}{subsection.4.6.1}%
+\contentsline {chapter}{\numberline {5}Tính Đa hình, Liên kết Động \& Kiểu Trả về Đồng biến (Polymorphism)}{30}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Triết lý Đa hình \& Cơ chế Liên kết (Binding)}{30}{section.5.1}%
+\contentsline {section}{\numberline {5.2}Hàm Ảo, \texttt {override} và \texttt {final} trong C++11}{31}{section.5.2}%
+\contentsline {subsection}{\numberline {5.2.1}Cơ chế Hàm Ảo (\texttt {virtual})}{31}{subsection.5.2.1}%
+\contentsline {subsection}{\numberline {5.2.2}Bộ Đôi Từ Khóa Ngữ Cảnh C++11: \texttt {override} và \texttt {final}}{32}{subsection.5.2.2}%
+\contentsline {section}{\numberline {5.3}Phân tích Dưới Gầm Máy: Bảng Ảo (VTable) \& Con trỏ vptr}{32}{section.5.3}%
+\contentsline {subsection}{\numberline {5.3.1}Hàm Thunk Bù Độ Lệch Con Trỏ Bản Thể (Adjustor Thunk)}{33}{subsection.5.3.1}%
+\contentsline {section}{\numberline {5.4}Kiểu Trả Về Đồng Biến (Covariant Return Types)}{34}{section.5.4}%
+\contentsline {section}{\numberline {5.5}Destructor Ảo (Virtual Destructor) \& Bẫy Gọi Hàm Ảo Trong Constructor}{34}{section.5.5}%
+\contentsline {subsection}{\numberline {5.5.1}Destructor Ảo --- Nguyên Lý Sống Còn Trong Kế Thừa}{34}{subsection.5.5.1}%
+\contentsline {subsection}{\numberline {5.5.2}Bẫy Gọi Hàm Ảo Trong Constructor \& Destructor}{35}{subsection.5.5.2}%
+\contentsline {chapter}{\numberline {6}Khuôn mẫu \& Lập trình Tổng quát (Templates \& Generic Programming)}{36}{chapter.6}%
+\contentsline {section}{\numberline {6.1}Khuôn Mẫu Hàm \& Khuôn Mẫu Lớp (Function \& Class Templates)}{36}{section.6.1}%
+\contentsline {section}{\numberline {6.2}Cơ Chế Phân Giải Tên Hai Giai Đoạn (Two-Phase Name Lookup)}{37}{section.6.2}%
+\contentsline {subsection}{\numberline {6.2.1}Từ Khóa \texttt {typename} và \texttt {.template} Cho Tên Phụ Thuộc (Dependent Names)}{37}{subsection.6.2.1}%
+\contentsline {section}{\numberline {6.3}Chuyên Biệt Hóa Khuôn Mẫu \& Giải Pháp Hiện Đại C++17}{37}{section.6.3}%
+\contentsline {subsection}{\numberline {6.3.1}Chuyên Biệt Hóa Toàn Phần (Full Specialization)}{37}{subsection.6.3.1}%
+\contentsline {subsection}{\numberline {6.3.2}C++17 \texttt {if constexpr}: Chấm Dứt Bẫy Nạp Chồng Herb Sutter}{38}{subsection.6.3.2}%
+\contentsline {section}{\numberline {6.4}Các Tính Năng Khuôn Mẫu Hiện Đại: Variadics \& Fold Expressions}{38}{section.6.4}%
+\contentsline {subsection}{\numberline {6.4.1}Biểu Thức Gập C++17 (Fold Expressions)}{38}{subsection.6.4.1}%
+\contentsline {section}{\numberline {6.5}CRTP: Đa Hình Tĩnh (Static Polymorphism)}{39}{section.6.5}%
+\contentsline {chapter}{\numberline {7}Xử lý Ngoại lệ \& Kiến trúc Thư viện Chuẩn STL (Exceptions \& STL)}{40}{chapter.7}%
+\contentsline {section}{\numberline {7.1}Cơ Chế Bắt Ngoại Lệ \& Tránh Cắt Xén Đối Tượng}{40}{section.7.1}%
+\contentsline {section}{\numberline {7.2}Trải Cuộn Ngăn Xếp (Stack Unwinding) \& Liên Minh RAII}{41}{section.7.2}%
+\contentsline {section}{\numberline {7.3}Đặc Tả \texttt {noexcept} \& Tối Ưu Hóa Tái Cấp Phát \texttt {std::vector}}{42}{section.7.3}%
+\contentsline {section}{\numberline {7.4}Ba Cấp Độ Cam Kết An Toàn Ngoại Lệ (Exception Safety Guarantees)}{42}{section.7.4}%
+\contentsline {section}{\numberline {7.5}Kiến Trúc Tách Rời Trong Thư Viện Chuẩn C++ (STL)}{43}{section.7.5}%
+\contentsline {subsection}{\numberline {7.5.1}Kiến Trúc Ba Tầng Tách Rời (Decoupled Architecture)}{43}{subsection.7.5.1}%
+\contentsline {subsection}{\numberline {7.5.2}Kỹ Thuật Tag Dispatching Tại Compile-Time}{43}{subsection.7.5.2}%
+\contentsline {subsection}{\numberline {7.5.3}Bộ Cấp Phát Bộ Nhớ Tùy Biến (Allocators \& Rebind Mechanism)}{44}{subsection.7.5.3}%
+\contentsline {chapter}{\numberline {8}Nguyên lý Thiết kế SOLID \& Mẫu Kiến trúc Hiện đại (SOLID \& Design Patterns)}{45}{chapter.8}%
+\contentsline {section}{\numberline {8.1}Hệ Thống Năm Nguyên Lý Thiết Kế SOLID}{45}{section.8.1}%
+\contentsline {subsection}{\numberline {8.1.1}1. Single Responsibility Principle (Nguyên Lý Đơn Trách Nhiệm - SRP)}{45}{subsection.8.1.1}%
+\contentsline {subsection}{\numberline {8.1.2}2. Open/Closed Principle (Nguyên Lý Đóng/Mở - OCP)}{46}{subsection.8.1.2}%
+\contentsline {subsection}{\numberline {8.1.3}3. Liskov Substitution Principle (Nguyên Lý Thay Thế Liskov - LSP)}{46}{subsection.8.1.3}%
+\contentsline {subsection}{\numberline {8.1.4}4. Interface Segregation Principle (Nguyên Lý Phân Tách Giao Diện - ISP)}{47}{subsection.8.1.4}%
+\contentsline {subsection}{\numberline {8.1.5}5. Dependency Inversion Principle (Nguyên Lý Đảo Ngược Phụ Thuộc - DIP)}{47}{subsection.8.1.5}%
+\contentsline {section}{\numberline {8.2}Các Mẫu Thiết Kế GoF Hiện Đại Hóa Trong C++11/14/17}{47}{section.8.2}%
+\contentsline {subsection}{\numberline {8.2.1}Meyers Singleton (Thread-Safe Static Local Initialization)}{47}{subsection.8.2.1}%
+\contentsline {subsection}{\numberline {8.2.2}Mẫu Nhà Máy (Factory Method Pattern) Kết Hợp Smart Pointers}{48}{subsection.8.2.2}%
+\contentsline {subsection}{\numberline {8.2.3}Mẫu Chiến Lược (Strategy Pattern): Đa Hình Động vs Đa Hình Tĩnh}{48}{subsection.8.2.3}%
+\contentsline {chapter}{Lời Kết: Con Đường Làm Chủ C++ Hiện Đại}{50}{chapter*.2}%
+\contentsline {chapter}{Tài Liệu Tham Khảo (Bibliography)}{51}{chapter*.3}%

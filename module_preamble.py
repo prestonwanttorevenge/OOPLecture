@@ -191,16 +191,31 @@ preamble_text = r"""\documentclass[12pt,a4paper,oneside]{book}
 % ==============================================================================
 \begin{document}
 
-% Trang Bìa Học Thuật Oxford Style
+% ------------------------------------------------------------------------------
+% 1. BÌA NGOÀI ĐỒ HỌA NGHỆ THUẬT (ARTISTIC FRONT COVER - FULL BLEED)
+% ------------------------------------------------------------------------------
+\begin{titlepage}
+    \thispagestyle{empty}
+    \begin{tikzpicture}[remember picture, overlay]
+        \node[inner sep=0pt] at (current page.center) {
+            \includegraphics[width=\paperwidth,height=\paperheight]{cover_page.jpg}
+        };
+    \end{tikzpicture}
+\end{titlepage}
+\clearpage
+
+% ------------------------------------------------------------------------------
+% 2. TRANG BÌA PHỤ HỌC THUẬT NỘI BỘ (INSIDE ACADEMIC TITLE PAGE)
+% ------------------------------------------------------------------------------
 \begin{titlepage}
     \centering
-    \vspace*{1.5cm}
+    \vspace*{1.2cm}
     
     {\Huge\bfseries\color{darkblue} THE OOP C++ BIBLE\par}
     \vspace{0.4cm}
     {\large\scshape\color{primaryblue} Giáo Trình Khoa Học Máy Tính \& Kiến Trúc Phần Mềm Hướng Đối Tượng\par}
     
-    \vspace{1.2cm}
+    \vspace{1.0cm}
     {\color{primaryblue}\rule{0.85\textwidth}{1.8pt}}\par
     \vspace{0.6cm}
     
@@ -209,7 +224,7 @@ preamble_text = r"""\documentclass[12pt,a4paper,oneside]{book}
     \vspace{0.6cm}
     {\color{primaryblue}\rule{0.85\textwidth}{1.8pt}}\par
     
-    \vspace{2.5cm}
+    \vspace{2.0cm}
     
     \begin{minipage}{0.85\textwidth}
         \centering
